@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
 import { profile } from "../../services/api";
+import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const EditProfile = () => {
         address: formData.address || "",
         state: formData.state || "",
         country: formData.country || "",
-        website: formData.website || "",
+        website: normalizeWebsiteForStorage(formData.website),
         bio: formData.bio || "",
       };
 
@@ -118,7 +119,7 @@ const EditProfile = () => {
             address: formData.address || "",
             state: formData.state || "",
             country: formData.country || "",
-            website: formData.website || "",
+            website: normalizeWebsiteForStorage(formData.website),
             bio: formData.bio || "",
           },
           social_links: socialLinks,

@@ -254,7 +254,7 @@ export const auth = {
 
 export const bookmark = {
   list() {
-    return request("GET", "/bookmark/bookmarks/");
+    return request("GET", "/bookmark/bookmark/");
   },
 
   // Updated: Now accepts full opportunity object along with opportunity_id
@@ -267,11 +267,11 @@ export const bookmark = {
     if (body.pathfinder != null) data.pathfinder = body.pathfinder;
     // log for debug so picking up server validation errors easier
     console.debug("bookmark.create payload", data);
-    return request("POST", "/bookmark/bookmarks/", { data });
+    return request("POST", "/bookmark/bookmark/", { data });
   },
 
   delete(id) {
-    return request("DELETE", `/bookmark/bookmarks/${id}/delete/`);
+    return request("DELETE", `/bookmark/bookmark/${id}/delete/`);
   },
 
   opportunitiesList() {
@@ -290,7 +290,7 @@ export const bookmark = {
   },
 
   opportunitiesSavedList() {
-    return request("GET", "/bookmarks/opportunities/saved/");
+    return request("GET", "/bookmark/opportunities/saved/");
   },
 
   opportunitiesSavedCreate(body) {
@@ -298,32 +298,37 @@ export const bookmark = {
     if (body.opportunity != null) data.opportunity = body.opportunity;
     const oid = body.opportunity_id ?? body.opportunity?.id;
     if (oid != null) data.opportunity_id = oid;
-    return request("POST", "/bookmarks/opportunities/saved/", { data });
+    return request("POST", "/bookmark/opportunities/saved/", { data });
   },
 
   /** Pathfinder: remove a saved opportunity by opportunity id. */
   opportunitiesSavedDelete(opportunityId) {
-    return request("DELETE", `/bookmarks/opportunities/saved/${opportunityId}/`);
+    return request("DELETE", `/bookmark/opportunities/saved/${opportunityId}/`);
   },
 
-  /** Enabler: list pathfinders (applicants) saved from opportunities. */
+  /** Enabler: list saved pathfinder bookmarks. GET /api/bookmark/applicants/saved/ */
   applicantsSavedList() {
-    return request("GET", "/bookmarks/applicants/saved/");
+    return request("GET", "/bookmark/applicants/saved/");
   },
 
-  /** Enabler: bookmark a pathfinder who applied (optional opportunity context). */
+  /** Enabler: single saved bookmark (view). GET /api/bookmark/applicants/saved/{pathfinder_id}/ */
+  applicantsSavedGet(pathfinderId) {
+    return request("GET", `/bookmark/applicants/saved/${pathfinderId}/`);
+  },
+
+  /** Enabler: bookmark a pathfinder (e.g. applicant). POST /api/bookmark/applicants/saved/ */
   applicantsSavedCreate(body) {
     const data = {};
     if (body.pathfinder != null) data.pathfinder = body.pathfinder;
     if (body.pathfinder_id != null) data.pathfinder_id = body.pathfinder_id;
     if (body.opportunity != null) data.opportunity = body.opportunity;
     if (body.opportunity_id != null) data.opportunity_id = body.opportunity_id;
-    return request("POST", "/bookmarks/applicants/saved/", { data });
+    return request("POST", "/bookmark/applicants/saved/", { data });
   },
 
-  /** Enabler: remove saved applicant bookmark by pathfinder id. */
+  /** Enabler: remove saved bookmark by pathfinder id. DELETE /api/bookmark/applicants/saved/{pathfinder_id}/ */
   applicantsSavedDelete(pathfinderId) {
-    return request("DELETE", `/bookmarks/applicants/saved/${pathfinderId}/`);
+    return request("DELETE", `/bookmark/applicants/saved/${pathfinderId}/`);
   },
 };
 

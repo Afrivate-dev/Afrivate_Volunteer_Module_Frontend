@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { profile, getRole } from '../services/api';
+import { buildPathfinderBaseDetails } from '../utils/pathfinderProfilePayload';
 
 const defaultFormData = {
   firstName: 'Amina',
@@ -120,23 +121,38 @@ const Profile = () => {
     if (validateForm()) {
       try {
         const role = getRole();
-        const profileData = {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          base_details: {
-            contact_email: formData.email,
-            phone_number: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            country: formData.country,
-          }
-        };
-        
         if (role === 'enabler') {
+          const profileData = {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            base_details: {
+              contact_email: formData.email,
+              phone_number: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              state: formData.state,
+              country: formData.country,
+            },
+          };
           await profile.enablerPatch(profileData);
         } else {
-          await profile.pathfinderPatch(profileData);
+          const addressLine = [formData.address, formData.city]
+            .filter(Boolean)
+            .join(', ')
+            .trim();
+          await profile.pathfinderPatch({
+            first_name: String(formData.firstName || '').trim(),
+            last_name: String(formData.lastName || '').trim(),
+            base_details: buildPathfinderBaseDetails({
+              bio: '',
+              contact_email: formData.email,
+              phone_number: formData.phone,
+              address: addressLine || String(formData.address || '').trim(),
+              state: formData.state,
+              country: formData.country,
+              website: '',
+            }),
+          });
         }
       } catch (err) {
         console.error('Error saving profile:', err);

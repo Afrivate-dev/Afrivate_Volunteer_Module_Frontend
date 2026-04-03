@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import NavBar from "../../components/auth/Navbar";
 import { profile, getApiErrorMessage } from "../../services/api";
+import {
+  buildPathfinderBaseDetails,
+  buildPathfinderProfileBody,
+  stripBaseDetailsId,
+  normalizeSocialLink,
+} from "../../utils/pathfinderProfilePayload";
 
 function extractSections(text) {
   const lines = text.split(/\r?\n/);
@@ -144,7 +150,27 @@ const EditNewProfile = () => {
         if (Array.isArray(data.skills)) setSkills(data.skills.map(s => (typeof s === "string" ? s : s?.name || s?.skill || "")).filter(Boolean));
         if (Array.isArray(data.educations)) setEducations(data.educations.map(e => (typeof e === "string" ? e : e?.name || e?.institution || "")).filter(Boolean));
         if (Array.isArray(data.certifications)) setCertifications(data.certifications.map(c => (typeof c === "string" ? c : c?.name || c?.title || "")).filter(Boolean));
-        if (Array.isArray(data.social_links)) setSocialLinks(data.social_links);
+        if (Array.isArray(data.social_links)) {
+          setSocialLinks(
+            data.social_links
+              .map((l) => {
+                const n = normalizeSocialLink(l);
+                if (n) return n;
+                if (l && typeof l === "object") {
+                  return {
+                    platform_name: String(
+                      l.platform_name ?? l.platform ?? l.name ?? ""
+                    ).trim(),
+                    platform_url: String(
+                      l.platform_url ?? l.url ?? l.link ?? ""
+                    ).trim(),
+                  };
+                }
+                return null;
+              })
+              .filter((l) => l && (l.platform_name || l.platform_url))
+          );
+        }
       }
       try {
         const picData = await profile.pictureGet();
@@ -271,42 +297,38 @@ const EditNewProfile = () => {
     }
 
     try {
-      const baseDetails = {
-        bio: (formData.bio || "").trim() || null,
+      const baseDetails = buildPathfinderBaseDetails({
+        bio: formData.bio,
         contact_email: contactEmail,
-        phone_number: (formData.phone_number || "").trim() || null,
+        phone_number: formData.phone_number,
         address,
         state,
         country,
-        website: (formData.website || "").trim() || null,
-      };
-      if (loadedBaseDetailsId != null) baseDetails.id = loadedBaseDetailsId;
+        website: formData.website,
+        id: loadedBaseDetailsId != null ? loadedBaseDetailsId : undefined,
+      });
 
-      const profileData = {
+      const profileData = buildPathfinderProfileBody({
         first_name: first,
         last_name: last,
-        other_name: (formData.other_name || "").trim() || null,
-        title: (formData.title || "").trim() || null,
-        about: (formData.about || "").trim() || null,
-        work_experience: (formData.work_experience || "").trim() || null,
-        languages: (formData.languages || "").trim() || null,
-        gmail: (formData.gmail || "").trim() || null,
+        other_name: formData.other_name,
+        title: formData.title,
+        about: formData.about,
+        work_experience: formData.work_experience,
+        languages: formData.languages,
+        gmail: formData.gmail,
         base_details: baseDetails,
         social_links: Array.isArray(socialLinks) ? socialLinks : [],
-        skills: skills.map((name) => (typeof name === "string" ? { name } : name)),
-        educations: educations.map((name) => (typeof name === "string" ? { name } : name)),
-        certifications: certifications.map((name) => (typeof name === "string" ? { name } : name)),
-      };
+        skills,
+        educations,
+        certifications,
+      });
 
       try {
         await profile.pathfinderUpdate(profileData);
       } catch (updateErr) {
         if (updateErr.status === 404 || !loadedProfileId) {
-          const createPayload = { ...profileData };
-          if (createPayload.base_details && createPayload.base_details.id != null) {
-            const { id, ...rest } = createPayload.base_details;
-            createPayload.base_details = rest;
-          }
+          const createPayload = stripBaseDetailsId(profileData);
           await profile.pathfinderCreate(createPayload);
         } else {
           throw updateErr;

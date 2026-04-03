@@ -22,22 +22,33 @@ const PathfinderProfile = () => {
   }, []);
 
   const checkBookmarkStatus = useCallback(async (pathfinderId) => {
-    const oppId = location.state?.opportunityId;
     try {
-      if (oppId != null && oppId !== "") {
-        const saved = await bookmarks.applicantsSavedList();
-        const list = Array.isArray(saved) ? saved : saved?.results || [];
-        const idStr = String(pathfinderId);
-        const isSaved = list.some((row) => {
-          const pid =
-            row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
-          return pid != null && String(pid) === idStr;
-        });
-        setIsBookmarked(isSaved);
+      // 1) View single: GET /api/bookmark/applicants/saved/{pathfinder_id}/
+      try {
+        await bookmarks.applicantsSavedGet(pathfinderId);
+        setIsBookmarked(true);
+        setBookmarkId(null);
+        return;
+      } catch (_) {
+        /* fall through to list */
+      }
+
+      // 2) List: GET /api/bookmark/applicants/saved/
+      const saved = await bookmarks.applicantsSavedList();
+      const list = Array.isArray(saved) ? saved : saved?.results || [];
+      const idStr = String(pathfinderId);
+      const inApplicantsSaved = list.some((row) => {
+        const pid =
+          row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
+        return pid != null && String(pid) === idStr;
+      });
+      if (inApplicantsSaved) {
+        setIsBookmarked(true);
         setBookmarkId(null);
         return;
       }
 
+      // 3) Legacy generic bookmarks (non–applicants-saved)
       let myEnablerId = enablerIdRef.current;
       if (!myEnablerId) {
         try {
@@ -59,11 +70,14 @@ const PathfinderProfile = () => {
       if (foundBookmark) {
         setIsBookmarked(true);
         setBookmarkId(foundBookmark.id);
+      } else {
+        setIsBookmarked(false);
+        setBookmarkId(null);
       }
     } catch (err) {
       console.error('Error checking bookmark status:', err);
     }
-  }, [location.state?.opportunityId]);
+  }, []);
 
   useEffect(() => {
     const load = async () => {

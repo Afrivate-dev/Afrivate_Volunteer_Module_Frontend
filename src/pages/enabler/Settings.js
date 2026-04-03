@@ -4,6 +4,7 @@ import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
 import { profile } from "../../services/api";
+import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -154,7 +155,7 @@ const Settings = () => {
         address,
         state,
         country,
-        website: (formData.website || "").trim() || "",
+        website: normalizeWebsiteForStorage(formData.website),
       };
       if (baseDetailsId != null) base_details.id = baseDetailsId;
       const updateData = {

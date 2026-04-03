@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
 import { profile, getApiErrorMessage } from "../../services/api";
+import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
 
 const EnablerProfileSetup = () => {
   const navigate = useNavigate();
@@ -106,7 +107,7 @@ const EnablerProfileSetup = () => {
         state: formData.state || "",
         country: formData.country || "",
         phone_number: formData.phone_number || "",
-        website: formData.website || "",
+        website: normalizeWebsiteForStorage(formData.website),
         bio: formData.bio || "",
       };
       if (existingProfile?.base_details?.id != null) {
