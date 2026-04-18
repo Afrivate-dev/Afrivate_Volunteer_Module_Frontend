@@ -1,7 +1,8 @@
 /**
- * Afrivate Backend API client
- * All paths use /api prefix (e.g. /api/auth/register/). Override with REACT_APP_API_BASE_URL in .env if needed.
- * Updated API implementation based on Afrivate API-1 PDF documentation.
+ * Afrivate Backend API client. Paths use the /api prefix (e.g. /api/auth/register/).
+ * Override base URL with REACT_APP_API_BASE_URL; prefix with REACT_APP_API_PREFIX.
+ *
+ * Auth and profile endpoints follow the product specs (Bearer JWT, JSON bodies unless multipart).
  */
 
 const BASE_URL = (
@@ -151,67 +152,49 @@ async function request(method, path, options = {}) {
   return data;
 }
 
-// --- Auth ---
+// --- Auth (POST /api/auth/... JSON unless noted; Bearer on protected routes) ---
 
 export const auth = {
-  login(body) {
-    return request("POST", "/auth/login/", { data: body });
-  },
-
   register(body) {
     return request("POST", "/auth/register/", { data: body });
   },
 
-  /**
-   * Blacklist refresh token on server. Sends refresh in body per backend contract.
-   */
-  logout() {
-    const refresh = getRefreshToken();
-    const data = refresh ? { refresh } : {};
-    return request("POST", "/auth/logout/", { data });
+  verifyOtp(body) {
+    return request("POST", "/auth/verify-otp/", { data: body });
   },
 
-  token(body) {
-    return request("POST", "/auth/token/", { data: body });
+  resendOtp(body) {
+    return request("POST", "/auth/resend-otp/", { data: body });
   },
 
-  tokenRefresh(refresh) {
-    return request("POST", "/auth/token/refresh/", { data: { refresh } });
+  login(body) {
+    return request("POST", "/auth/login/", { data: body });
   },
 
   forgotPassword(body) {
     return request("POST", "/auth/forgot-password/", { data: body });
   },
 
-  /** Email signup: verify 6-digit OTP; returns JWT tokens when successful. */
-  verifyOtp(body) {
-    return request("POST", "/auth/verify-otp/", { data: body });
-  },
-
-  /** Forgot password: verify reset OTP; response includes uid (or similar) for reset step. */
   verifyPasswordResetOtp(body) {
     return request("POST", "/auth/verify-password-reset-otp/", { data: body });
   },
 
-  /**
-   * Set new password after reset. Prefer { uid, new_password, confirm_password }.
-   * Legacy: { email, new_password, confirm_password } if uid missing.
-   */
   resetPassword(body) {
     return request("POST", "/auth/reset-password/", { data: body });
-  },
-
-  /** Logged-in user (e.g. Google-only): add email/password. */
-  setPassword(body) {
-    return request("POST", "/auth/set-password/", { data: body });
   },
 
   changePassword(body) {
     return request("POST", "/auth/change-password/", { data: body });
   },
 
-  verifyEmail(body) {
-    return request("POST", "/auth/verify-email/", { data: body });
+  logout() {
+    const refresh = getRefreshToken();
+    const data = refresh ? { refresh } : {};
+    return request("POST", "/auth/logout/", { data });
+  },
+
+  tokenRefresh(refresh) {
+    return request("POST", "/auth/token/refresh/", { data: { refresh } });
   },
 
   googlePathfinder(body) {
@@ -222,59 +205,11 @@ export const auth = {
     return request("POST", "/auth/google/enabler/", { data: body });
   },
 
-  /** Legacy single-route Google auth (fallback if role-specific routes unavailable). */
-  google(body) {
-    return request("POST", "/auth/google/", { data: body });
+  setPassword(body) {
+    return request("POST", "/auth/set-password/", { data: body });
   },
 
-  // NEW: Registration (alternative)
-  registration(body) {
-    return request("POST", "/auth/registration/", { data: body });
-  },
-
-  // NEW: Resend verification email
-  registrationResendEmail(body) {
-    return request("POST", "/auth/registration/resend-email/", { data: body });
-  },
-
-  // NEW: Verify email with key
-  registrationVerifyEmail(body) {
-    return request("POST", "/auth/registration/verify-email/", { data: body });
-  },
-
-  // NEW: Password change (different from forgot-password)
-  passwordChange(body) {
-    return request("POST", "/auth/password/change/", { data: body });
-  },
-
-  // NEW: Password reset request
-  passwordReset(body) {
-    return request("POST", "/auth/password/reset/", { data: body });
-  },
-
-  // NEW: Password reset confirm
-  passwordResetConfirm(body) {
-    return request("POST", "/auth/password/reset/confirm/", { data: body });
-  },
-
-  // NEW: Get user profile
-  userGet() {
-    return request("GET", "/auth/user/");
-  },
-
-  // NEW: Update user profile (full)
-  userUpdate(body) {
-    return request("PUT", "/auth/user/", { data: body });
-  },
-
-  // NEW: Update user profile (partial)
-  userPatch(body) {
-    return request("PATCH", "/auth/user/", { data: body });
-  },
-
-  /**
-   * Delete account. Prefers DELETE /auth/delete-account/; falls back to /auth/user/.
-   */
+  /** Not listed in the public auth spec; used by settings “delete account”. */
   async deleteAccount() {
     try {
       return await request("DELETE", "/auth/delete-account/");
@@ -288,10 +223,11 @@ export const auth = {
 };
 
 /**
- * Google OAuth: signup uses role-specific URL; login tries pathfinder then enabler, then legacy /auth/google/.
+ * Google: send `{ token: "<google_id_token>" }` from the SDK. Signup uses role-specific routes;
+ * login tries pathfinder then enabler.
  */
 export async function googleAuthWithRole({ idToken, mode, role }) {
-  const data = { id_token: idToken };
+  const data = { token: idToken };
   if (mode === "signup") {
     if (role === "enabler") {
       return auth.googleEnabler(data);
@@ -302,12 +238,7 @@ export async function googleAuthWithRole({ idToken, mode, role }) {
     return await auth.googlePathfinder(data);
   } catch (e1) {
     if (e1.status !== 400 && e1.status !== 404) throw e1;
-    try {
-      return await auth.googleEnabler(data);
-    } catch (e2) {
-      if (e2.status !== 400 && e2.status !== 404) throw e2;
-      return auth.google(data);
-    }
+    return auth.googleEnabler(data);
   }
 }
 
@@ -400,23 +331,19 @@ export const bookmarks = bookmark;
 
 export const notifications = {
   list() {
-    return request("GET", "/notifynotifications/");
+    return request("GET", "/notify/notifications/");
   },
 
   create(body) {
-    return request("POST", "/notifynotifications/", { data: body });
+    return request("POST", "/notify/notifications/", { data: body });
   },
 
-  get(id) {
-    return request("GET", `/notifynotifications/${id}/`);
+  markRead(notificationId) {
+    return request("POST", `/notify/notifications/${notificationId}/mark-read/`);
   },
 
-  update(id, body) {
-    return request("PUT", `/notifynotifications/${id}/`, { data: body });
-  },
-
-  delete(id) {
-    return request("DELETE", `/notifynotifications/${id}/`);
+  markAllRead() {
+    return request("POST", "/notify/notifications/mark-all-read/");
   },
 };
 
@@ -455,9 +382,9 @@ export const profile = {
     return request("GET", "/profile/pathfinderprofile/");
   },
 
-  /** Fetch pathfinder profile by user ID (for enabler view). Uses GET /profile/view-profile/{id}/ */
-  pathfinderGetById(id) {
-    return request("GET", `/profile/view-profile/${id}/`);
+  /** Public pathfinder by Django user id: GET /profile/pathfinderprofile/user/<user_id>/ */
+  pathfinderGetById(userId) {
+    return request("GET", `/profile/pathfinderprofile/user/${userId}/`);
   },
 
   pathfinderCreate(body) {
@@ -495,8 +422,43 @@ export const profile = {
     });
   },
 
+  credentialsGet(id) {
+    return request("GET", `/profile/credentials/${id}/`);
+  },
+
+  credentialsPut(id, body) {
+    return request("PUT", `/profile/credentials/${id}/`, { data: body });
+  },
+
+  credentialsPatch(id, body) {
+    if (body instanceof FormData) {
+      return request("PATCH", `/profile/credentials/${id}/`, { body, headers: {} });
+    }
+    return request("PATCH", `/profile/credentials/${id}/`, { data: body });
+  },
+
   credentialsDelete(id) {
     return request("DELETE", `/profile/credentials/${id}/`);
+  },
+
+  socialLinksCreate(body) {
+    return request("POST", "/profile/social-links/", { data: body });
+  },
+
+  socialLinksGet(id) {
+    return request("GET", `/profile/social-links/${id}/`);
+  },
+
+  socialLinksPut(id, body) {
+    return request("PUT", `/profile/social-links/${id}/`, { data: body });
+  },
+
+  socialLinksPatch(id, body) {
+    return request("PATCH", `/profile/social-links/${id}/`, { data: body });
+  },
+
+  socialLinksDelete(id) {
+    return request("DELETE", `/profile/social-links/${id}/`);
   },
 };
 
@@ -513,53 +475,73 @@ export const waitlist = {
 };
 
 // --- Applications ---
-// Updated: Endpoint changed from /applications/api/applications/ to /applications/
-// Added: cover_letter field support
+// Spec: POST /api/applications/ supports two options:
+//   Option A — JSON with existing credential: { opportunity, cover_letter, profile_resume }
+//   Option B — multipart/form-data with file: form-data with opportunity, cover_letter, resume (File)
 
 export const applications = {
+  /**
+   * List my applications.
+   * Pathfinder: returns all applications they submitted
+   * Enabler: returns all applications received for their opportunities
+   */
   list() {
     return request("GET", "/applications/");
   },
 
-  // Updated: Added cover_letter to request body
+  /**
+   * Submit an application (Pathfinder only).
+   *
+   * Supports two options:
+   * Option A — Existing credential as resume:
+   *   { opportunity: 1, cover_letter: "...", profile_resume: 3 }
+   *
+   * Option B — File upload (multipart/form-data):
+   *   FormData with: opportunity, cover_letter, resume (File object)
+   */
   create(body) {
-    return request("POST", "/applications/", {
-      data: {
-        opportunity: body.opportunity,
-        cover_letter: body.cover_letter || "",
-      },
-    });
+    // If body is FormData (file upload), pass directly
+    if (body instanceof FormData) {
+      return request("POST", "/applications/", {
+        body: body,
+        headers: {},
+      });
+    }
+
+    // Otherwise, JSON with optional profile_resume or cover_letter
+    const data = {};
+    if (body.opportunity != null) data.opportunity = body.opportunity;
+    if (body.cover_letter) data.cover_letter = body.cover_letter;
+    if (body.profile_resume != null) data.profile_resume = body.profile_resume;
+
+    return request("POST", "/applications/", { data });
   },
 
   get(id) {
     return request("GET", `/applications/${id}/`);
   },
 
-  // Updated: Added cover_letter to request body
   update(id, body) {
-    return request("PUT", `/applications/${id}/`, {
-      data: {
-        opportunity: body.opportunity,
-        cover_letter: body.cover_letter || "",
-      },
-    });
+    return request("PUT", `/applications/${id}/`, { data: body });
   },
 
-  // Updated: Added cover_letter to request body
   patch(id, body) {
-    return request("PATCH", `/applications/${id}/`, {
-      data: {
-        opportunity: body.opportunity,
-        cover_letter: body.cover_letter || "",
-      },
-    });
+    return request("PATCH", `/applications/${id}/`, { data: body });
   },
 
-  delete(id) {
+  /**
+   * Withdraw an application (Pathfinder only).
+   * Only possible if status is still "pending".
+   * DELETE /api/applications/<id>/
+   */
+  withdraw(id) {
     return request("DELETE", `/applications/${id}/`);
   },
 
-  // Updated: Changed from PUT to PATCH as per new API
+  /**
+   * Accept or reject an application (Enabler only).
+   * PATCH /api/applications/<id>/change_status/ with { status: "accepted" | "rejected" }
+   */
   updateStatus(id, body) {
     return request("PATCH", `/applications/${id}/change_status/`, { data: body });
   },
@@ -576,49 +558,100 @@ export const applications = {
 };
 
 // --- Opportunities ---
-// Paths: GET/POST /api/opportunities/, GET /api/opportunities/mine/, CRUD /api/opportunities/<pk>/,
-// applicants GET /api/opportunities/<pk>/applicants/, single applicant GET .../applicants/<applicant_id>/
+// Spec endpoints:
+// 1. GET /api/opportunities/?opportunity_type=...&is_open=...&search=...&page=...&page_size=... — Browse all (public)
+// 2. GET /api/opportunities/<id>/ — View single opportunity (public)
+// 3. POST /api/opportunities/ — Post opportunity (Enabler only)
+// 4. PATCH /api/opportunities/<id>/ — Edit opportunity (Enabler only, within 12 hours)
+// 5. DELETE /api/opportunities/<id>/ — Delete opportunity (Enabler only)
+// 6. GET /api/opportunities/mine/ — My posted opportunities (Enabler only)
+// 7. GET /api/opportunities/<id>/applicants/ — List applicants for opportunity (Enabler only)
+// 8. GET /api/opportunities/<id>/applicants/<applicant_id>/ — View applicant's full profile (Enabler only)
 
 export const opportunities = {
+  /**
+   * Browse all opportunities (public endpoint, no auth required).
+   * Supports query params:
+   *   - opportunity_type: 'job', 'internship', 'volunteering'
+   *   - is_open: true/false
+   *   - search: search title and description
+   *   - page: page number
+   *   - page_size: items per page (max 100)
+   */
   list(params = {}) {
     const query = new URLSearchParams(params).toString();
     return request("GET", `/opportunities/${query ? `?${query}` : ""}`);
   },
 
+  /**
+   * Post an opportunity (Enabler only).
+   * Required fields in body: title, opportunity_type, description, link
+   * link must start with https://
+   */
   create(body) {
     return request("POST", "/opportunities/", { data: body });
   },
 
+  /**
+   * Get my posted opportunities (Enabler only).
+   * GET /api/opportunities/mine/
+   */
   mine() {
     return request("GET", "/opportunities/mine/");
   },
 
+  /**
+   * Create opportunity via mine endpoint (alternative to create()).
+   */
   mineCreate(body) {
     return request("POST", "/opportunities/mine/", { data: body });
   },
 
+  /**
+   * View single opportunity (public endpoint).
+   */
   get(id) {
     return request("GET", `/opportunities/${id}/`);
   },
 
+  /**
+   * Update opportunity (Enabler only, within 12 hours of posting).
+   */
   update(id, body) {
     return request("PUT", `/opportunities/${id}/`, { data: body });
   },
 
+  /**
+   * Patch opportunity (Enabler only, within 12 hours of posting).
+   * Include only fields to update.
+   */
   patch(id, body) {
     return request("PATCH", `/opportunities/${id}/`, { data: body });
   },
 
+  /**
+   * Delete opportunity (Enabler only).
+   * If no applicants: response 204 No Content
+   * If has applicants: response 200 with message, opportunity closed instead
+   */
   delete(id) {
     return request("DELETE", `/opportunities/${id}/`);
   },
 
-  /** Enabler: all applicants for an opportunity. GET /api/opportunities/<pk>/applicants/ */
+  /**
+   * List all applicants for an opportunity (Enabler only, must be creator).
+   * GET /api/opportunities/<id>/applicants/
+   * Returns array of applicant objects with status, cover_letter, applied_at, resume
+   */
   applicantsList(opportunityId) {
     return request("GET", `/opportunities/${opportunityId}/applicants/`);
   },
 
-  /** Enabler: one applicant (pathfinder) for an opportunity. GET /api/opportunities/<pk>/applicants/<applicant_id>/ */
+  /**
+   * View an applicant's full profile (Enabler only, must be opportunity creator).
+   * GET /api/opportunities/<id>/applicants/<applicant_id>/
+   * Returns full pathfinder profile including skills, education, certifications, credentials
+   */
   getApplicant(opportunityId, applicantId) {
     return request("GET", `/opportunities/${opportunityId}/applicants/${applicantId}/`);
   },

@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
-import { profile, getRole } from '../../services/api';
+import { profile, getRole, notifications } from '../../services/api';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useUser();
   const [profileData, setProfileData] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -36,6 +37,21 @@ const NavBar = () => {
       }
     };
     loadProfile();
+  }, []);
+
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const response = await notifications.list();
+        const raw = Array.isArray(response) ? response : response?.results || [];
+        const count = raw.filter(item => item.current_user_read === false).length;
+        setUnreadCount(count);
+      } catch (err) {
+        console.error('Error loading unread notifications:', err);
+        setUnreadCount(0);
+      }
+    };
+    loadUnreadCount();
   }, []);
 
   // Get profile picture URL from profile data
@@ -92,8 +108,15 @@ const NavBar = () => {
         </div>
 
         {/* Right side - Bell icon */}
-        <div className="flex items-center">
-          <i className="fa-regular fa-bell text-xl text-gray-800" role="img" aria-label="Notifications"></i>
+        <div className="flex items-center relative">
+          <Link to="/notifications" className="text-gray-800 hover:text-purple-600 relative">
+            <i className="fa-regular fa-bell text-xl" role="img" aria-label="Notifications"></i>
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </Link>
         </div>
       </nav>
 

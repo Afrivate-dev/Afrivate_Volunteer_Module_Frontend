@@ -104,9 +104,9 @@ export function GoogleAuthButton({
     return (
       <div
         className={`flex items-center justify-center w-full py-4 rounded-[15px] border border-gray-300 bg-gray-50 text-gray-500 text-sm ${className}`}
-        title="Set REACT_APP_GOOGLE_CLIENT_ID to enable"
+        title="Create a Web OAuth client in Google Cloud Console and set REACT_APP_GOOGLE_CLIENT_ID in .env, then restart npm start"
       >
-        {buttonText} (not configured)
+        {buttonText} — add REACT_APP_GOOGLE_CLIENT_ID to .env
       </div>
     );
   }

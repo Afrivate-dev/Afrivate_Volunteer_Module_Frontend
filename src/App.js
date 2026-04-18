@@ -11,7 +11,6 @@ import SignUp from './pages/auth/SignUp';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import VerifyOTP from './pages/auth/VerifyOTP';
 import ResetPassword from './pages/auth/ResetPassword';
-import SetPassword from './pages/auth/SetPassword';
 import CreateOpportunity from './pages/enabler/CreateOpportunity';
 import Recommendations from './pages/enabler/Recommendations';
 import EnablerProfile from './pages/enabler/EnablerProfile';
@@ -49,6 +48,7 @@ import KYCForm from './components/forms/KYCForm';
 import DeepPayInfo from './pages/DeepPayInfo';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
+import Notifications from './pages/Notifications';
 // eslint-disable-next-line no-unused-vars -- used in Route element
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
@@ -99,13 +99,13 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/deep-pay-info" element={<DeepPayInfo />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/set-password" element={<RequireAuth><SetPassword /></RequireAuth>} />
           <Route path="/create-opportunity" element={<RequireAuth role="enabler"><CreateOpportunity /></RequireAuth>} />
           <Route path="/enabler/recommendations" element={<RequireAuth role="enabler"><Recommendations /></RequireAuth>} />
           <Route path="/enabler/profile" element={<RequireAuth role="enabler"><EnablerProfile /></RequireAuth>} />

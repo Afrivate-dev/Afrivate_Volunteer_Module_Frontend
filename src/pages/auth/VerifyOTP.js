@@ -10,8 +10,8 @@ const FORGOT_EMAIL_KEY = "forgotPasswordEmail";
 
 /**
  * Two flows (query ?flow=):
- * - registration — after POST /auth/register/; verifies with POST /auth/verify-otp/
- * - password_reset — after POST /auth/forgot-password/; verifies with POST /auth/verify-password-reset-otp/
+ * - registration — POST /auth/register/ then POST /auth/verify-otp/; resend via POST /auth/resend-otp/
+ * - password_reset — POST /auth/forgot-password/ then POST /auth/verify-password-reset-otp/; resend via forgot-password again
  *
  * If `flow` is omitted: password_reset when forgot email exists in session, else registration when registration email exists.
  */
@@ -120,7 +120,12 @@ const VerifyOTP = () => {
     setError("");
     setIsResending(true);
     try {
-      if (email) await api.auth.forgotPassword({ email });
+      if (!email) return;
+      if (flow === "registration") {
+        await api.auth.resendOtp({ email });
+      } else {
+        await api.auth.forgotPassword({ email });
+      }
     } catch (_) {
       /* still show generic message */
     } finally {
@@ -177,13 +182,17 @@ const VerifyOTP = () => {
                 </button>
               </div>
             ) : (
-              <p className="text-sm text-center text-gray-500">
-                Check spam or{" "}
-                <Link to="/signup" className="text-purple-600 font-medium">
-                  start sign up again
-                </Link>
-                .
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-600">Didn&apos;t receive the code?</p>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending}
+                  className="text-sm font-medium text-purple-600 hover:text-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isResending ? "Resending..." : "Resend code"}
+                </button>
+              </div>
             )}
 
             <div className="text-center">

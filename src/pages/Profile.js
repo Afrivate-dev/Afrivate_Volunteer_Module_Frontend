@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { profile, getRole } from '../services/api';
+import { profile, getRole, auth, getApiErrorMessage } from '../services/api';
 import { buildPathfinderBaseDetails } from '../utils/pathfinderProfilePayload';
 
 const defaultFormData = {
@@ -30,6 +30,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('personal');
   const [formData, setFormData] = useState(defaultFormData);
   const [errors, setErrors] = useState({});
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -118,45 +119,85 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    if (validateForm()) {
-      try {
-        const role = getRole();
-        if (role === 'enabler') {
-          const profileData = {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            base_details: {
-              contact_email: formData.email,
-              phone_number: formData.phone,
-              address: formData.address,
-              city: formData.city,
-              state: formData.state,
-              country: formData.country,
-            },
-          };
-          await profile.enablerPatch(profileData);
-        } else {
-          const addressLine = [formData.address, formData.city]
-            .filter(Boolean)
-            .join(', ')
-            .trim();
-          await profile.pathfinderPatch({
-            first_name: String(formData.firstName || '').trim(),
-            last_name: String(formData.lastName || '').trim(),
-            base_details: buildPathfinderBaseDetails({
-              bio: '',
-              contact_email: formData.email,
-              phone_number: formData.phone,
-              address: addressLine || String(formData.address || '').trim(),
-              state: formData.state,
-              country: formData.country,
-              website: '',
-            }),
-          });
-        }
-      } catch (err) {
-        console.error('Error saving profile:', err);
+    setFeedback(null);
+
+    if (activeTab === 'security') {
+      if (!formData.currentPassword && !formData.newPassword && !formData.confirmPassword) {
+        setFeedback({
+          type: 'error',
+          text: 'Fill in current and new password to change your password, or switch to another tab.',
+        });
+        return;
       }
+      if (!validateForm()) return;
+      try {
+        await auth.changePassword({
+          old_password: formData.currentPassword,
+          new_password: formData.newPassword,
+          confirm_password: formData.confirmPassword,
+        });
+        setFormData((prev) => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        }));
+        setFeedback({ type: 'success', text: 'Password updated.' });
+      } catch (err) {
+        setFeedback({ type: 'error', text: getApiErrorMessage(err) || 'Could not change password.' });
+      }
+      return;
+    }
+
+    if (activeTab === 'preferences') {
+      setFeedback({
+        type: 'success',
+        text: 'Preferences saved in this session (not synced to the server yet).',
+      });
+      return;
+    }
+
+    if (!validateForm()) return;
+
+    try {
+      const role = getRole();
+      if (role === 'enabler') {
+        const profileData = {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          base_details: {
+            contact_email: formData.email,
+            phone_number: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            country: formData.country,
+          },
+        };
+        await profile.enablerPatch(profileData);
+      } else {
+        const addressLine = [formData.address, formData.city]
+          .filter(Boolean)
+          .join(', ')
+          .trim();
+        await profile.pathfinderPatch({
+          first_name: String(formData.firstName || '').trim(),
+          last_name: String(formData.lastName || '').trim(),
+          base_details: buildPathfinderBaseDetails({
+            bio: '',
+            contact_email: formData.email,
+            phone_number: formData.phone,
+            address: addressLine || String(formData.address || '').trim(),
+            state: formData.state,
+            country: formData.country,
+            website: '',
+          }),
+        });
+      }
+      setFeedback({ type: 'success', text: 'Profile saved.' });
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      setFeedback({ type: 'error', text: getApiErrorMessage(err) || 'Could not save profile.' });
     }
   };
 
@@ -509,6 +550,15 @@ const Profile = () => {
             {renderCurrentTab()}
 
             <div className="mt-8 pt-6 border-t border-gray-200">
+              {feedback && (
+                <p
+                  className={`mb-4 text-sm ${
+                    feedback.type === 'success' ? 'text-green-700' : 'text-red-600'
+                  }`}
+                >
+                  {feedback.text}
+                </p>
+              )}
               <div className="flex justify-between items-center">
                 <Link
                   to="/dashboard"

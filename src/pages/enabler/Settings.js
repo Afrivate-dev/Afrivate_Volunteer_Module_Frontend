@@ -4,14 +4,16 @@ import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
 import { Link } from "react-router-dom";
-import { profile, auth } from "../../services/api";
+import { profile, auth, getApiErrorMessage } from "../../services/api";
 import { useUser } from "../../context/UserContext";
 import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
+import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { logout } = useUser();
   const fileInputRef = useRef(null);
+  const initialSocialLinksRef = useRef([]);
 
   useEffect(() => {
     document.title = "Enabler Settings - AfriVate";
@@ -31,6 +33,7 @@ const Settings = () => {
     website: "",
     currentPassword: "",
     newPassword: "",
+    confirmNewPassword: "",
   });
   const [socialLinks, setSocialLinks] = useState([]);
   const [baseDetailsId, setBaseDetailsId] = useState(null);
@@ -43,6 +46,7 @@ const Settings = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false });
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [loading, setLoading] = useState(true);
+  const [credDetailModal, setCredDetailModal] = useState(null);
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -64,7 +68,12 @@ const Settings = () => {
           phone_number: base.phone_number || "",
           website: base.website || "",
         }));
-        setSocialLinks(Array.isArray(data.social_links) ? data.social_links : []);
+        const sl = Array.isArray(data.social_links) ? data.social_links : [];
+        setSocialLinks(sl);
+        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
+      } else {
+        setSocialLinks([]);
+        initialSocialLinksRef.current = [];
       }
     } catch (err) {
       console.error("Error loading enabler profile:", err);
@@ -150,7 +159,6 @@ const Settings = () => {
         return;
       }
       const employeesNum = formData.employees.trim() === "" ? null : parseInt(formData.employees, 10);
-      // API expects base_details with: bio, contact_email, phone_number, address, state, country, website
       const base_details = {
         bio: (formData.bio || "").trim() || "",
         contact_email,
@@ -161,20 +169,181 @@ const Settings = () => {
         website: normalizeWebsiteForStorage(formData.website),
       };
       if (baseDetailsId != null) base_details.id = baseDetailsId;
+
+      const filteredLinks = socialLinks
+        .map((l) => ({
+          id: l.id,
+          platform_name: (l.platform_name || "").trim(),
+          platform_url: (l.platform_url || "").trim(),
+        }))
+        .filter((l) => l.platform_name || l.platform_url);
+
+      const useRest =
+        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
+        socialLinksHaveRestIds(filteredLinks);
+
       const updateData = {
         name,
         employees: Number.isNaN(employeesNum) ? null : employeesNum,
         role: formData.role.trim() || null,
         base_details,
-        social_links: socialLinks
-          .map((l) => ({ platform_name: (l.platform_name || "").trim(), platform_url: (l.platform_url || "").trim() }))
-          .filter((l) => l.platform_name || l.platform_url),
       };
-      await profile.enablerUpdate(updateData);
+      if (!useRest) {
+        updateData.social_links = filteredLinks.map(({ platform_name, platform_url }) => ({
+          platform_name,
+          platform_url,
+        }));
+      }
+
+      await profile.enablerPatch(updateData);
+      if (useRest) {
+        await syncSocialLinksRestApi(initialSocialLinksRef.current, filteredLinks);
+      }
+
+      const fresh = await profile.enablerGet();
+      const newSl = Array.isArray(fresh.social_links) ? fresh.social_links : [];
+      setSocialLinks(newSl);
+      initialSocialLinksRef.current = JSON.parse(JSON.stringify(newSl));
+
       setToast({ isOpen: true, message: "Changes saved successfully!", type: "success" });
     } catch (err) {
       console.error("Error saving profile:", err);
-      setToast({ isOpen: true, message: err.message || "Failed to save. Try again.", type: "error" });
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || err.message || "Failed to save. Try again.",
+        type: "error",
+      });
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const old_password = (formData.currentPassword || "").trim();
+    const new_password = (formData.newPassword || "").trim();
+    const confirm_password = (formData.confirmNewPassword || "").trim();
+    if (!old_password || !new_password || !confirm_password) {
+      setToast({
+        isOpen: true,
+        message: "Enter current password, new password, and confirmation.",
+        type: "error",
+      });
+      return;
+    }
+    if (new_password !== confirm_password) {
+      setToast({ isOpen: true, message: "New passwords do not match.", type: "error" });
+      return;
+    }
+    try {
+      await auth.changePassword({ old_password, new_password, confirm_password });
+      setFormData((p) => ({ ...p, currentPassword: "", newPassword: "", confirmNewPassword: "" }));
+      setToast({ isOpen: true, message: "Password updated.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not change password.",
+        type: "error",
+      });
+    }
+  };
+
+  const openCredentialDetails = async (id) => {
+    setCredDetailModal({ id, loading: true });
+    try {
+      const data = await profile.credentialsGet(id);
+      setCredDetailModal({ id, data, loading: false });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not load credential.",
+        type: "error",
+      });
+      setCredDetailModal(null);
+    }
+  };
+
+  const handlePatchCredentialName = async (id, document_name) => {
+    const name = String(document_name || "").trim();
+    if (!name) {
+      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
+      return;
+    }
+    try {
+      await profile.credentialsPatch(id, { document_name: name });
+      setCredentials((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
+      );
+      setToast({ isOpen: true, message: "Document name updated.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not update document name.",
+        type: "error",
+      });
+    }
+  };
+
+  const handlePutCredentialName = async (id, document_name) => {
+    const name = String(document_name || "").trim();
+    if (!name) {
+      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
+      return;
+    }
+    try {
+      await profile.credentialsPut(id, { document_name: name });
+      setCredentials((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
+      );
+      setToast({ isOpen: true, message: "Document updated (PUT).", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "PUT failed.",
+        type: "error",
+      });
+    }
+  };
+
+  const refreshSocialLinkFromServer = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    try {
+      const data = await profile.socialLinksGet(link.id);
+      setSocialLinks((prev) => {
+        const next = [...prev];
+        next[index] = {
+          ...next[index],
+          platform_name: data.platform_name ?? next[index].platform_name,
+          platform_url: data.platform_url ?? next[index].platform_url,
+        };
+        return next;
+      });
+      setToast({ isOpen: true, message: "Link refreshed from server.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not refresh link.",
+        type: "error",
+      });
+    }
+  };
+
+  const handleSocialLinkPut = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    const platform_name = (link.platform_name || "").trim();
+    const platform_url = (link.platform_url || "").trim();
+    if (!platform_name || !platform_url) {
+      setToast({ isOpen: true, message: "Platform name and URL are required for PUT.", type: "error" });
+      return;
+    }
+    try {
+      await profile.socialLinksPut(link.id, { platform_name, platform_url });
+      setToast({ isOpen: true, message: "Social link saved (PUT).", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "PUT failed; try Save changes for PATCH sync.",
+        type: "error",
+      });
     }
   };
 
@@ -432,7 +601,7 @@ const Settings = () => {
               <h3 className="text-lg font-bold text-black mb-2">Social links</h3>
               <p className="text-gray-600 text-sm mb-2">Add platform name and URL (e.g. Website, https://company.com)</p>
               {socialLinks.map((link, index) => (
-                <div key={index} className="flex flex-wrap gap-2 items-center mb-2">
+                <div key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`} className="flex flex-wrap gap-2 items-center mb-2">
                   <input
                     type="text"
                     value={link.platform_name || ""}
@@ -447,6 +616,26 @@ const Settings = () => {
                     placeholder="https://..."
                     className="flex-1 min-w-[180px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
                   />
+                  {link.id != null && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => refreshSocialLinkFromServer(index)}
+                        className="text-xs text-[#6A00B1] font-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
+                        title="Reload this link from the server"
+                      >
+                        Refresh
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSocialLinkPut(index)}
+                        className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        title="Save this row with PUT (full replace)"
+                      >
+                        PUT save
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
                     onClick={() => removeSocialLink(index)}
@@ -469,6 +658,7 @@ const Settings = () => {
 
           <div className="mb-8">
             <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Change Password</h2>
+            <p className="text-gray-600 text-sm mb-3">Change the password you use to sign in with email.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-2">Current Password</label>
@@ -492,7 +682,25 @@ const Settings = () => {
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm text-gray-600 mb-2">Confirm New Password</label>
+                <input
+                  type="password"
+                  name="confirmNewPassword"
+                  value={formData.confirmNewPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirm new password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                />
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={handleChangePassword}
+              className="mt-4 bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#5A0091]"
+            >
+              Update password
+            </button>
           </div>
 
           <div className="mb-8">
@@ -539,13 +747,50 @@ const Settings = () => {
             </div>
             {docUploadError && <p className="text-red-500 text-sm mb-2">{docUploadError}</p>}
             {credentials.length > 0 && (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {credentials.map((cred) => (
-                  <li key={cred.id} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
-                    <span className="text-sm text-gray-700">{cred.document_name || cred.name || "Document"}</span>
-                    <div className="flex items-center gap-2">
+                  <li key={cred.id} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                    <input
+                      type="text"
+                      value={cred.document_name ?? cred.name ?? ""}
+                      onChange={(e) =>
+                        setCredentials((prev) =>
+                          prev.map((c) =>
+                            c.id === cred.id ? { ...c, document_name: e.target.value } : c
+                          )
+                        )
+                      }
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      placeholder="Document name"
+                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handlePatchCredentialName(cred.id, cred.document_name ?? cred.name ?? "")
+                        }
+                        className="text-[#6A00B1] text-sm font-semibold hover:underline"
+                      >
+                        Save (PATCH)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handlePutCredentialName(cred.id, cred.document_name ?? cred.name ?? "")
+                        }
+                        className="text-gray-600 text-sm font-semibold hover:underline"
+                      >
+                        Save (PUT)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openCredentialDetails(cred.id)}
+                        className="text-gray-700 text-sm font-semibold hover:underline"
+                      >
+                        Details
+                      </button>
                       {cred.document && (
-                        <a href={cred.document} target="_blank" rel="noopener noreferrer" className="text-[#6A00B1] text-sm hover:underline">View</a>
+                        <a href={cred.document} target="_blank" rel="noopener noreferrer" className="text-[#6A00B1] text-sm hover:underline">Open file</a>
                       )}
                       <button
                         type="button"
@@ -613,6 +858,39 @@ const Settings = () => {
         confirmText="Delete Account"
         type="danger"
       />
+
+      {credDetailModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="fixed inset-0 bg-black/50 border-0 cursor-default"
+            aria-label="Close"
+            onClick={() => setCredDetailModal(null)}
+          />
+          <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col z-10">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-black">Credential details</h3>
+              <button
+                type="button"
+                onClick={() => setCredDetailModal(null)}
+                className="text-gray-500 hover:text-gray-800 text-xl leading-none px-2"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4 overflow-auto">
+              {credDetailModal.loading ? (
+                <p className="text-gray-600 text-sm">Loading…</p>
+              ) : (
+                <pre className="text-xs bg-gray-50 p-3 rounded-lg overflow-auto whitespace-pre-wrap break-words">
+                  {JSON.stringify(credDetailModal.data, null, 2)}
+                </pre>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toast
         isOpen={toast.isOpen}

@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
-import { profile } from "../../services/api";
+import { profile, getApiErrorMessage } from "../../services/api";
 import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
+import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 
 const EditProfile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const initialSocialLinksRef = useRef([]);
   const [formData, setFormData] = useState({
     name: "",
     employees: "",
@@ -46,9 +48,9 @@ const EditProfile = () => {
           bio: base.bio || "",
         });
         setProfilePhotoUrl(base.profile_pic || "");
-        if (Array.isArray(data.social_links)) {
-          setSocialLinks(data.social_links);
-        }
+        const sl = Array.isArray(data.social_links) ? data.social_links : [];
+        setSocialLinks(sl);
+        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
       }
     } catch (err) {
       console.error("Error loading enabler profile:", err);
@@ -78,7 +80,6 @@ const EditProfile = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Build base_details object - send all fields to ensure they're all saved
       const baseDetailsData = {
         contact_email: formData.contact_email || "",
         phone_number: formData.phone_number || "",
@@ -89,48 +90,50 @@ const EditProfile = () => {
         bio: formData.bio || "",
       };
 
-      // Build the full profile data
+      const filteredLinks = socialLinks
+        .map((l) => ({
+          id: l.id,
+          platform_name: (l.platform_name || "").trim(),
+          platform_url: (l.platform_url || "").trim(),
+        }))
+        .filter((l) => l.platform_name || l.platform_url);
+
+      const useRest =
+        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
+        socialLinksHaveRestIds(filteredLinks);
+
       const profileData = {
         name: formData.name || "Enabler",
         employees: formData.employees || null,
         role: formData.role || null,
         base_details: baseDetailsData,
-        social_links: socialLinks,
       };
+      if (!useRest) {
+        profileData.social_links = filteredLinks.map(({ platform_name, platform_url }) => ({
+          platform_name,
+          platform_url,
+        }));
+      }
 
-      console.log("Saving profile with data:", JSON.stringify(profileData, null, 2));
-
-      // Try PATCH first for partial update (more forgiving)
       await profile.enablerPatch(profileData);
+      if (useRest) {
+        await syncSocialLinksRestApi(initialSocialLinksRef.current, filteredLinks);
+      }
+
+      const fresh = await profile.enablerGet();
+      const newSl = Array.isArray(fresh.social_links) ? fresh.social_links : [];
+      setSocialLinks(newSl);
+      initialSocialLinksRef.current = JSON.parse(JSON.stringify(newSl));
 
       setToast({ isOpen: true, message: "Profile updated successfully!", type: "success" });
       setTimeout(() => navigate("/enabler/profile"), 1200);
     } catch (err) {
-      console.error("Error saving profile with PATCH, trying PUT:", err);
-      try {
-        // Fallback to PUT if PATCH fails
-        const profileData = {
-          name: formData.name || "Enabler",
-          employees: formData.employees || null,
-          role: formData.role || null,
-          base_details: {
-            contact_email: formData.contact_email || "",
-            phone_number: formData.phone_number || "",
-            address: formData.address || "",
-            state: formData.state || "",
-            country: formData.country || "",
-            website: normalizeWebsiteForStorage(formData.website),
-            bio: formData.bio || "",
-          },
-          social_links: socialLinks,
-        };
-        await profile.enablerUpdate(profileData);
-        setToast({ isOpen: true, message: "Profile updated successfully!", type: "success" });
-        setTimeout(() => navigate("/enabler/profile"), 1200);
-      } catch (putErr) {
-        console.error("Error saving profile with PUT:", putErr);
-        setToast({ isOpen: true, message: putErr.message || "Failed to save profile. Please try again.", type: "error" });
-      }
+      console.error("Error saving profile:", err);
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || err.message || "Failed to save profile. Please try again.",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }

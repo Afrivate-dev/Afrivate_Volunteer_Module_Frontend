@@ -52,22 +52,10 @@ const Login = () => {
     setServerError('');
   
     try {
-      let data;
-      try {
-        data = await api.auth.login({
-          username_or_email: formData.email.trim(),
-          password: formData.password,
-        });
-      } catch (loginErr) {
-        try {
-          data = await api.auth.token({
-            email: formData.email.trim(),
-            password: formData.password,
-          });
-        } catch {
-          throw loginErr;
-        }
-      }
+      const data = await api.auth.login({
+        username_or_email: formData.email.trim(),
+        password: formData.password,
+      });
 
       if (data.access) {
         api.setTokens(data.access, data.refresh);

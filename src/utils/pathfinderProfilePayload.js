@@ -17,7 +17,9 @@ export function normalizeSocialLink(link) {
     link.platform_url ?? link.url ?? link.link ?? ""
   ).trim();
   if (!platform_name && !platform_url) return null;
-  return { platform_name, platform_url };
+  const out = { platform_name, platform_url };
+  if (link.id != null) out.id = link.id;
+  return out;
 }
 
 export function normalizeSkillEntry(s) {

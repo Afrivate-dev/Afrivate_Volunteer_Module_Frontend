@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
-import { profile, getApiErrorMessage } from "../../services/api";
+import { profile, getApiErrorMessage, auth } from "../../services/api";
+import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 import {
   buildPathfinderBaseDetails,
   buildPathfinderProfileBody,
@@ -43,6 +45,7 @@ function extractSections(text) {
 
 const EditNewProfile = () => {
   const photoInputRef = useRef(null);
+  const initialSocialLinksRef = useRef([]);
 
   useEffect(() => {
     document.title = "Edit Profile - AfriVate";
@@ -83,6 +86,11 @@ const EditNewProfile = () => {
   const [photoUploadError, setPhotoUploadError] = useState(null);
   const [currentCvUrl, setCurrentCvUrl] = useState(null);
   const [currentCvName, setCurrentCvName] = useState(null);
+  const [pwdOld, setPwdOld] = useState("");
+  const [pwdNew, setPwdNew] = useState("");
+  const [pwdConfirm, setPwdConfirm] = useState("");
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdMessage, setPwdMessage] = useState(null);
 
   const parseResumeFile = useCallback((file) => {
     if (!file) return;
@@ -151,25 +159,9 @@ const EditNewProfile = () => {
         if (Array.isArray(data.educations)) setEducations(data.educations.map(e => (typeof e === "string" ? e : e?.name || e?.institution || "")).filter(Boolean));
         if (Array.isArray(data.certifications)) setCertifications(data.certifications.map(c => (typeof c === "string" ? c : c?.name || c?.title || "")).filter(Boolean));
         if (Array.isArray(data.social_links)) {
-          setSocialLinks(
-            data.social_links
-              .map((l) => {
-                const n = normalizeSocialLink(l);
-                if (n) return n;
-                if (l && typeof l === "object") {
-                  return {
-                    platform_name: String(
-                      l.platform_name ?? l.platform ?? l.name ?? ""
-                    ).trim(),
-                    platform_url: String(
-                      l.platform_url ?? l.url ?? l.link ?? ""
-                    ).trim(),
-                  };
-                }
-                return null;
-              })
-              .filter((l) => l && (l.platform_name || l.platform_url))
-          );
+          const sl = data.social_links.map((l) => normalizeSocialLink(l)).filter(Boolean);
+          setSocialLinks(sl);
+          initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
         }
       }
       try {
@@ -308,6 +300,13 @@ const EditNewProfile = () => {
         id: loadedBaseDetailsId != null ? loadedBaseDetailsId : undefined,
       });
 
+      const normalizedForSync = (socialLinks || [])
+        .map((l) => normalizeSocialLink(l))
+        .filter(Boolean);
+      const useRest =
+        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
+        socialLinksHaveRestIds(normalizedForSync);
+
       const profileData = buildPathfinderProfileBody({
         first_name: first,
         last_name: last,
@@ -323,6 +322,9 @@ const EditNewProfile = () => {
         educations,
         certifications,
       });
+      if (useRest) {
+        delete profileData.social_links;
+      }
 
       try {
         await profile.pathfinderUpdate(profileData);
@@ -335,6 +337,10 @@ const EditNewProfile = () => {
         }
       }
 
+      if (useRest) {
+        await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
+      }
+
       await loadProfile();
       setError(null);
       setSuccessMessage("Profile saved successfully.");
@@ -344,6 +350,33 @@ const EditNewProfile = () => {
       setError(getApiErrorMessage(err) || "Failed to save profile. Please try again.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPwdMessage(null);
+    const old_password = pwdOld.trim();
+    const new_password = pwdNew.trim();
+    const confirm_password = pwdConfirm.trim();
+    if (!old_password || !new_password || !confirm_password) {
+      setPwdMessage({ type: "error", text: "Fill current password, new password, and confirmation." });
+      return;
+    }
+    if (new_password !== confirm_password) {
+      setPwdMessage({ type: "error", text: "New passwords do not match." });
+      return;
+    }
+    setPwdSaving(true);
+    try {
+      await auth.changePassword({ old_password, new_password, confirm_password });
+      setPwdOld("");
+      setPwdNew("");
+      setPwdConfirm("");
+      setPwdMessage({ type: "success", text: "Password updated." });
+    } catch (err) {
+      setPwdMessage({ type: "error", text: getApiErrorMessage(err) || "Could not change password." });
+    } finally {
+      setPwdSaving(false);
     }
   };
 
@@ -889,6 +922,69 @@ const EditNewProfile = () => {
                   <i className="fa fa-check mr-1" /> CV uploaded successfully
                 </p>
               )}
+            </div>
+
+            {/* Change password (POST /api/auth/change-password/) */}
+            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4 border border-gray-100">
+              <h2 className="text-lg md:text-xl font-bold text-black mb-1" style={{ fontFamily: "Inter" }}>
+                Change password
+              </h2>
+              <p className="text-xs text-gray-600 mb-3">
+                Signed in with Google only?{" "}
+                <Link to="/set-password" className="text-[#6A00B1] font-semibold hover:underline">
+                  Set a password first
+                </Link>
+                , then you can change it here.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1">Current password</label>
+                  <input
+                    type="password"
+                    value={pwdOld}
+                    onChange={(e) => setPwdOld(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    autoComplete="current-password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1">New password</label>
+                  <input
+                    type="password"
+                    value={pwdNew}
+                    onChange={(e) => setPwdNew(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-gray-600 mb-1">Confirm new password</label>
+                  <input
+                    type="password"
+                    value={pwdConfirm}
+                    onChange={(e) => setPwdConfirm(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    autoComplete="new-password"
+                  />
+                </div>
+              </div>
+              {pwdMessage && (
+                <p
+                  className={`text-sm mb-2 ${
+                    pwdMessage.type === "success" ? "text-green-700" : "text-red-600"
+                  }`}
+                >
+                  {pwdMessage.text}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleChangePassword}
+                disabled={pwdSaving}
+                className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-900 disabled:opacity-50"
+              >
+                {pwdSaving ? "Updating…" : "Update password"}
+              </button>
             </div>
 
             {/* Save Button */}
