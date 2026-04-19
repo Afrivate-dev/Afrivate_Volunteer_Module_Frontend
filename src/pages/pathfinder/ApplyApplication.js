@@ -179,6 +179,7 @@ const ApplyApplication = () => {
       });
     
     setLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opportunityId, location.state]);
 
   useEffect(() => {
