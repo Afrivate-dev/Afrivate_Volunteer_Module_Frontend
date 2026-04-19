@@ -39,7 +39,7 @@ const OrganizationProfile = () => {
         setProfileData(data);
         if (data?.id != null && getAccessToken() && getRole() === "pathfinder") {
           try {
-            const raw = await bookmarks.list();
+            const raw = await bookmarks.enablersSavedList();
             const list = normalizeBookmarkList(raw);
             const row = findEnablerBookmarkRow(list, data.id);
             if (row) {
@@ -78,19 +78,12 @@ const OrganizationProfile = () => {
 
     if (isBookmarked) {
       try {
-        let idToDelete = bookmarkId;
-        if (idToDelete == null) {
-          const raw = await bookmarks.list();
-          const list = normalizeBookmarkList(raw);
-          const row = findEnablerBookmarkRow(list, enablerPk);
-          idToDelete = row?.id ?? row?.pk;
-        }
-        if (idToDelete != null) await bookmarks.delete(idToDelete);
+        await bookmarks.enablersSavedDelete(enablerPk);
         setIsBookmarked(false);
         setBookmarkId(null);
         setToast({ isOpen: true, message: "Removed from bookmarks.", type: "success" });
       } catch (err) {
-        console.error(err);
+        console.error("Delete bookmark error:", err);
         setToast({
           isOpen: true,
           message: "Could not remove bookmark. Try again.",
@@ -99,17 +92,24 @@ const OrganizationProfile = () => {
       }
     } else {
       try {
-        const res = await bookmarks.create({ enabler: enablerPk });
+        const res = await bookmarks.enablersSavedCreate({ enabler_id: enablerPk }); 
         setIsBookmarked(true);
         setBookmarkId(res?.id ?? res?.pk ?? null);
         setToast({ isOpen: true, message: "Organization saved to bookmarks.", type: "success" });
       } catch (err) {
-        console.error(err);
-        setToast({
-          isOpen: true,
-          message: "Could not save bookmark. Try again.",
-          type: "error",
-        });
+        console.error("Create bookmark error:",err);
+
+        const errorMessage = err?.body?.non_field_errors?.[0] || "";
+        if (errorMessage.includes("already bookmarked")) {
+          setIsBookmarked(true);
+          setToast({ isOpen: true, message: "Organization is already saved.", type: "success" });
+        } else {
+          setToast({
+            isOpen: true,
+            message: "Could not save bookmark. Try again.",
+            type: "error",
+          });
+        }
       }
     }
   };
