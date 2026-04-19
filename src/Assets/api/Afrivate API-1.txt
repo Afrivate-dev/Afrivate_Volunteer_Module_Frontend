@@ -1,0 +1,4168 @@
+
+
+
+Afrivate API (v1)
+
+Download OpenAPI specification:
+
+Afrivate API powers Afrivate's mobile and web platforms, managing user data, orders, carts, and more. Built for security and scalability, it includes features like JWT authentication, product management, order processing, payment integration, and real-time notifications. it ensures a seamless shopping experience
+
+
+
+
+
+
+applications
+
+
+
+
+
+
+applications_list
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)user
+integer (User)user_name
+string (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)
+
+status
+
+
+cover_letter applied_at
+reviewed_at
+
+]
+
+
+
+
+
+
+
+GET	/applications/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+]
+
+Copy
+
+Expand all	Collapse all
+
+
+
+
+
+
+
+applications_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunity
+requiredinteger (Opportunity)cover_letter
+string (Cover letter)
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)user
+integer (User)user_name
+string (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)status
+string (Status)
+Enum:  "pending"  "accepted"  "rejected"cover_letter
+string (Cover letter)applied_at
+string <date-time> (Applied at)reviewed_at
+string or null <date-time> (Reviewed at)
+
+
+
+
+
+
+POST	/applications/
+
+
+Request samples
+
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"opportunity": 0, "cover_letter": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+applications_read
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)user
+integer (User)user_name
+string (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)status
+string (Status)
+Enum:  "pending"  "accepted"  "rejected"cover_letter
+string (Cover letter)applied_at
+string <date-time> (Applied at)reviewed_at
+string or null <date-time> (Reviewed at)
+
+
+
+
+
+
+
+
+
+GET	/applications/{id}/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+applications_update
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunity
+requiredinteger (Opportunity)cover_letter
+string (Cover letter)
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+id user
+
+
+user_namestring (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)status
+string (Status)
+Enum:  "pending"  "accepted"  "rejected"cover_letter
+string (Cover letter)applied_at
+string <date-time> (Applied at)reviewed_at
+string or null <date-time> (Reviewed at)
+
+
+
+
+
+
+PUT	/applications/{id}/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"opportunity": 0, "cover_letter": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+applications_partial_update
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunity
+requiredinteger (Opportunity)cover_letter
+string (Cover letter)
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+id user
+
+
+user_namestring (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)status
+string (Status)
+Enum:  "pending"  "accepted"  "rejected"cover_letter
+string (Cover letter)applied_at
+string <date-time> (Applied at)reviewed_at
+string or null <date-time> (Reviewed at)
+
+
+
+
+
+
+PATCH	/applications/{id}/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"opportunity": 0, "cover_letter": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+applications_delete
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+
+
+Responses
+
+- 204
+
+
+
+
+
+
+
+DELETE	/applications/{id}/
+
+
+
+
+
+
+applications_change_status
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunity
+requiredinteger (Opportunity)cover_letter
+string (Cover letter)
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)user
+integer (User)user_name
+string (User name)opportunity
+required
+integer (Opportunity)opportunity_title
+string (Opportunity title)status
+string (Status)
+Enum:  "pending"  "accepted"  "rejected"cover_letter
+string (Cover letter)applied_at
+string <date-time> (Applied at)reviewed_at
+string or null <date-time> (Reviewed at)
+
+
+
+
+
+
+PATCH	/applications/{id}/change_status/
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"opportunity": 0, "cover_letter": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"user": 0, "user_name": "string", "opportunity": 0,
+"opportunity_title": "string", "status": "pending", "cover_letter": "string",
+"applied_at": "2019-08-24T14:15:22Z",
+"reviewed_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+
+
+auth
+
+
+
+
+auth_change-password_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+old_password
+requiredstring (Old password)	non-emptynew_password
+requiredstring (New password)	non-emptyconfirm_password
+requiredstring (Confirm password)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+old_password
+requiredstring (Old password)	non-emptynew_password
+requiredstring (New password)	non-emptyconfirm_password
+requiredstring (Confirm password)	non-empty
+
+
+
+
+
+
+POST	/auth/change-password/
+
+
+Request samples
+
+
+Content type
+application/json
+
+Copy
+{
+"old_password": "string", "new_password": "string", "confirm_password": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"old_password": "string", "new_password": "string", "confirm_password": "string"
+}
+
+
+
+
+
+
+
+auth_forgot-password_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+
+
+
+
+POST	/auth/forgot-password/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com"
+}
+
+
+
+
+
+
+auth_login_create
+
+Check the credentials and return the REST Token if the credentials are valid and authenticated. Calls Django Auth login method to register User ID in Django session framework
+
+Accept the following POST parameters: username, password Return the REST Framework Token Object's key.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+usernamestring (Username)email
+string <email> (Email)password
+requiredstring (Password)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+usernamestring (Username)email
+string <email> (Email)password
+requiredstring (Password)	non-empty
+
+
+
+
+
+
+POST	/auth/login/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"username": "string", "email": "user@example.com", "password": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"username": "string", "email": "user@example.com", "password": "string"
+}
+
+
+
+
+
+
+Calls Django logout method and delete the Token object assigned to the current User object.
+Accepts/Returns nothing.
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+- 200
+
+
+
+
+
+
+
+GET	/auth/logout/
+
+
+
+
+
+
+Calls Django logout method and delete the Token object assigned to the current User object.
+Accepts/Returns nothing.
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+- 201
+
+
+
+
+
+
+
+POST	/auth/logout/
+
+
+
+
+
+
+Calls Django Auth SetPasswordForm save method.
+
+Accepts the following POST parameters: new_password1, new_password2 Returns the success/fail message.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+new_password1
+requiredstring (New password1)	[ 1 .. 128 ] charactersnew_password2
+requiredstring (New password2)	[ 1 .. 128 ] characters
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+new_password1
+requiredstring (New password1)	[ 1 .. 128 ] charactersnew_password2
+requiredstring (New password2)	[ 1 .. 128 ] characters
+
+
+
+
+
+
+POST	/auth/password/change/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"new_password1": "string", "new_password2": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"new_password1": "string", "new_password2": "string"
+}
+
+
+
+
+
+
+Calls Django Auth PasswordResetForm save method.
+
+Accepts the following POST parameters: email Returns the success/fail message.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+
+
+
+
+POST	/auth/password/reset/
+
+
+Request samples
+
+
+Content type
+application/json
+
+Copy
+{
+"email": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com"
+}
+
+
+
+
+
+
+Password reset e-mail link is confirmed, therefore this resets the user's password.
+Accepts the following POST parameters: token, uid, new_password1, new_password2 Returns the success/fail message.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+new_password1
+requiredstring (New password1)	[ 1 .. 128 ] charactersnew_password2
+requiredstring (New password2)	[ 1 .. 128 ] charactersuid
+requiredstring (Uid)	non-emptytoken
+requiredstring (Token)	non-empty
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+new_password1
+requiredstring (New password1)	[ 1 .. 128 ] charactersnew_password2
+requiredstring (New password2)	[ 1 .. 128 ] charactersuid
+requiredstring (Uid)	non-emptytoken
+requiredstring (Token)	non-empty
+
+
+
+
+
+
+POST	/auth/password/reset/confirm/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"new_password1": "string", "new_password2": "string", "uid": "string",
+"token": "string"
+}
+
+
+Response samples
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"new_password1": "string", "new_password2": "string", "uid": "string",
+"token": "string"
+}
+
+
+
+
+
+
+auth_register_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+username
+requiredstring (Username)	[ 1 .. 150 ] characters	^[\w.@+-]+$
+Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.email
+requiredstring <email> (Email)	[ 1 .. 254 ] characterspassword
+requiredstring (Password)	[ 1 .. 128 ] charactersrole
+string (Role)
+Enum:  "enabler"  "pathfinder"password2
+requiredstring (Password2)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)username
+requiredstring (Username)	[ 1 .. 150 ] characters	^[\w.@+-]+$
+Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.email
+requiredstring <email> (Email)	[ 1 .. 254 ] characterspassword
+requiredstring (Password)	[ 1 .. 128 ] charactersrole
+string (Role)
+Enum:  "enabler"  "pathfinder"password2
+requiredstring (Password2)	non-empty
+
+
+
+
+
+
+POST	/auth/register/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"username": "string", "email": "user@example.com", "password": "string", "role": "enabler", "password2": "string"
+}
+
+
+Response samples
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"username": "string", "email": "user@example.com", "password": "string", "role": "enabler", "password2": "string"
+}
+
+
+
+
+
+
+Registers a new user.
+
+Accepts the following POST parameters: username, email, password1, password2.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+username
+requiredstring (Username)	[ 1 .. 150 ] charactersemail
+requiredstring <email> (Email)	non-emptypassword1
+requiredstring (Password1)	non-emptypassword2
+requiredstring (Password2)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+username
+requiredstring (Username)	[ 1 .. 150 ] charactersemail
+requiredstring <email> (Email)	non-emptypassword1
+requiredstring (Password1)	non-emptypassword2
+requiredstring (Password2)	non-empty
+
+
+
+
+
+
+POST	/auth/registration/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"username": "string", "email": "user@example.com", "password1": "string", "password2": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"username": "string", "email": "user@example.com", "password1": "string",
+
+"password2": "string"
+}
+
+
+
+
+
+
+Resends another email to an unverified email.
+
+Accepts the following POST parameter: email.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-empty
+
+
+
+
+
+
+POST	/auth/registration/resend-email/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"email": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com"
+}
+
+
+
+
+
+
+Verifies the email associated with the provided key.
+
+Accepts the following POST parameter: key.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+key
+requiredstring (Key)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+key
+requiredstring (Key)	non-empty
+
+
+
+
+
+
+POST	/auth/registration/verify-email/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"key": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"key": "string"
+}
+
+
+
+
+
+
+auth_token_create
+
+Takes a set of user credentials and returns an access and refresh JSON web token pair to prove the authentication of those credentials.
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring (Email)	non-emptypassword
+requiredstring (Password)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring (Email)	non-emptypassword
+requiredstring (Password)	non-empty
+
+
+
+
+
+
+POST	/auth/token/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "string", "password": "string"
+}
+
+
+Response samples
+
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "string", "password": "string"
+}
+
+
+
+
+
+
+auth_token_refresh_create
+
+Takes a refresh type JSON web token and returns an access type JSON web token if the refresh token is valid.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+refresh
+requiredstring (Refresh)	non-empty
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+refresh
+requiredstring (Refresh)	non-emptyaccessstring (Access)	non-empty
+
+
+
+
+POST	/auth/token/refresh/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"refresh": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"refresh": "string", "access": "string"
+}
+
+
+
+
+
+
+Reads and updates UserModel fields Accepts GET, PUT, PATCH methods.
+Default accepted fields: username, first_name, last_name Default display fields: pk, username, email, first_name, last_name Read-only fields: pk, email
+
+Returns UserModel fields.
+
+
+AUTHORIZATIONS:	Bearer
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+pk email
+first_name
+
+last_name
+
+
+
+
+
+
+
+
+
+
+GET	/auth/user/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"pk": 0,
+"email": "user@example.com", "first_name": "string", "last_name": "string"
+}
+
+
+
+
+Reads and updates UserModel fields Accepts GET, PUT, PATCH methods.
+Default accepted fields: username, first_name, last_name Default display fields: pk, username, email, first_name, last_name Read-only fields: pk, email
+
+Returns UserModel fields.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+first_name last_name
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+pk email
+first_name last_name
+
+
+
+
+
+PUT	/auth/user/
+
+
+Request samples
+
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"first_name": "string", "last_name": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"pk": 0,
+"email": "user@example.com", "first_name": "string", "last_name": "string"
+}
+
+
+
+
+
+
+Reads and updates UserModel fields Accepts GET, PUT, PATCH methods.
+Default accepted fields: username, first_name, last_name Default display fields: pk, username, email, first_name, last_name Read-only fields: pk, email
+
+Returns UserModel fields.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+first_name last_name
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+pk email
+first_name last_name
+
+
+
+
+
+PATCH	/auth/user/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"first_name": "string", "last_name": "string"
+}
+
+
+Response samples
+
+
+
+
+Content type
+application/json
+
+
+Copy
+{
+"pk": 0,
+"email": "user@example.com", "first_name": "string", "last_name": "string"
+}
+
+
+
+
+
+
+auth_verify-email_list
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+token
+requiredstring (Token)	[ 1 .. 64 ] characters]
+
+
+
+
+
+
+
+GET	/auth/verify-email/
+
+
+Response samples
+
+200
+
+
+
+
+
+
+[
+- {
+"token": "string"
+}
+]
+
+
+Copy
+
+
+Expand all	Collapse all
+
+
+
+
+
+
+
+auth_verify-email_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+token
+requiredstring (Token)	[ 1 .. 64 ] characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+token
+requiredstring (Token)	[ 1 .. 64 ] characters
+
+
+
+
+
+
+POST	/auth/verify-email/
+
+
+Request samples
+
+Payload
+
+
+
+Copy
+{
+"token": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"token": "string"
+}
+
+
+
+
+
+
+auth_verify-otp_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-emptyotp
+requiredstring (Otp)	[ 1 .. 6 ] characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	non-emptyotp
+requiredstring (Otp)	[ 1 .. 6 ] characters
+
+
+
+
+
+
+POST	/auth/verify-otp/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com", "otp": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com", "otp": "string"
+}
+
+
+
+
+
+bookmark
+
+
+
+
+
+
+bookmark_bookmarks_list
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)opportunity
+object (Opportunity)opportunity_id
+required
+integer (Opportunity id)created_at
+string <date-time> (Created at)]
+
+
+
+
+
+
+
+GET	/bookmark/bookmarks/
+
+
+Response samples
+
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"id": 0,
++ "opportunity": { ... },
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"opportunity_id": 0,
+"created_at": "2019-08-24T14:15:22Z"
+}
+]
+
+
+
+
+
+
+bookmark_bookmarks_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunityobject (Opportunity)opportunity_id
+required
+integer (Opportunity id)
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)opportunity
+object (Opportunity)opportunity_id
+required
+integer (Opportunity id)
+
+
+created_at
+
+string <date-time> (Created at)
+
+
+
+
+
+
+
+
+
+
+POST	/bookmark/bookmarks/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+- "opportunity": {
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+},
+"opportunity_id": 0
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+
+
+Copy
+
+
+Expand all	Collapse all
+
+- "opportunity": {
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+},
+"opportunity_id": 0,
+"created_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+bookmark_bookmarks_delete_delete
+
+Remove a bookmarked opportunity for the authenticated user. DELETE /api/bookmarks/{bookmark_id}/
+
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredstring
+
+
+Responses
+
+- 204
+
+
+
+
+
+
+
+DELETE	/bookmark/bookmarks/{id}/delete/
+
+
+
+
+bookmark_opportunities_saved_list
+
+List all bookmarked opportunities for the authenticated user. GET /api/bookmarks/
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)opportunity
+object (Opportunity)opportunity_id
+required
+integer (Opportunity id)created_at
+string <date-time> (Created at)]
+
+
+
+
+
+
+
+GET	/bookmark/opportunities/saved/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+[
+- {
+"id": 0,
++ "opportunity": { ... },
+"opportunity_id": 0,
+"created_at": "2019-08-24T14:15:22Z"
+}
+]
+
+
+
+
+
+
+bookmark_opportunities_saved_create
+
+List all bookmarked opportunities for the authenticated user. GET /api/bookmarks/
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+opportunityobject (Opportunity)opportunity_id
+required
+integer (Opportunity id)
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)opportunity
+object (Opportunity)opportunity_id
+required
+integer (Opportunity id)
+
+
+created_at
+
+string <date-time> (Created at)
+
+
+
+
+
+
+
+
+
+
+POST	/bookmark/opportunities/saved/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+- "opportunity": {
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+},
+"opportunity_id": 0
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+
+
+Copy
+
+
+Expand all	Collapse all
+
+- "opportunity": {
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+},
+"opportunity_id": 0,
+"created_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+
+notifynotifications
+
+
+
+
+
+
+notifynotifications_list
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 200 ] characters
+
+message priority
+
+type
+
+link created_at
+
+]
+
+
+
+
+
+
+
+GET	/notifynotifications/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"id": 0,
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+}
+]
+
+
+Copy
+
+
+Expand all	Collapse all
+
+
+
+
+notifynotifications_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 200 ] charactersmessagestring or null (Message)	non-emptypriority
+string (Priority)
+Enum: "info"  "warning"  "critical"type
+string (Type)
+Enum: "system"  "server"  "personal"linkstring or null <uri> (Link)	<= 200 characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 200 ] charactersmessagestring or null (Message)	non-emptypriority
+string (Priority)
+Enum: "info"  "warning"  "critical"type
+string (Type)
+Enum: "system"  "server"  "personal"linkstring or null <uri> (Link)	<= 200 characters
+
+
+created_at
+
+string <date-time> (Created at)
+
+
+
+
+
+
+
+
+
+
+POST	/notifynotifications/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"id": 0,
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+notifynotifications_read
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this notification.
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 200 ] charactersmessagestring or null (Message)	non-emptypriority
+string (Priority)
+Enum: "info"  "warning"  "critical"type
+string (Type)
+Enum: "system"  "server"  "personal"
+
+link created_at
+
+
+
+
+
+GET	/notifynotifications/{id}/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+notifynotifications_update
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this notification.
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 200 ] charactersmessagestring or null (Message)	non-emptypriority
+string (Priority)
+Enum: "info"  "warning"  "critical"type
+string (Type)
+Enum: "system"  "server"  "personal"linkstring or null <uri> (Link)	<= 200 characters
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 200 ] charactersmessagestring or null (Message)	non-emptypriority
+string (Priority)
+Enum: "info"  "warning"  "critical"type
+string (Type)
+Enum: "system"  "server"  "personal"linkstring or null <uri> (Link)	<= 200 characterscreated_at
+string <date-time> (Created at)
+
+
+
+
+
+
+PUT	/notifynotifications/{id}/
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string",
+"message": "string",
+"priority": "info",
+"type": "system",
+"link": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+}
+
+
+
+
+
+
+notifynotifications_delete
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this notification.
+
+
+Responses
+
+- 204
+
+
+
+
+
+
+
+DELETE	/notifynotifications/{id}/
+
+
+
+
+
+
+
+opportunities
+
+
+
+
+
+
+opportunities_opportunities_list
+
+AUTHORIZATIONS:	Bearer
+
+QUERY PARAMETERS
+
+opportunity_type is_open
+search
+
+
+
+page
+
+
+
+page_size
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+count
+requiredintegernext
+string or null <uri>previous
+string or null <uri>results
+required
+Array of objects (Opportunity)
+
+
+
+
+
+
+
+
+
+GET	/opportunities/opportunities/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"count": 0,
+"next": "http://example.com", "previous": "http://example.com",
+
+Copy
+
+Expand all	Collapse all
+
+- "results": [
++ { ... }
+]
+}
+
+
+
+
+opportunities_opportunities_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersis_open
+boolean (Is open)
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)
+
+is_open created_by_name created_by
+
+
+
+
+
+POST	/opportunities/opportunities/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com",
+
+"posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+}
+
+
+
+
+
+
+opportunities_opportunities_mine_list
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)is_open
+boolean (Is open)created_by_name
+string (Created by name)created_by
+integer or null (Created by)
+]
+
+
+
+
+
+
+
+GET	/opportunities/opportunities/mine/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+}
+]
+
+Copy
+
+Expand all	Collapse all
+
+
+
+
+
+
+
+opportunities_opportunities_mine_create
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+
+Enum:  "volunteering"  "internship"  "scholarship"  "job"
+"grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersis_open
+boolean (Is open)
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)is_open
+boolean (Is open)created_by_name
+string (Created by name)created_by
+integer or null (Created by)
+
+
+
+
+POST	/opportunities/opportunities/mine/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+}
+
+
+
+
+opportunities_opportunities_read
+
+Handles GET (Retrieve), PUT/PATCH (Update), and DELETE for a single opportunity. Enforces the IsOwnerOrReadOnly permission.
+
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this opportunity.
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum:  "volunteering"  "internship"  "scholarship"  "job"
+"grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)is_open
+boolean (Is open)created_by_name
+string (Created by name)
+
+
+created_by
+
+integer or null (Created by)
+
+
+
+
+
+
+
+
+
+
+GET	/opportunities/opportunities/{id}/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+}
+
+
+
+
+
+
+opportunities_opportunities_update
+
+Handles GET (Retrieve), PUT/PATCH (Update), and DELETE for a single opportunity. Enforces the IsOwnerOrReadOnly permission.
+
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this opportunity.
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersis_open
+boolean (Is open)
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)is_open
+boolean (Is open)
+
+created_by_name created_by
+
+
+
+
+
+PUT	/opportunities/opportunities/{id}/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true,
+
+"created_by_name": "string", "created_by": 0
+}
+
+
+
+
+
+
+opportunities_opportunities_partial_update
+
+Handles GET (Retrieve), PUT/PATCH (Update), and DELETE for a single opportunity. Enforces the IsOwnerOrReadOnly permission.
+
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this opportunity.
+REQUEST BODY SCHEMA:	application/json
+
+
+title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersis_open
+boolean (Is open)
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)title
+requiredstring (Title)	[ 1 .. 255 ] charactersopportunity_type
+string (Opportunity type)
+Enum: "volunteering" "internship" "scholarship" "job" "grant"description
+requiredstring (Description)	non-emptylink
+requiredstring <uri> (Link)	[ 1 .. 200 ] charactersposted_at
+string <date-time> (Posted at)is_open
+boolean (Is open)created_by_name
+string (Created by name)created_by
+integer or null (Created by)
+
+
+
+
+
+
+PATCH	/opportunities/opportunities/{id}/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "is_open": true
+}
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"title": "string", "opportunity_type": "volunteering", "description": "string",
+"link": "http://example.com", "posted_at": "2019-08-24T14:15:22Z",
+"is_open": true, "created_by_name": "string", "created_by": 0
+}
+
+
+
+
+
+
+opportunities_opportunities_delete
+
+Handles GET (Retrieve), PUT/PATCH (Update), and DELETE for a single opportunity. Enforces the IsOwnerOrReadOnly permission.
+
+
+AUTHORIZATIONS:	Bearer
+
+PATH PARAMETERS
+
+
+id
+requiredinteger
+A unique integer value identifying this opportunity.
+
+
+Responses
+
+- 204
+
+
+
+
+
+DELETE	/opportunities/opportunities/{id}/
+
+
+
+
+
+
+
+profile
+
+
+
+
+
+
+profile_credentials_list
+
+a model viewset to handle CRUD operations on the credential model
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+idinteger (ID)document_name
+requiredstring (Document name)	[ 1 .. 100 ] charactersdocument
+string <uri> (Document)is_verified
+boolean (Is verified)]
+
+
+
+
+
+GET	/profile/credentials/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"id": 0,
+"document_name": "string", "document": "http://example.com", "is_verified": true
+}
+]
+
+Copy
+
+Expand all	Collapse all
+
+
+
+
+
+
+
+profile_credentials_create
+
+a model viewset to handle CRUD operations on the credential model
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+document_name
+requiredstring (Document name)	[ 1 .. 100 ] characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)document_name
+requiredstring (Document name)	[ 1 .. 100 ] charactersdocument
+string <uri> (Document)is_verified
+boolean (Is verified)
+
+
+
+
+
+
+POST	/profile/credentials/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"document_name": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+
+{
+"id": 0,
+"document_name": "string", "document": "http://example.com", "is_verified": true
+}
+
+
+
+
+
+
+profile_enablerprofile_read
+
+view to handle CRUD operations on the profile model front-end can send the social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+
+
+GET	/profile/enablerprofile/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+
+Copy
+
+Expand all	Collapse all
+
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+
+
+
+
+profile_enablerprofile_create
+
+view to handle CRUD operations on the profile model front-end can send the social link data as nested objects when creating a profile instance
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+
+
+
+
+POST	/profile/enablerprofile/
+
+
+Request samples
+
+
+
+
+Content type
+application/json
+
+
+
+
+
+{
+- "base_details": {
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+
+Copy
+
+Expand all	Collapse all
+
+- "base_details": { "id": 0,
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+
+
+
+
+profile_enablerprofile_update
+
+view to handle CRUD operations on the profile model front-end can send the social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+
+
+
+
+
+
+PUT	/profile/enablerprofile/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+{
+- "base_details": {
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+
+Copy
+
+Expand all	Collapse all
+
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+
+
+
+
+profile_enablerprofile_partial_update
+
+view to handle CRUD operations on the profile model front-end can send the social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+id	integer (ID)
+
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)name
+requiredstring (Name)	[ 1 .. 100 ] charactersemployeesinteger or null (Employees)	[ -2147483648 .. 2147483647 ]rolestring or null (Role)	<= 50 characters
+
+
+
+
+
+
+PATCH	/profile/enablerprofile/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+- "base_details": {
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+
+
+Copy
+
+
+Expand all	Collapse all
+
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+"name": "string", "employees": -2147483648, "role": "string"
+}
+
+
+
+
+
+
+profile_pathfinderprofile_read
+
+View to handle CRUD operations on the pathfinder profile model front-end can send social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+
+
+
+
+GET	/profile/pathfinderprofile/
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+
+
+
+
+profile_pathfinderprofile_create
+
+View to handle CRUD operations on the pathfinder profile model front-end can send social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+
+
+
+
+POST	/profile/pathfinderprofile/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+{
+- "base_details": {
+
+Copy
+
+Expand all	Collapse all
+
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+
+
+
+
+profile_pathfinderprofile_update
+
+View to handle CRUD operations on the pathfinder profile model front-end can send social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+
+
+
+
+PUT	/profile/pathfinderprofile/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+{
+- "base_details": {
+
+Copy
+
+Expand all	Collapse all
+
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+
+
+
+
+profile_pathfinderprofile_partial_update
+
+View to handle CRUD operations on the pathfinder profile model front-end can send social link data as nested objects when creating a profile instance
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+base_details
+requiredobject (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+
+idinteger (ID)base_details
+required
+object (Profile)social_links
+Array of objects (SocialLink)skills
+Array of objects (Skill)educations
+Array of objects (Education)certifications
+Array of objects (Certification)first_name
+requiredstring (First name)	[ 1 .. 50 ] characterslast_name
+requiredstring (Last name)	[ 1 .. 50 ] charactersother_namestring or null (Other name)	<= 50 characterstitlestring or null (Title)	<= 100 characters
+e.g. Software Engineer, Data Scientistaboutstring or null (About)	<= 1000 characterswork_experience
+string (Work experience)languagesstring or null (Languages)	<= 200 characters
+English, French, Yorubagmailstring or null <email> (Gmail)	<= 256 characters
+
+
+
+
+
+
+PATCH	/profile/pathfinderprofile/
+
+
+Request samples
+
+
+Content type
+application/json
+
+
+
+{
+- "base_details": {
+
+Copy
+
+Expand all	Collapse all
+
+"bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy	Expand all	Collapse all
+
+{
+"id": 0,
+- "base_details": { "id": 0,
+"profile_pic": "http://example.com", "bio": "string",
+"contact_email": "user@example.com", "phone_number": "string", "address": "string",
+"state": "string",
+"country": "string",
+"website": "http://example.com", "created_at": "2019-08-24T14:15:22Z"
+},
+- "social_links": [
++ { ... }
+],
+- "skills": [
++ { ... }
+],
+- "educations": [
++ { ... }
+],
+- "certifications": [
++ { ... }
+],
+"first_name": "string", "last_name": "string", "other_name": "string", "title": "string",
+"about": "string", "work_experience": "string", "languages": "string", "gmail": "user@example.com"
+}
+
+
+
+
+
+
+profile_profile_picture_read
+
+View to handle profile picture retrieve and update for the current user's Profile.
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+id profile_pic
+
+
+
+
+
+
+GET	/profile/profile/picture/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"profile_pic": "http://example.com"
+}
+
+
+
+
+
+
+profile_profile_picture_partial_update
+
+View to handle profile picture retrieve and update for the current user's Profile.
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	multipart/form-data
+
+
+profile_pic
+requiredstring or null <binary>
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+id profile_pic
+
+
+
+
+
+
+PATCH	/profile/profile/picture/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"id": 0,
+"profile_pic": "http://example.com"
+}
+
+
+
+
+
+
+
+waitlist
+
+
+
+
+
+
+waitlist_create
+
+waitlist email submissions!!
+
+
+AUTHORIZATIONS:	Bearer
+
+REQUEST BODY SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	[ 1 .. 254 ] charactersnamestring or null (Name)	<= 255 characters
+
+
+Responses
+
+201
+
+
+RESPONSE SCHEMA:	application/json
+
+
+email
+requiredstring <email> (Email)	[ 1 .. 254 ] charactersnamestring or null (Name)	<= 255 characters
+
+
+
+
+
+
+POST	/waitlist/
+
+
+Request samples
+
+
+Content type
+application/json
+
+Copy
+{
+"email": "user@example.com", "name": "string"
+}
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+Copy
+{
+"email": "user@example.com", "name": "string"
+}
+
+
+
+
+
+
+waitlist_stats_list
+
+Get waitlist statistics - Admin only
+
+
+AUTHORIZATIONS:	Bearer
+
+
+
+Responses
+
+200
+
+
+RESPONSE SCHEMA:	application/json
+
+Array [
+
+total_signups
+requiredinteger (Total signups)verified_signups
+required
+integer (Verified signups)
+
+
+signups_today
+requiredinteger (Signups today)signups_this_week
+required
+integer (Signups this week)signups_this_month
+required
+integer (Signups this month)]
+
+
+
+
+
+
+
+GET	/waitlist/stats/
+
+
+Response samples
+
+
+Content type
+application/json
+
+
+
+
+
+[
+- {
+"total_signups": 0,
+"verified_signups": 0,
+"signups_today": 0,
+"signups_this_week": 0,
+"signups_this_month": 0
+}
+]
+
+
+Copy
+
+
+Expand all	Collapse all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
