@@ -56,7 +56,7 @@ const EditOpportunity = () => {
               setCustomQuestions(JSON.parse(savedQuestions));
             }
           } catch (e) {
-            console.log("No custom questions found");
+            // no custom questions stored
           }
         }
       } catch (err) {

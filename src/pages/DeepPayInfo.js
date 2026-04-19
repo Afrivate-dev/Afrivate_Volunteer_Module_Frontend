@@ -29,17 +29,10 @@ const DeepPayInfo = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
-          <div className="relative">
-            <img
-              src="/topimage.png"
-              alt="Workspace"
-              className="w-full h-48 object-cover"
-            />
-            <div className="absolute inset-0 bg-purple-900 bg-opacity-60 flex items-center justify-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-white text-center px-4">
-                Payment Protection with DeepPay
-              </h1>
-            </div>
+          <div className="bg-purple-900 h-48 flex items-center justify-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-white text-center px-4">
+              Payment Protection with DeepPay
+            </h1>
           </div>
           <div className="p-6">
             <p className="text-gray-600 text-center">

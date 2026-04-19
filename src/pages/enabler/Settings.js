@@ -85,7 +85,7 @@ const Settings = () => {
         setProfilePhotoUrl(picData.profile_pic);
       }
     } catch (picErr) {
-      console.log("No profile picture yet");
+      // no profile picture set yet
     }
 
     try {

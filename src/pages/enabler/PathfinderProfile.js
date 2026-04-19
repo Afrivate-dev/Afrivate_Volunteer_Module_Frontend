@@ -92,7 +92,6 @@ const PathfinderProfile = () => {
             // Use the opportunity ID to fetch applicant profile
             data = await opportunities.getApplicant(opportunityId, id);
           } catch (err) {
-            console.log("Could not fetch applicant profile, using regular pathfinder profile:", err);
             data = await profile.pathfinderGetById(id);
           }
         } else {
