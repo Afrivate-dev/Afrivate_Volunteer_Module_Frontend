@@ -53,18 +53,23 @@ const Applicants = () => {
         // Map to the format needed by the UI - include full cover_letter text
         const mappedApps = forOpp.map((app) => {
           const { name, email } = parseContactDetails(app.cover_letter);
-          const bookmarkPathfinderId =
-            app.pathfinder ?? app.pathfinder_id ?? app.pathfinder_profile ?? app.user;
+          
+          const actualUserId = app.applicant_id ?? app.user;
+
+          const profileId = app.pathfinder_profile_id ?? app.pathfinder_profile?.id ?? actualUserId
+
           return {
             id: app.id,
-            userId: app.user,
-            bookmarkPathfinderId,
-            pathfinderName: name,
-            pathfinderEmail: email,
+            userId: actualUserId,
+            bookmarkPathfinderId: profileId,
+
+            pathfinderName: name !== "Applicant" ? name : (app.username || app.user_name || "Applicant"),
+            pathfinderEmail: email || app.email || "",
+
             opportunityTitle: app.opportunity_title || titleFromOpp,
             status: app.status || "pending",
             applicationText: app.cover_letter || "",
-            cvUrl: app.cv || app.cv_url || app.resume || app.document || null,
+            cvUrl: app.resume || app.cv || app.cv_url || app.resume || app.document || null,
           };
         });
 
@@ -76,8 +81,7 @@ const Applicants = () => {
           const ids = new Set(
             savedRows
               .map((row) => {
-                const pid =
-                  row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
+                const pid = row.pathfinder_details?.id ?? row.pathfinder_id;
                 return pid != null ? String(pid) : null;
               })
               .filter(Boolean)
@@ -153,7 +157,9 @@ const Applicants = () => {
         });
       } else {
         await bookmarks.applicantsSavedCreate({
+          pathfinder: app.bookmarkPathfinderId,
           pathfinder_id: app.bookmarkPathfinderId,
+          opportunity: Number(opportunityId),
           opportunity_id: Number(opportunityId),
         });
         setSavedPathfinderIds((prev) => new Set(prev).add(key));
