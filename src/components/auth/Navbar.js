@@ -7,39 +7,19 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useUser();
-  const [profileData, setProfileData] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const role = getRole();
-        let data;
-        if (role === 'enabler') {
-          data = await profile.enablerGet();
-        } else {
-          data = await profile.pathfinderGet();
-        }
-        if (data) {
-          setProfileData(data);
-        }
-        // Also load profile picture using pictureGet API
-        try {
-          const picData = await profile.pictureGet();
-          if (picData && picData.profile_pic) {
-            setProfileData(prev => prev ? { ...prev, profile_pic: picData.profile_pic } : null);
-          }
-        } catch (picErr) {
-          // Picture not set yet, that's okay
-        }
-      } catch (err) {
-        console.error('Error loading profile:', err);
-        // Fallback: use default profile data
-        setProfileData({ first_name: 'User', last_name: '', title: 'Pathfinder' });
-      }
-    };
-    loadProfile();
-  }, []);
+    const rawPic = user?.raw?.base_details?.profile_pic || user?.raw?.profile_pic;
+    if (rawPic) {
+      setProfilePic(rawPic);
+      return;
+    }
+    profile.pictureGet().then(picData => {
+      if (picData?.profile_pic) setProfilePic(picData.profile_pic);
+    }).catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     const loadUnreadCount = async () => {
@@ -56,25 +36,21 @@ const NavBar = () => {
     loadUnreadCount();
   }, []);
 
-  // Get profile picture URL from profile data
-  const profilePic = profileData?.base_details?.profile_pic || profileData?.profile_pic || null;
-
   const profileInfo = useMemo(() => {
+    const raw = user?.raw;
     let name = user?.name || 'Pathfinder';
     let title = '';
-    
-    if (profileData) {
-      if (profileData.first_name || profileData.last_name) {
-        name = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
-      } else if (profileData.name) {
-        name = profileData.name;
+    if (raw) {
+      if (raw.first_name || raw.last_name) {
+        name = `${raw.first_name || ''} ${raw.last_name || ''}`.trim();
+      } else if (raw.name) {
+        name = raw.name;
       }
-      if (profileData.title) title = profileData.title;
-      if (profileData.about) title = profileData.about.split('\n')[0];
+      if (raw.title) title = raw.title;
+      else if (raw.about) title = raw.about.split('\n')[0];
     }
-    
     return { name, title };
-  }, [user?.name, profileData]);
+  }, [user]);
 
   const role = getRole();
 

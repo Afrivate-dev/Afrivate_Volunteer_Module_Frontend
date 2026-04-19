@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
+import { useUser } from "../../context/UserContext";
 import { profile, getApiErrorMessage, auth } from "../../services/api";
 import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 import {
@@ -44,6 +45,7 @@ function extractSections(text) {
 }
 
 const EditNewProfile = () => {
+  const { refetchUser } = useUser();
   const photoInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
 
@@ -342,6 +344,7 @@ const EditNewProfile = () => {
       }
 
       await loadProfile();
+      await refetchUser();
       setError(null);
       setSuccessMessage("Profile saved successfully.");
       setTimeout(() => setSuccessMessage(null), 4000);

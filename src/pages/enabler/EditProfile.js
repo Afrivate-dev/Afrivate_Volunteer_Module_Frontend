@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import { useUser } from "../../context/UserContext";
 import Toast from "../../components/common/Toast";
 import { profile, getApiErrorMessage } from "../../services/api";
 import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
@@ -8,6 +9,7 @@ import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/sync
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const { refetchUser } = useUser();
   const fileInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
   const [formData, setFormData] = useState({
@@ -125,6 +127,7 @@ const EditProfile = () => {
       setSocialLinks(newSl);
       initialSocialLinksRef.current = JSON.parse(JSON.stringify(newSl));
 
+      await refetchUser();
       setToast({ isOpen: true, message: "Profile updated successfully!", type: "success" });
       setTimeout(() => navigate("/enabler/profile"), 1200);
     } catch (err) {

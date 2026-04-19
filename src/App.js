@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Component } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import CookieConsent from './components/CookieConsent';
 import { getConsent } from './utils/cookieConsent';
@@ -53,6 +53,36 @@ import Notifications from './pages/Notifications';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import NotFound from './pages/NotFound';
 
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('Uncaught error:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 font-sans">
+          <h1 className="text-4xl font-bold text-[#6A00B1] mb-4">Something went wrong</h1>
+          <p className="text-gray-500 mb-8 text-center">An unexpected error occurred. Please refresh the page.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
+          >
+            Refresh
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   const location = useLocation();
 
@@ -73,6 +103,7 @@ function App() {
   }, [location.pathname, location.search]);
 
   return (
+    <ErrorBoundary>
     <UserProvider>
       <div className="min-h-screen bg-gray-50 overflow-x-hidden">
         <Routes>
@@ -154,6 +185,7 @@ function App() {
         <CookieConsent />
       </div>
     </UserProvider>
+    </ErrorBoundary>
   );
 }
 

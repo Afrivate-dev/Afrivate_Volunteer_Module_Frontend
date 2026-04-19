@@ -5,37 +5,22 @@ import { profile, notifications } from '../../services/api';
 
 const EnablerNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [profileData, setProfileData] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useUser();
+  const { user, logout } = useUser();
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const data = await profile.enablerGet();
-        setProfileData(data);
-        try {
-          const picData = await profile.pictureGet();
-          if (picData && picData.profile_pic) {
-            setProfilePic(picData.profile_pic);
-          }
-        } catch (picErr) {
-          // Picture not set yet
-        }
-      } catch (err) {
-        console.error("Error loading enabler profile:", err);
-        // Fallback: use default
-        setProfileData({ name: 'Enabler' });
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProfile();
-  }, []);
+    const rawPic = user?.raw?.base_details?.profile_pic || user?.raw?.profile_pic;
+    if (rawPic) {
+      setProfilePic(rawPic);
+      return;
+    }
+    profile.pictureGet().then(picData => {
+      if (picData?.profile_pic) setProfilePic(picData.profile_pic);
+    }).catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     const loadUnreadCount = async () => {
@@ -63,10 +48,7 @@ const EnablerNavbar = () => {
   };
 
   const getDisplayName = () => {
-    if (profileData && profileData.name) {
-      return profileData.name;
-    }
-    return "Enabler";
+    return user?.raw?.name || user?.name || "Enabler";
   };
 
   return (
@@ -113,9 +95,7 @@ const EnablerNavbar = () => {
             onClick={() => setIsOpen(false)}
             className="px-4 py-6 flex items-center gap-3 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
           >
-            {loading ? (
-              <div className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 bg-gray-300 animate-pulse"></div>
-            ) : profilePic ? (
+            {profilePic ? (
               <img src={profilePic} alt="Profile" className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 object-cover" />
             ) : (
               <div className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 flex items-center justify-center bg-gray-200">
