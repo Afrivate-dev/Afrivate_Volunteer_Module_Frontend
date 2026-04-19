@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
+import Pagination from "../../components/common/Pagination";
 import { applications, opportunities, bookmarks } from "../../services/api";
+
+const PAGE_SIZE = 10;
 
 const Applicants = () => {
   const navigate = useNavigate();
   const { id: opportunityId } = useParams();
   const [opportunityTitle, setOpportunityTitle] = useState("");
   const [applicationsList, setApplicationsList] = useState([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState({});
@@ -242,7 +246,7 @@ const Applicants = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {applicationsList.map((app) => (
+              {applicationsList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((app) => (
                 <div
                   key={app.id}
                   className="bg-white border border-gray-200 rounded-lg overflow-hidden"
@@ -372,6 +376,12 @@ const Applicants = () => {
                   )}
                 </div>
               ))}
+              <Pagination
+                page={page}
+                totalPages={Math.ceil(applicationsList.length / PAGE_SIZE)}
+                onPrev={() => setPage((p) => p - 1)}
+                onNext={() => setPage((p) => p + 1)}
+              />
             </div>
           )}
         </div>

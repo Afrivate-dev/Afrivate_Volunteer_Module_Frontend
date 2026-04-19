@@ -2,9 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Toast from "../../components/common/Toast";
+import Pagination from "../../components/common/Pagination";
 import { opportunities, bookmarks, applications } from "../../services/api";
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 import { parseDescription } from "../../utils/descriptionUtils";
+
+const PAGE_SIZE = 10;
 
 function getOpportunityPreview(text) {
   const parsed = parseDescription(text);
@@ -33,6 +36,7 @@ const AvailableOpportunities = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [page, setPage] = useState(1);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -105,6 +109,11 @@ const AvailableOpportunities = () => {
     loadApplications();
   }, [loadOpportunities, loadSavedIds, loadApplications]);
 
+  // Reset to page 1 when search or filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterType]);
+
   const filteredList = list.filter((item) => {
     const matchesSearch =
       item.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -167,6 +176,8 @@ const AvailableOpportunities = () => {
   };
 
   const uniqueTypes = ["all", ...new Set(list.map((opp) => opp.type).filter(Boolean))];
+  const totalPages = Math.ceil(filteredList.length / PAGE_SIZE);
+  const pagedList = filteredList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
@@ -237,8 +248,11 @@ const AvailableOpportunities = () => {
           {/* Results Count */}
           {!loading && (
             <div className="mb-4 text-sm text-gray-600">
-              Showing <span className="font-semibold">{filteredList.length}</span> of{" "}
-              <span className="font-semibold">{list.length}</span> opportunities
+              Showing{" "}
+              <span className="font-semibold">
+                {filteredList.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredList.length)}
+              </span>{" "}
+              of <span className="font-semibold">{filteredList.length}</span> opportunities
             </div>
           )}
 
@@ -276,7 +290,7 @@ const AvailableOpportunities = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredList.map((item) => (
+              {pagedList.map((item) => (
                 <div
                   key={item.id}
                   className="bg-white border border-gray-200 rounded-lg p-4 md:p-5 hover:shadow-md transition-shadow cursor-pointer"
@@ -350,6 +364,12 @@ const AvailableOpportunities = () => {
                   </div>
                 </div>
               ))}
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPrev={() => setPage((p) => p - 1)}
+                onNext={() => setPage((p) => p + 1)}
+              />
             </div>
           )}
         </div>

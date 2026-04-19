@@ -2,8 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Modal from "../../components/common/Modal";
+import Pagination from "../../components/common/Pagination";
 import { opportunities, profile } from "../../services/api";
 import { getOrgName } from "../../utils/opportunityUtils";
+
+const PAGE_SIZE = 10;
 
 function mapApiOpportunity(item) {
   return {
@@ -30,6 +33,7 @@ const OpportunitiesPosted = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [opportunitiesList, setOpportunitiesList] = useState([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
@@ -157,7 +161,7 @@ const OpportunitiesPosted = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {opportunitiesList.map((opp) => (
+              {opportunitiesList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((opp) => (
                 <div
                   key={opp.id}
                   className="bg-gray-100 rounded-lg p-3 md:p-4 flex items-start gap-3 md:gap-4"
@@ -204,6 +208,12 @@ const OpportunitiesPosted = () => {
                   </div>
                 </div>
               ))}
+              <Pagination
+                page={page}
+                totalPages={Math.ceil(opportunitiesList.length / PAGE_SIZE)}
+                onPrev={() => setPage((p) => p - 1)}
+                onNext={() => setPage((p) => p + 1)}
+              />
             </div>
           )}
         </div>
