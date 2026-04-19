@@ -52,6 +52,7 @@ import Notifications from './pages/Notifications';
 // eslint-disable-next-line no-unused-vars -- used in Route element
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import NotFound from './pages/NotFound';
+import PathfinderSettings from './pages/pathfinder/PathfinderSettings';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -146,6 +147,7 @@ function App() {
           <Route path="/enabler/edit-opportunity/:id" element={<RequireAuth role="enabler"><EditOpportunity /></RequireAuth>} />
           <Route path="/enabler/opportunities-posted" element={<RequireAuth role="enabler"><OpportunitiesPosted /></RequireAuth>} />
           <Route path="/enabler/settings" element={<RequireAuth role="enabler"><Settings /></RequireAuth>} />
+          <Route path="/pathfinder/settings" element={<RequireAuth role="pathfinder"><PathfinderSettings /></RequireAuth>} />
           <Route path="/enabler/pathfinder/:id" element={<RequireAuth role="enabler"><PathfinderProfile /></RequireAuth>} />
           <Route path="/enabler/contact/:id" element={<RequireAuth role="enabler"><ContactPathfinder /></RequireAuth>} />
           <Route path="/enabler/bookmarked-pathfinders" element={<RequireAuth role="enabler"><EnablerPathfinderBookmarks /></RequireAuth>} />
