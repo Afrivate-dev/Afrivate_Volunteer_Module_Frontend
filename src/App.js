@@ -4,7 +4,7 @@ import CookieConsent from './components/CookieConsent';
 import { getConsent } from './utils/cookieConsent';
 import { loadGtagScript } from './utils/gtag';
 import { UserProvider } from './context/UserContext';
-import Navbar from './components/layout/Navbar';
+import Navbar from './components/auth/Navbar';
 import RequireAuth from './components/auth/RequireAuth';
 import Login from './pages/auth/Login';
 import SignUp from './pages/auth/SignUp';
