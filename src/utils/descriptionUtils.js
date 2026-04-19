@@ -13,6 +13,7 @@ const SECTION_MARKERS = {
   LOCATION: "[LOCATION]",
   WORK_MODEL: "[WORK_MODEL]",
   TIME_COMMITMENT: "[TIME_COMMITMENT]",
+  CUSTOM_QUESTIONS: "[CUSTOM_QUESTIONS]",
 };
 
 /**
@@ -30,6 +31,7 @@ export function combineDescription(sections) {
     location = "",
     workModel = "",
     timeCommitment = "",
+    customQuestions = [],
   } = sections;
 
   const parts = [];
@@ -58,6 +60,9 @@ export function combineDescription(sections) {
   if (timeCommitment.trim()) {
     parts.push(`${SECTION_MARKERS.TIME_COMMITMENT}\n${timeCommitment.trim()}`);
   }
+  if (Array.isArray(customQuestions) && customQuestions.length > 0) {
+    parts.push(`${SECTION_MARKERS.CUSTOM_QUESTIONS}\n${JSON.stringify(customQuestions)}`);
+  }
 
   return parts.join("\n\n") || "See details.";
 }
@@ -77,6 +82,7 @@ export function parseDescription(combinedDescription) {
     location: "",
     workModel: "",
     timeCommitment: "",
+    customQuestions: [],
   };
 
   if (!combinedDescription || typeof combinedDescription !== "string") {
@@ -118,6 +124,14 @@ export function parseDescription(combinedDescription) {
   result.location = extractSection(SECTION_MARKERS.LOCATION);
   result.workModel = extractSection(SECTION_MARKERS.WORK_MODEL);
   result.timeCommitment = extractSection(SECTION_MARKERS.TIME_COMMITMENT);
+  const rawQuestions = extractSection(SECTION_MARKERS.CUSTOM_QUESTIONS);
+  if (rawQuestions) {
+    try {
+      result.customQuestions = JSON.parse(rawQuestions);
+    } catch (_) {
+      result.customQuestions = [];
+    }
+  }
 
   return result;
 }

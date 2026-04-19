@@ -18,7 +18,6 @@ const OrganizationProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [bookmarkId, setBookmarkId] = useState(null);
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "error" });
 
   useEffect(() => {
@@ -44,14 +43,11 @@ const OrganizationProfile = () => {
             const row = findEnablerBookmarkRow(list, data.id);
             if (row) {
               setIsBookmarked(true);
-              setBookmarkId(row.id ?? row.pk ?? null);
             } else {
               setIsBookmarked(false);
-              setBookmarkId(null);
             }
           } catch (_) {
             setIsBookmarked(false);
-            setBookmarkId(null);
           }
         }
       } catch (err) {
@@ -80,7 +76,6 @@ const OrganizationProfile = () => {
       try {
         await bookmarks.enablersSavedDelete(enablerPk);
         setIsBookmarked(false);
-        setBookmarkId(null);
         setToast({ isOpen: true, message: "Removed from bookmarks.", type: "success" });
       } catch (err) {
         console.error("Delete bookmark error:", err);
@@ -92,9 +87,8 @@ const OrganizationProfile = () => {
       }
     } else {
       try {
-        const res = await bookmarks.enablersSavedCreate({ enabler_id: enablerPk }); 
+        await bookmarks.enablersSavedCreate({ enabler_id: enablerPk });
         setIsBookmarked(true);
-        setBookmarkId(res?.id ?? res?.pk ?? null);
         setToast({ isOpen: true, message: "Organization saved to bookmarks.", type: "success" });
       } catch (err) {
         console.error("Create bookmark error:",err);

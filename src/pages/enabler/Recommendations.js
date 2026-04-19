@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import { applications } from "../../services/api";
+import { applications, profile } from "../../services/api";
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -20,23 +20,48 @@ const Recommendations = () => {
         const appsData = await applications.list();
         
         if (Array.isArray(appsData)) {
-          const byEmail = {};
+          // Deduplicate applicants by user ID
+          const seenIds = new Set();
+          const userIds = [];
           appsData.forEach((a) => {
-            const email = (a.user_name || "").toLowerCase();
-            if (!email || byEmail[email]) return;
-            const pf = {
-              id: a.user || a.id,
-              name: a.user_name || "Applicant",
-              experience: "Volunteering experience",
-              skills: "—",
-              role: "Pathfinder",
-              location: "",
-              email: email,
-            };
-            byEmail[email] = pf;
+            const uid = a.user;
+            if (uid != null && !seenIds.has(uid)) {
+              seenIds.add(uid);
+              userIds.push(uid);
+            }
           });
-          
-          const list = Object.values(byEmail);
+
+          // Fetch full profiles in parallel; skip any that fail
+          const results = await Promise.allSettled(
+            userIds.map((uid) => profile.pathfinderGetById(uid))
+          );
+
+          const list = results
+            .map((r, i) => {
+              if (r.status !== "fulfilled" || !r.value) return null;
+              const data = r.value;
+              const base = data.base_details || {};
+              const name =
+                [data.first_name, data.last_name].filter(Boolean).join(" ") ||
+                data.name ||
+                base.contact_email ||
+                "Pathfinder";
+              const skillsArr = Array.isArray(data.skills)
+                ? data.skills.map((s) => (typeof s === "string" ? s : s?.name || s?.skill || "")).filter(Boolean)
+                : [];
+              const locationParts = [base.address, base.state, base.country].filter(Boolean);
+              return {
+                id: userIds[i],
+                name,
+                role: data.title || "Pathfinder",
+                experience: data.work_experience || data.about || "Volunteering experience",
+                skills: skillsArr.length ? skillsArr.join(", ") : "—",
+                location: locationParts.join(", "),
+                email: base.contact_email || data.gmail || "",
+              };
+            })
+            .filter(Boolean);
+
           const half = Math.ceil(list.length / 2);
           setTopMatches(list.slice(0, half));
           setOtherMatches(list.slice(half));

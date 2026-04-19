@@ -51,6 +51,7 @@ import ContactUs from './pages/ContactUs';
 import Notifications from './pages/Notifications';
 // eslint-disable-next-line no-unused-vars -- used in Route element
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import NotFound from './pages/NotFound';
 
 function App() {
   const location = useLocation();
@@ -81,9 +82,9 @@ function App() {
           <Route path="/landingenabler" element={<Landingenabler />} />
           <Route path="/dashf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
           <Route path="/enabler/dashboard" element={<RequireAuth role="enabler"><EnablerDashboard /></RequireAuth>} />
-          <Route path="/emppro" element={<RequireAuth><Emppro /></RequireAuth>} />
-          <Route path="/dash-employer" element={<RequireAuth><DashEmployer /></RequireAuth>} />
-          <Route path="/dash-freelance" element={<RequireAuth><DashFreelance /></RequireAuth>} />
+          <Route path="/emppro" element={<RequireAuth role="enabler"><Emppro /></RequireAuth>} />
+          <Route path="/dash-employer" element={<RequireAuth role="enabler"><DashEmployer /></RequireAuth>} />
+          <Route path="/dash-freelance" element={<RequireAuth role="pathfinder"><DashFreelance /></RequireAuth>} />
           <Route path="/opportunity" element={<Opportunity />} />
           <Route path="/volunteer-details" element={<VolunteerDetails />} />
           <Route path="/my-applications" element={<RequireAuth role="pathfinder"><MyApplications /></RequireAuth>} />
@@ -99,7 +100,7 @@ function App() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
           <Route path="/deep-pay-info" element={<DeepPayInfo />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
@@ -148,6 +149,7 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <CookieConsent />
       </div>

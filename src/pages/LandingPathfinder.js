@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import bgVideo from '../Assets/bg-video.mp4';
 import bgImg from '../Assets/Subtract (5).png';
 import logoImg from '../Assets/Vector (1).png';
 import pic1 from '../Assets/Picture 1.png';
@@ -56,7 +55,6 @@ const LandingPathfinder = () => {
     <div className="bg-[#FAFAFA]  relative min-h-screen text-white hero-bg overflow-x-hidden">
       <div className="absolute inset-0 w-[100%] md:h-[600px] h-[600px]">
         <img src={bgImg} alt="Background placeholder" className="absolute inset-0 w-full md:h-[700px] h-[625px] object-cover" />
-        <video className="absolute inset-0 w-full md:h-[700px] h-[625px]  object-cover" src={bgVideo} autoPlay loop muted playsInline />
       </div>
 
       <div className="fixed top-0 left-[4%] z-30 w-[92%] bg-[#6A00B1] text-white text-center py-2 text-xs font-montserrat rounded-t-full">

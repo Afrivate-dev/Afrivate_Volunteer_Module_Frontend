@@ -2,20 +2,44 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
-import { getPathfinderById } from "../../utils/pathfinderData";
-import { notifications } from "../../services/api";
+import { notifications, profile } from "../../services/api";
 
 const ContactPathfinder = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [pathfinder, setPathfinder] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    setPathfinder(getPathfinderById(id));
+    async function fetchPathfinder() {
+      try {
+        const data = await profile.pathfinderGetById(id);
+        if (data) {
+          const base = data.base_details || {};
+          const name =
+            [data.first_name, data.last_name].filter(Boolean).join(" ") ||
+            data.name ||
+            base.contact_email ||
+            "Pathfinder";
+          const locationParts = [base.address, base.state, base.country].filter(Boolean);
+          setPathfinder({
+            id: data.id,
+            name,
+            role: data.title || "Pathfinder",
+            location: locationParts.join(", "),
+          });
+        }
+      } catch (err) {
+        console.error("Error loading pathfinder:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPathfinder();
   }, [id]);
 
   const handleSubmit = async (e) => {
@@ -44,6 +68,19 @@ const ContactPathfinder = () => {
       setSending(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <EnablerNavbar />
+        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!pathfinder) {
     return (

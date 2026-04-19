@@ -257,8 +257,6 @@ export const bookmark = {
     if (body.opportunity_id != null) data.opportunity_id = body.opportunity_id;
     if (body.enabler != null) data.enabler = body.enabler;
     if (body.pathfinder != null) data.pathfinder = body.pathfinder;
-    // log for debug so picking up server validation errors easier
-    console.debug("bookmark.create payload", data);
     return request("POST", "/bookmark/", { data });
   },
 

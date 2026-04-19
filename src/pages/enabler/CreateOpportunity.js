@@ -76,6 +76,7 @@ const CreateOpportunity = () => {
         location: formData.location,
         workModel: formData.workModel,
         timeCommitment: formData.timeCommitment,
+        customQuestions,
       });
 
       const opportunityData = {
@@ -86,16 +87,7 @@ const CreateOpportunity = () => {
         is_open: true,
       };
 
-      const response = await opportunities.create(opportunityData);
-      
-      let opportunityId = null;
-      if (response && typeof response === "object") {
-        opportunityId = response.id ?? response.data?.id ?? response.pk;
-      }
-      
-      if (customQuestions.length > 0 && opportunityId != null) {
-        sessionStorage.setItem(`opportunity_questions_${opportunityId}`, JSON.stringify(customQuestions));
-      }
+      await opportunities.create(opportunityData);
 
       setToast({ isOpen: true, message: "Opportunity posted successfully!", type: "success" });
       setTimeout(() => {

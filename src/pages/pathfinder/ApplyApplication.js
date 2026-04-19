@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Toast from "../../components/common/Toast";
 import apiClient, { opportunities, applications, getApiErrorMessage } from "../../services/api";
-
-function getCustomQuestions(opportunityId) {
-  try {
-    const q = JSON.parse(sessionStorage.getItem("opportunityCustomQuestions") || "{}");
-    return Array.isArray(q[opportunityId]) ? q[opportunityId] : [];
-  } catch (_) {
-    return [];
-  }
-}
+import { parseDescription } from "../../utils/descriptionUtils";
 
 const ApplyApplication = () => {
   const navigate = useNavigate();
@@ -31,14 +23,10 @@ const ApplyApplication = () => {
   const [profileCvName, setProfileCvName] = useState(null);
   const [uploadingProfileCv, setUploadingProfileCv] = useState(false);
   const [customAnswers, setCustomAnswers] = useState({});
+  const [customQuestions, setCustomQuestions] = useState([]);
 
   const [existingApplication, setExistingApplication] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-
-  const customQuestions = useMemo(
-    () => (opportunityId ? getCustomQuestions(opportunityId) : []),
-    [opportunityId]
-  );
 
   useEffect(() => {
     const job = location.state?.job;
@@ -143,6 +131,8 @@ const ApplyApplication = () => {
       // Fetch opportunity from API
       opportunities.get(opportunityId)
         .then((data) => {
+          const { customQuestions: questions } = parseDescription(data.description || "");
+          setCustomQuestions(Array.isArray(questions) ? questions : []);
           setOpportunity({
             id: data.id,
             title: data.title,
@@ -189,7 +179,7 @@ const ApplyApplication = () => {
       });
     
     setLoading(false);
-  }, [opportunityId, location.state, customQuestions]);
+  }, [opportunityId, location.state]);
 
   useEffect(() => {
     document.title = isEditMode ? "View Application - AfriVate" : "Apply - AfriVate";

@@ -29,7 +29,7 @@ const EnablerDashboard = () => {
     const loadOpportunities = async () => {
       setOpportunitiesLoading(true);
       try {
-      const data = await opportunities.mine();
+        const data = await opportunities.mine();
         const list = Array.isArray(data) ? data : [];
         setOpportunitiesList(list);
       } catch (err) {
