@@ -423,6 +423,51 @@ const EditNewProfile = () => {
     setCertifications(certifications.filter((_, i) => i !== index));
   };
 
+  const addSocialLink = () => {
+    setSocialLinks((prev) => [...prev, { platform_name: "", platform_url: "" }]);
+  };
+
+  const updateSocialLink = (index, field, value) => {
+    setSocialLinks((prev) => {
+      const next = [...prev];
+      if (!next[index]) next[index] = { platform_name: "", platform_url: "" };
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
+  const removeSocialLink = (index) => {
+    setSocialLinks((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const refreshSocialLinkFromServer = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    try {
+      const data = await profile.socialLinksGet(link.id);
+      setSocialLinks((prev) => {
+        const next = [...prev];
+        next[index] = {
+          ...next[index],
+          platform_name: data.platform_name ?? next[index].platform_name,
+          platform_url: data.platform_url ?? next[index].platform_url,
+        };
+        return next;
+      });
+    } catch (_) {}
+  };
+
+  const handleSocialLinkPut = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    const platform_name = (link.platform_name || "").trim();
+    const platform_url = (link.platform_url || "").trim();
+    if (!platform_name || !platform_url) return;
+    try {
+      await profile.socialLinksPut(link.id, { platform_name, platform_url });
+    } catch (_) {}
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white font-sans relative">
@@ -852,6 +897,74 @@ const EditNewProfile = () => {
                   <span className="text-xs font-extrabold text-[#6A00B1]">Add Certification</span>
                 </button>
               </div>
+            </div>
+
+            {/* Social Links Section */}
+            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
+              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
+                Social Links
+              </h2>
+              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
+                Add your professional links (e.g. LinkedIn, GitHub, Portfolio)
+              </p>
+              {socialLinks.map((link, index) => (
+                <div
+                  key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`}
+                  className="flex flex-wrap gap-2 items-center mb-2"
+                >
+                  <input
+                    type="text"
+                    value={link.platform_name || ""}
+                    onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
+                    placeholder="Platform (e.g. LinkedIn)"
+                    className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  />
+                  <input
+                    type="url"
+                    value={link.platform_url || ""}
+                    onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
+                    placeholder="https://..."
+                    className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  />
+                  {link.id != null && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => refreshSocialLinkFromServer(index)}
+                        className="text-xs text-[#6A00B1] font-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
+                        title="Reload from server"
+                      >
+                        Refresh
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSocialLinkPut(index)}
+                        className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        title="Save with PUT"
+                      >
+                        PUT
+                      </button>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeSocialLink(index)}
+                    className="text-red-500 hover:text-red-700 p-1"
+                    title="Remove"
+                  >
+                    <i className="fa fa-times text-xs"></i>
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addSocialLink}
+                className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors mt-1"
+                style={{ fontFamily: 'Inter' }}
+              >
+                <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
+                <span className="text-xs font-extrabold text-[#6A00B1]">Add social link</span>
+              </button>
             </div>
 
             {/* CV / Documents - Government Credentials API */}
