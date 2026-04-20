@@ -1,9 +1,9 @@
 import React, { useEffect, Component } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import CookieConsent from './components/CookieConsent';
 import { getConsent } from './utils/cookieConsent';
 import { loadGtagScript } from './utils/gtag';
-import { UserProvider } from './context/UserContext';
+import { UserProvider, useUser } from './context/UserContext';
 import Navbar from './components/auth/Navbar';
 import RequireAuth from './components/auth/RequireAuth';
 import Login from './pages/auth/Login';
@@ -28,9 +28,6 @@ import Landing from './pages/Landing';
 import LandingPathfinder from './pages/LandingPathfinder';
 import Landingenabler from './pages/Landingenabler';
 import EnablerDashboard from './pages/enabler/EnablerDashboard';
-import Emppro from './pages/emppro';
-import DashEmployer from './pages/Dash-employer';
-import DashFreelance from './pages/Dash-freelance';
 import Opportunity from './pages/pathfinder/Opportunity';
 import Pathf from './pages/pathfinder/PathfinderDashboard';
 import VolunteerDetails from './pages/pathfinder/VolunteerDetails';
@@ -42,8 +39,6 @@ import EditNewProfile from './pages/pathfinder/EditNewProfile';
 import AvailableOpportunities from './pages/pathfinder/AvailableOpportunities';
 import EnablerProfileView from './pages/pathfinder/EnablerProfileView';
 import Road from './pages/Roadmap';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
 import KYCForm from './components/forms/KYCForm';
 import DeepPayInfo from './pages/DeepPayInfo';
 import AboutUs from './pages/AboutUs';
@@ -84,6 +79,21 @@ class ErrorBoundary extends Component {
   }
 }
 
+function RoleRedirect({ pathfinder, enabler }) {
+  const { user, loading } = useUser();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent"></div>
+      </div>
+    );
+  }
+  const role = (user?.role || '').toLowerCase();
+  if (role === 'pathfinder') return <Navigate to={pathfinder} replace />;
+  if (role === 'enabler') return <Navigate to={enabler} replace />;
+  return <Navigate to="/" replace />;
+}
+
 function App() {
   const location = useLocation();
 
@@ -114,9 +124,9 @@ function App() {
           <Route path="/landingenabler" element={<Landingenabler />} />
           <Route path="/dashf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
           <Route path="/enabler/dashboard" element={<RequireAuth role="enabler"><EnablerDashboard /></RequireAuth>} />
-          <Route path="/emppro" element={<RequireAuth role="enabler"><Emppro /></RequireAuth>} />
-          <Route path="/dash-employer" element={<RequireAuth role="enabler"><DashEmployer /></RequireAuth>} />
-          <Route path="/dash-freelance" element={<RequireAuth role="pathfinder"><DashFreelance /></RequireAuth>} />
+          <Route path="/emppro" element={<Navigate to="/enabler/dashboard" replace />} />
+          <Route path="/dash-employer" element={<Navigate to="/enabler/dashboard" replace />} />
+          <Route path="/dash-freelance" element={<Navigate to="/pathf" replace />} />
           <Route path="/opportunity" element={<Opportunity />} />
           <Route path="/volunteer-details" element={<VolunteerDetails />} />
           <Route path="/my-applications" element={<RequireAuth role="pathfinder"><MyApplications /></RequireAuth>} />
@@ -154,13 +164,12 @@ function App() {
           <Route path="/enabler/applicants/:id" element={<RequireAuth role="enabler"><Applicants /></RequireAuth>} />
           <Route path="/enabler/profile-setup" element={<RequireAuth role="enabler"><EnablerProfileSetup /></RequireAuth>} />
 
-          {/* Protected routes */}
+          {/* Legacy redirects */}
           <Route
             path="/dashboard"
             element={
               <RequireAuth>
-                <Navbar />
-                <Dashboard />
+                <RoleRedirect pathfinder="/pathf" enabler="/enabler/dashboard" />
               </RequireAuth>
             }
           />
@@ -168,8 +177,7 @@ function App() {
             path="/profile"
             element={
               <RequireAuth>
-                <Navbar />
-                <Profile />
+                <RoleRedirect pathfinder="/edit-new-profile" enabler="/enabler/profile" />
               </RequireAuth>
             }
           />
