@@ -210,7 +210,7 @@ export const auth = {
   },
 
   deleteAccount() {
-    return request(“DELETE”, “/auth/delete-account/”);
+    return request("DELETE", "/auth/delete-account/");
   },
 };
 
