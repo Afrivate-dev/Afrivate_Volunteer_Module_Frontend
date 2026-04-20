@@ -79,11 +79,16 @@ const CreateOpportunity = () => {
         customQuestions,
       });
 
+      const link = createOpportunityLink(formData.title, formData.opportunityType);
+      if (!link.startsWith("https://")) {
+        throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
+      }
+
       const opportunityData = {
         title: formData.title.trim(),
         description: combinedDesc,
         opportunity_type: formData.opportunityType || "volunteering",
-        link: createOpportunityLink(formData.title, formData.opportunityType),
+        link,
         is_open: true,
       };
 

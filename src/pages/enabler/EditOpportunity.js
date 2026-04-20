@@ -106,11 +106,16 @@ const EditOpportunity = () => {
         timeCommitment: formData.timeCommitment,
       });
 
+      const link = createOpportunityLink(formData.title, formData.opportunityType);
+      if (!link.startsWith("https://")) {
+        throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
+      }
+
       const updateData = {
         title: formData.title,
         description: combinedDesc,
         opportunity_type: formData.opportunityType,
-        link: createOpportunityLink(formData.title, formData.opportunityType),
+        link,
         is_open: true,
       };
 

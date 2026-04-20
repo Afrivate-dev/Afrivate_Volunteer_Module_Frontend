@@ -209,16 +209,8 @@ export const auth = {
     return request("POST", "/auth/set-password/", { data: body });
   },
 
-  /** Not listed in the public auth spec; used by settings “delete account”. */
-  async deleteAccount() {
-    try {
-      return await request("DELETE", "/auth/delete-account/");
-    } catch (e) {
-      if (e.status === 404) {
-        return request("DELETE", "/auth/user/");
-      }
-      throw e;
-    }
+  deleteAccount() {
+    return request(“DELETE”, “/auth/delete-account/”);
   },
 };
 
@@ -245,40 +237,6 @@ export async function googleAuthWithRole({ idToken, mode, role }) {
 // --- Bookmarks ---
 
 export const bookmark = {
-  list() {
-    return request("GET", "/bookmark/");
-  },
-
-  // Updated: Now accepts full opportunity object along with opportunity_id
-  create(body) {
-    // build payload without sending explicit nulls (backend dislikes them)
-    const data = {};
-    if (body.opportunity) data.opportunity = body.opportunity;
-    if (body.opportunity_id != null) data.opportunity_id = body.opportunity_id;
-    if (body.enabler != null) data.enabler = body.enabler;
-    if (body.pathfinder != null) data.pathfinder = body.pathfinder;
-    return request("POST", "/bookmark/", { data });
-  },
-
-  delete(id) {
-    return request("DELETE", `/bookmark/${id}/delete/`);
-  },
-
-  opportunitiesList() {
-    return request("GET", "/bookmark/opportunities/");
-  },
-
-  opportunitiesCreate(body) {
-    return request("POST", "/bookmark/opportunities/", {
-      data: {
-        title: body.title,
-        description: body.description || "",
-        link: body.link || "https://afrivate.com",
-        is_open: body.is_open !== false,
-      },
-    });
-  },
-
   opportunitiesSavedList() {
     return request("GET", "/bookmark/opportunities/saved/");
   },
@@ -299,11 +257,6 @@ export const bookmark = {
   /** Enabler: list saved pathfinder bookmarks. GET /api/bookmark/applicants/saved/ */
   applicantsSavedList() {
     return request("GET", "/bookmark/applicants/saved/");
-  },
-
-  /** Enabler: single saved bookmark (view). GET /api/bookmark/applicants/saved/{pathfinder_id}/ */
-  applicantsSavedGet(pathfinderId) {
-    return request("GET", `/bookmark/applicants/saved/${pathfinderId}/`);
   },
 
   /** Enabler: bookmark a pathfinder (e.g. applicant). POST /api/bookmark/applicants/saved/ */
@@ -383,7 +336,7 @@ export const profile = {
 
 
   enablerCreate(body) {
-    return request("POST", "/profile/enablerprofile/", { data: body });
+    return request("PATCH", "/profile/enablerprofile/", { data: body });
   },
 
   enablerUpdate(body) {
@@ -404,7 +357,7 @@ export const profile = {
   },
 
   pathfinderCreate(body) {
-    return request("POST", "/profile/pathfinderprofile/", { data: body });
+    return request("PATCH", "/profile/pathfinderprofile/", { data: body });
   },
 
   pathfinderUpdate(body) {
@@ -455,6 +408,10 @@ export const profile = {
 
   credentialsDelete(id) {
     return request("DELETE", `/profile/credentials/${id}/`);
+  },
+
+  socialLinksList() {
+    return request("GET", "/profile/social-links/");
   },
 
   socialLinksCreate(body) {
@@ -614,13 +571,6 @@ export const opportunities = {
    */
   mine() {
     return request("GET", "/opportunities/mine/");
-  },
-
-  /**
-   * Create opportunity via mine endpoint (alternative to create()).
-   */
-  mineCreate(body) {
-    return request("POST", "/opportunities/mine/", { data: body });
   },
 
   /**
