@@ -162,9 +162,13 @@ const Applicants = () => {
       }
     } catch (err) {
       console.error("Bookmark toggle failed:", err);
+      const backendMsg =
+        err?.body?.non_field_errors?.[0] ||
+        err?.body?.detail ||
+        null;
       setToast({
         isOpen: true,
-        message: "Could not update bookmark. Please try again.",
+        message: backendMsg || "Could not update bookmark. Please try again.",
         type: "error",
       });
     } finally {
