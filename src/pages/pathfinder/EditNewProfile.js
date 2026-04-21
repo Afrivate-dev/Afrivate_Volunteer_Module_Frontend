@@ -18,6 +18,8 @@ const EditNewProfile = () => {
   const photoInputRef = useRef(null);
   const documentInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
+  // true until loadProfile finds a profile with meaningful data already saved
+  const isFirstSaveRef = useRef(true);
 
   useEffect(() => {
     document.title = "Edit Profile - AfriVate";
@@ -68,6 +70,9 @@ const EditNewProfile = () => {
       const data = await profile.pathfinderGet();
       if (data) {
         if (data.id != null) setLoadedProfileId(data.id);
+        // Profile has real data if any name/title/about/email field is non-empty
+        const hasData = !!(data.first_name || data.last_name || data.title || data.about || data.base_details?.contact_email);
+        if (hasData) isFirstSaveRef.current = false;
         const base = data.base_details || {};
         if (base.id != null) setLoadedBaseDetailsId(base.id);
         setFormData({
@@ -198,7 +203,7 @@ const EditNewProfile = () => {
   const handleSave = async () => {
     setSaving(true);
     setError(null);
-    const wasFirstSave = !loadedProfileId;
+    const wasFirstSave = isFirstSaveRef.current;
 
     const first = (formData.first_name || "").trim() || "User";
     const last = (formData.last_name || "").trim();
@@ -272,6 +277,7 @@ const EditNewProfile = () => {
 
       await loadProfile();
       await refetchUser();
+      isFirstSaveRef.current = false;
       setError(null);
       setSuccessMessage("Profile saved successfully.");
       setTimeout(() => setSuccessMessage(null), 4000);
