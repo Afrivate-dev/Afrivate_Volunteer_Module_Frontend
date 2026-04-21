@@ -499,88 +499,172 @@ const EditNewProfile = () => {
   }
 
   if (isPreviewMode) {
-    const displayName = [formData.first_name, formData.last_name].filter(Boolean).join(" ") || "Pathfinder";
+    const displayName = [formData.first_name, formData.last_name, formData.other_name]
+      .filter(Boolean).join(" ") || "Pathfinder";
+    const PreviewSection = ({ title, children }) => (
+      <div className="mb-6">
+        <h2 className="text-base font-bold text-[#6A00B1] uppercase tracking-wide mb-3 pb-1 border-b border-gray-200">
+          {title}
+        </h2>
+        {children}
+      </div>
+    );
+    const PreviewField = ({ label, value }) =>
+      value ? (
+        <div>
+          <p className="text-xs text-gray-500 font-semibold uppercase mb-0.5">{label}</p>
+          <p className="text-gray-800 text-sm whitespace-pre-wrap">{value}</p>
+        </div>
+      ) : null;
     return (
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
-        <div className="pt-20 px-4 md:px-6 pb-6">
+        <div className="pt-20 px-4 md:px-6 pb-10">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
-              {successMessage && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
-                  {successMessage}
-                </div>
+
+            {successMessage && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">
+                {successMessage}
+              </div>
+            )}
+            {redirectCountdown !== null && redirectCountdown > 0 && (
+              <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-lg mb-4 text-sm">
+                Redirecting to your dashboard in {redirectCountdown}s…
+              </div>
+            )}
+
+            {/* Hero header */}
+            <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center">
+                {profilePhotoUrl ? (
+                  <img src={profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" />
+                ) : (
+                  <i className="fa fa-user text-4xl text-white/70" />
+                )}
+              </div>
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">{displayName}</h1>
+                {formData.title && <p className="text-white/80 text-sm mb-2">{formData.title}</p>}
+                {formData.bio && <p className="text-white/70 text-sm italic">{formData.bio}</p>}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPreviewMode(false)}
+                className="flex-shrink-0 bg-white text-[#6A00B1] px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+              >
+                <i className="fa fa-edit mr-2" />Edit
+              </button>
+            </div>
+
+            <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6 space-y-0">
+
+              {/* Contact information */}
+              {(formData.contact_email || formData.phone_number || formData.gmail || formData.website) && (
+                <PreviewSection title="Contact Information">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <PreviewField label="Email" value={formData.contact_email} />
+                    <PreviewField label="Phone" value={formData.phone_number} />
+                    <PreviewField label="Gmail" value={formData.gmail} />
+                    <PreviewField label="Website" value={formData.website} />
+                  </div>
+                </PreviewSection>
               )}
-              {redirectCountdown !== null && redirectCountdown > 0 && (
-                <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-lg mb-4">
-                  Redirecting to your dashboard in {redirectCountdown}s…
-                </div>
+
+              {/* Location */}
+              {(formData.address || formData.state || formData.country) && (
+                <PreviewSection title="Location">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <PreviewField label="Address" value={formData.address} />
+                    <PreviewField label="State" value={formData.state} />
+                    <PreviewField label="Country" value={formData.country} />
+                    <PreviewField label="Languages" value={formData.languages} />
+                  </div>
+                </PreviewSection>
               )}
-              <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-extrabold text-black">Profile Preview</h1>
-                <button
-                  type="button"
-                  onClick={() => setIsPreviewMode(false)}
-                  className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091]"
-                >
-                  Edit
-                </button>
-              </div>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 flex items-center justify-center">
-                  {profilePhotoUrl ? (
-                    <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <i className="fa fa-user text-2xl text-gray-400" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-black">{displayName}</p>
-                  {formData.title && <p className="text-gray-600 text-sm">{formData.title}</p>}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                {formData.contact_email && (
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Email</p>
-                    <p className="text-gray-800">{formData.contact_email}</p>
+
+              {/* About */}
+              {(formData.about || formData.work_experience) && (
+                <PreviewSection title="About">
+                  <div className="space-y-4">
+                    <PreviewField label="About" value={formData.about} />
+                    <PreviewField label="Work Experience" value={formData.work_experience} />
                   </div>
-                )}
-                {formData.phone_number && (
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Phone</p>
-                    <p className="text-gray-800">{formData.phone_number}</p>
+                </PreviewSection>
+              )}
+
+              {/* Skills */}
+              {skills.length > 0 && (
+                <PreviewSection title="Skills">
+                  <div className="flex flex-wrap gap-2">
+                    {skills.map((s, i) => (
+                      <span key={i} className="bg-purple-100 text-[#6A00B1] px-3 py-1 rounded-full text-sm font-medium">{s}</span>
+                    ))}
                   </div>
-                )}
-                {formData.address && (
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Address</p>
-                    <p className="text-gray-800">{formData.address}</p>
+                </PreviewSection>
+              )}
+
+              {/* Education */}
+              {educations.length > 0 && (
+                <PreviewSection title="Education">
+                  <ul className="space-y-1">
+                    {educations.map((e, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                        <i className="fa fa-graduation-cap text-[#6A00B1] mt-0.5 text-xs" />
+                        {e}
+                      </li>
+                    ))}
+                  </ul>
+                </PreviewSection>
+              )}
+
+              {/* Certifications */}
+              {certifications.length > 0 && (
+                <PreviewSection title="Certifications">
+                  <ul className="space-y-1">
+                    {certifications.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                        <i className="fa fa-certificate text-[#6A00B1] mt-0.5 text-xs" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </PreviewSection>
+              )}
+
+              {/* Social links */}
+              {socialLinks.filter(l => l.platform_name || l.platform_url).length > 0 && (
+                <PreviewSection title="Social Links">
+                  <div className="flex flex-wrap gap-3">
+                    {socialLinks.filter(l => l.platform_url).map((l, i) => (
+                      <a
+                        key={i}
+                        href={l.platform_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-purple-50 text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
+                      >
+                        {l.platform_name || l.platform_url}
+                      </a>
+                    ))}
                   </div>
-                )}
-                {(formData.state || formData.country) && (
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Location</p>
-                    <p className="text-gray-800">{[formData.state, formData.country].filter(Boolean).join(", ")}</p>
-                  </div>
-                )}
-                {formData.about && (
-                  <div className="md:col-span-2">
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">About</p>
-                    <p className="text-gray-800 whitespace-pre-wrap">{formData.about}</p>
-                  </div>
-                )}
-                {skills.length > 0 && (
-                  <div className="md:col-span-2">
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Skills</p>
-                    <div className="flex flex-wrap gap-2">
-                      {skills.map((s, i) => (
-                        <span key={i} className="bg-purple-100 text-[#6A00B1] px-2 py-1 rounded text-xs">{s}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                </PreviewSection>
+              )}
+
+              {/* Documents / CV */}
+              {currentCvUrl && (
+                <PreviewSection title="Documents">
+                  <a
+                    href={currentCvUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
+                  >
+                    <i className="fa fa-file-pdf-o" />
+                    {currentCvName || "CV"}
+                  </a>
+                </PreviewSection>
+              )}
+
             </div>
           </div>
         </div>
