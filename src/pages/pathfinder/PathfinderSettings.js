@@ -9,7 +9,6 @@ import { useUser } from "../../context/UserContext";
 const PathfinderSettings = () => {
   const navigate = useNavigate();
   const { logout } = useUser();
-  const fileInputRef = useRef(null);
   const loadedBaseDetailsIdRef = useRef(null);
   const loadedProfileIdRef = useRef(null);
 
@@ -92,23 +91,6 @@ const PathfinderSettings = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => setProfilePhotoUrl(reader.result);
-    reader.readAsDataURL(file);
-    try {
-      const fd = new FormData();
-      fd.append("profile_pic", file);
-      await profile.picturePatch(fd);
-      setToast({ isOpen: true, message: "Profile picture updated!", type: "success" });
-    } catch (err) {
-      console.error("Error uploading profile picture:", err);
-      setToast({ isOpen: true, message: "Failed to upload picture. Try again.", type: "error" });
-    }
-  };
-
   const handleChangePassword = async () => {
     const old_password = (formData.currentPassword || "").trim();
     const new_password = (formData.newPassword || "").trim();
@@ -185,48 +167,6 @@ const PathfinderSettings = () => {
             <p className="text-gray-600 text-sm md:text-base">
               Manage your account settings, profile information, and preferences
             </p>
-          </div>
-
-          <div className="hidden md:flex justify-end gap-3 mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-purple-50 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-
-          {/* Profile photo */}
-          <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <div className="flex flex-col items-center md:items-start">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4 overflow-hidden flex-shrink-0">
-                {profilePhotoUrl ? (
-                  <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <i className="fa fa-user text-2xl text-gray-400"></i>
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors"
-              >
-                Edit Photo
-              </button>
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl md:text-3xl font-bold text-black mb-1">{displayName}</h2>
-              {formData.title && (
-                <p className="text-gray-600 text-sm md:text-base">{formData.title}</p>
-              )}
-            </div>
           </div>
 
           {/* Profile summary (read-only) */}
@@ -329,15 +269,6 @@ const PathfinderSettings = () => {
             </button>
           </div>
 
-          {/* Mobile action buttons */}
-          <div className="flex md:hidden flex-col gap-3 mt-8 pt-8 border-t border-gray-200">
-            <button
-              onClick={() => navigate(-1)}
-              className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-50 transition-colors w-full"
-            >
-              Cancel
-            </button>
-          </div>
         </div>
       </div>
 
