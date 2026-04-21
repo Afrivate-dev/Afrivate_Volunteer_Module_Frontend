@@ -256,7 +256,10 @@ const PathfinderDashboard = () => {
                           },
                         });
                       } else {
-                        navigate("/volunteer-details", { state: { job: item } });
+                        navigateToVolunteerDetails(navigate, item.id, {
+                          existingApplication: appliedMap[item.id] || null,
+                          fallbackJob: item,
+                        });
                       }
                     }}
                     className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] transition-colors flex-shrink-0 whitespace-nowrap"

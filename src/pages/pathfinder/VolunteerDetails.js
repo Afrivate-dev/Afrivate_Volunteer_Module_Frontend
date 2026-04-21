@@ -4,7 +4,7 @@ import NavBar from "../../components/auth/Navbar";
 import FormattedText from "../../components/common/FormattedText";
 import Toast from "../../components/common/Toast";
 import { bookmarks, opportunities, profile, applications } from "../../services/api";
-import { getOrgName } from "../../utils/opportunityUtils";
+import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 import { parseDescription } from "../../utils/descriptionUtils";
 
 const VolunteerDetails = () => {
@@ -469,7 +469,7 @@ const VolunteerDetails = () => {
                       </span>
                     </div>
                     <button
-                      onClick={() => navigate("/volunteer-details?id=" + opportunity.id, { state: { job: opportunity } })}
+                      onClick={() => navigateToVolunteerDetails(navigate, opportunity.id, { fallbackJob: opportunity })}
                       className="w-full bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] transition-colors"
                     >
                       View Details
