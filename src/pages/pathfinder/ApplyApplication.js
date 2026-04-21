@@ -127,8 +127,10 @@ const ApplyApplication = () => {
         company: job.company,
         location: job.location,
       });
-      // Parse custom questions from the description carried in location state
-      const rawDesc = job.description || job._raw?.description || "";
+      // Parse custom questions from the description carried in location state.
+      // Prefer _raw.description (full combined string with markers) over job.description
+      // which may be a truncated preview with markers already stripped.
+      const rawDesc = job._raw?.description || job.description || "";
       if (rawDesc) {
         const { customQuestions: questions } = parseDescription(rawDesc);
         setCustomQuestions(Array.isArray(questions) ? questions : []);

@@ -71,7 +71,7 @@ const VolunteerDetails = () => {
           } catch (err) {
             console.error("Error loading opportunity:", err);
             setToast({ isOpen: true, message: "Unable to load opportunity details. Please try again.", type: "error" });
-            navigate("/opportunity");
+            navigate("/available-opportunities");
           }
         } else {
           navigate("/opportunity");

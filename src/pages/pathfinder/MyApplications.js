@@ -119,7 +119,7 @@ const MyApplications = () => {
                 Apply for volunteering opportunities to see them here
               </p>
               <button
-                onClick={() => navigate("/opportunity")}
+                onClick={() => navigate("/available-opportunities")}
                 className="bg-[#6A00B1] text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium hover:bg-[#5A0091] transition-colors touch-manipulation"
               >
                 Browse Opportunities

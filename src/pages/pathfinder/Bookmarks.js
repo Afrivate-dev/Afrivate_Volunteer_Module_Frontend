@@ -159,7 +159,7 @@ const Bookmarks = () => {
                 Start bookmarking opportunities to see them here
               </p>
               <button
-                onClick={() => navigate('/opportunity')}
+                onClick={() => navigate('/available-opportunities')}
                 className="mt-6 bg-[#6A00B1] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#5A0091] transition-colors"
               >
                 Browse Opportunities

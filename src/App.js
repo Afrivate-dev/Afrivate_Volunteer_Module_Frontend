@@ -28,7 +28,6 @@ import Landing from './pages/Landing';
 import LandingPathfinder from './pages/LandingPathfinder';
 import Landingenabler from './pages/Landingenabler';
 import EnablerDashboard from './pages/enabler/EnablerDashboard';
-import Opportunity from './pages/pathfinder/Opportunity';
 import Pathf from './pages/pathfinder/PathfinderDashboard';
 import VolunteerDetails from './pages/pathfinder/VolunteerDetails';
 import MyApplications from './pages/pathfinder/MyApplications';
@@ -127,7 +126,7 @@ function App() {
           <Route path="/emppro" element={<Navigate to="/enabler/dashboard" replace />} />
           <Route path="/dash-employer" element={<Navigate to="/enabler/dashboard" replace />} />
           <Route path="/dash-freelance" element={<Navigate to="/pathf" replace />} />
-          <Route path="/opportunity" element={<Opportunity />} />
+          <Route path="/opportunity" element={<Navigate to="/available-opportunities" replace />} />
           <Route path="/volunteer-details" element={<VolunteerDetails />} />
           <Route path="/my-applications" element={<RequireAuth role="pathfinder"><MyApplications /></RequireAuth>} />
           <Route path="/organization/:id" element={<OrganizationProfile />} />

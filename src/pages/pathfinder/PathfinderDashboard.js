@@ -179,7 +179,7 @@ const PathfinderDashboard = () => {
           
           {/* Volunteering Image Card */}
           <button
-            onClick={() => navigate("/opportunity")}
+            onClick={() => navigate("/available-opportunities")}
             className="relative rounded-2xl overflow-hidden w-full mx-auto h-48 sm:h-56 border border-[#E9E9E9] block text-left"
           >
             <img src={Volunteer} alt="Volunteering" className="w-full h-full object-cover" />
