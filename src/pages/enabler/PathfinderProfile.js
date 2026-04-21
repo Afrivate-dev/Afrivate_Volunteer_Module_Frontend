@@ -248,7 +248,7 @@ const PathfinderProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
@@ -260,7 +260,7 @@ const PathfinderProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
           <div className="max-w-4xl mx-auto text-center py-12">
             <p className="text-gray-500">{error || "No pathfinder profile found."}</p>
             <button
@@ -279,7 +279,7 @@ const PathfinderProfile = () => {
     <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
 
-      <div className="pt-20 px-4 md:px-6 pb-10">
+      <div className="pt-14 px-4 md:px-6 pb-10">
         <div className="max-w-4xl mx-auto">
 
           {/* Hero header — purple banner matching EditNewProfile preview */}

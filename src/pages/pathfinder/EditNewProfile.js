@@ -352,7 +352,7 @@ const EditNewProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
@@ -381,7 +381,7 @@ const EditNewProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
-        <div className="pt-20 px-4 md:px-6 pb-10">
+        <div className="pt-14 px-4 md:px-6 pb-10">
           <div className="max-w-4xl mx-auto">
 
             {successMessage && (
@@ -544,7 +544,7 @@ const EditNewProfile = () => {
       <NavBar />
 
       {/* Main Content Container */}
-      <div className="pt-20 px-4 md:px-6 pb-6">
+      <div className="pt-14 px-4 md:px-6 pb-6">
         <div className="max-w-4xl mx-auto">
           {/* Background Container */}
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">

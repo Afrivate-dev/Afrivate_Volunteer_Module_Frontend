@@ -115,7 +115,7 @@ const OrganizationProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 py-12 text-center text-gray-500">Loading organization...</div>
+        <div className="pt-14 px-4 py-12 text-center text-gray-500">Loading organization...</div>
       </div>
     );
   }
@@ -124,7 +124,7 @@ const OrganizationProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 py-12 max-w-2xl mx-auto text-center">
+        <div className="pt-14 px-4 py-12 max-w-2xl mx-auto text-center">
           <h1 className="text-xl font-bold text-gray-900 mb-2">{displayName}</h1>
           <p className="text-gray-600 mb-4">{error}</p>
           {stateData.website && (
@@ -151,7 +151,7 @@ const OrganizationProfile = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
       <NavBar />
-      <div className="pt-20 px-4 md:px-8 pb-8">
+      <div className="pt-14 px-4 md:px-8 pb-8">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => navigate(-1)}

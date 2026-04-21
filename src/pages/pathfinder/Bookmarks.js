@@ -129,7 +129,7 @@ const Bookmarks = () => {
       <NavBar />
       
       {/* Main Content */}
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-3xl mx-auto">
           {/* Page Title */}
           <div className="mb-6 mt-4">

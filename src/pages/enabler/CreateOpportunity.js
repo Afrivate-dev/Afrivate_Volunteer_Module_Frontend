@@ -154,7 +154,7 @@ const CreateOpportunity = () => {
     <div className="min-h-screen bg-gray-50 font-sans">
       <EnablerNavbar />
       
-      <div className="pt-20 px-4 md:px-6 pb-8">
+      <div className="pt-14 px-4 md:px-6 pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-[30px] p-6 md:p-8 shadow-sm">
             

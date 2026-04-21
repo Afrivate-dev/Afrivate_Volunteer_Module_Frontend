@@ -147,7 +147,7 @@ const EnablerProfileView = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
           <div className="max-w-4xl mx-auto text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
             <p className="text-gray-500 mt-4">Loading profile...</p>
@@ -161,7 +161,7 @@ const EnablerProfileView = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
           <div className="max-w-4xl mx-auto text-center py-12">
             <button
               onClick={() => navigate(-1)}
@@ -180,7 +180,7 @@ const EnablerProfileView = () => {
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       <NavBar />
 
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <button

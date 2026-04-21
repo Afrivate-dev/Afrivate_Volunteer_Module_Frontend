@@ -200,7 +200,7 @@ const EnablerProfileSetup = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading...</p>
         </div>
@@ -219,7 +219,7 @@ const EnablerProfileSetup = () => {
       />
       
       {/* Main Content */}
-      <div className="pt-20 px-4 md:px-6 pb-8">
+      <div className="pt-14 px-4 md:px-6 pb-8">
         <div className="max-w-2xl mx-auto">
           {/* White Card Container */}
           <div className="bg-white rounded-[30px] p-3 md:p-4 shadow-sm border border-gray-200">

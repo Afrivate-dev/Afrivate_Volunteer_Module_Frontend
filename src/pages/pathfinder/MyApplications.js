@@ -85,7 +85,7 @@ const MyApplications = () => {
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       <NavBar />
-      <div className="pt-16 sm:pt-20 px-3 sm:px-4 md:px-8 pb-6 sm:pb-8">
+      <div className="pt-16 sm:pt-14 px-3 sm:px-4 md:px-8 pb-6 sm:pb-8">
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 sm:mb-6">
             <button

@@ -326,7 +326,7 @@ const ApplyApplication = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 py-12 text-center text-gray-500">Loading...</div>
+        <div className="pt-14 px-4 py-12 text-center text-gray-500">Loading...</div>
       </div>
     );
   }
@@ -334,7 +334,7 @@ const ApplyApplication = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
       <NavBar />
-      <div className="pt-20 px-4 md:px-8 pb-8">
+      <div className="pt-14 px-4 md:px-8 pb-8">
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => navigate(-1)}

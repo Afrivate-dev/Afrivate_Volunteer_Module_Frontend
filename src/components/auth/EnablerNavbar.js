@@ -53,7 +53,7 @@ const EnablerNavbar = () => {
 
   return (
     <>
-      <nav className="fixed font-sans bg-white sticky top-0 z-20 px-4 py-3 flex items-center justify-between w-full">
+      <nav className="fixed font-sans bg-white top-0 z-20 px-4 py-3 flex items-center justify-between w-full">
         <div className="flex items-center gap-4">
           <i
             className="fa-solid fa-bars text-xl font-bold cursor-pointer text-gray-800"

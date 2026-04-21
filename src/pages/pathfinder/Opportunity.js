@@ -129,7 +129,7 @@ const Opportunity = () => {
     <div className="min-h-screen bg-white font-sans">
       <NavBar />
 
-      <div className="pt-20 px-4 md:px-8 pb-8 max-w-3xl mx-auto">
+      <div className="pt-14 px-4 md:px-8 pb-8 max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Opportunities</h1>
 
         <input

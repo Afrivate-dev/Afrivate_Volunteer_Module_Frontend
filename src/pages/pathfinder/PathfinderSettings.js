@@ -146,7 +146,7 @@ const PathfinderSettings = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading settings...</p>
         </div>
@@ -158,7 +158,7 @@ const PathfinderSettings = () => {
     <div className="min-h-screen bg-white font-sans">
       <NavBar />
 
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">

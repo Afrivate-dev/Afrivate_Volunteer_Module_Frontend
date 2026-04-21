@@ -63,7 +63,7 @@ const NavBar = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed font-sans bg-white sticky top-0 z-20 px-4 py-3 
+      <nav className="fixed font-sans bg-white top-0 z-20 px-4 py-3
                       flex items-center justify-between w-full">
         {/* Left side - Hamburger and Home */}
         <div className="flex items-center gap-4">

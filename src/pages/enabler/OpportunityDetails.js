@@ -87,7 +87,7 @@ const OpportunityDetails = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
           <div className="max-w-6xl mx-auto text-center py-12">
             <p className="text-gray-500">Loading opportunity details...</p>
           </div>
@@ -100,7 +100,7 @@ const OpportunityDetails = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
           <div className="max-w-6xl mx-auto text-center py-12">
             <p className="text-gray-500">No opportunity found.</p>
             <button
@@ -120,7 +120,7 @@ const OpportunityDetails = () => {
       <EnablerNavbar />
       
       {/* Main Content */}
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-6xl mx-auto">
           
           {/* Back Button */}

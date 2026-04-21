@@ -75,7 +75,7 @@ const Notifications = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
       <NavbarComponent />
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-10">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-10">
         <div className="max-w-5xl mx-auto">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>

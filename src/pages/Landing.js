@@ -117,7 +117,7 @@ const Landing = () => {
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex flex-col pt-20 px-4 gap-2">
+        <div className="flex flex-col pt-14 px-4 gap-2">
           <Link to="/opportunity" onClick={() => setIsMenuOpen(false)} className="py-3 px-4 rounded-xl bg-[#515151] text-white font-semibold hover:bg-[#DCD0EF] hover:text-black transition flex items-center gap-3">
             <i className="fa-solid fa-hand-holding-heart w-5 text-center"></i>
             Volunteering

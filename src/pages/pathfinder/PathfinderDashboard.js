@@ -94,7 +94,7 @@ const PathfinderDashboard = () => {
     return (
       <div className="min-h-screen bg-white font-sans flex items-center justify-center">
         <NavBar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto mb-4" />
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
@@ -125,7 +125,7 @@ const PathfinderDashboard = () => {
       <NavBar />
       
       {/* Main Content Container */}
-      <div className="w-full max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-8">
+      <div className="w-full max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-14 pb-8">
         
         {/* Welcome Section */}
         <div className="text-center mt-8 sm:mt-10 mb-6">

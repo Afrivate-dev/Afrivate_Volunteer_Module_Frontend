@@ -183,7 +183,7 @@ const AvailableOpportunities = () => {
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       <NavBar />
 
-      <div className="pt-20 px-4 md:px-6 pb-8">
+      <div className="pt-14 px-4 md:px-6 pb-8">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="mb-6">

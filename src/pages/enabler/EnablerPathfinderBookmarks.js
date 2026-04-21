@@ -68,7 +68,7 @@ const EnablerPathfinderBookmarks = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">Bookmarked Pathfinders</h1>
           <p className="text-gray-600 mb-6">

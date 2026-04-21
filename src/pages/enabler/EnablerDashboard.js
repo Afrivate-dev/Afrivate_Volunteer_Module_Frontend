@@ -91,7 +91,7 @@ const EnablerDashboard = () => {
     return (
       <div className="min-h-screen bg-white font-sans flex items-center justify-center">
         <EnablerNavbar />
-        <div className="pt-20 text-center">
+        <div className="pt-14 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto mb-4" />
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
@@ -122,7 +122,7 @@ const EnablerDashboard = () => {
       <EnablerNavbar />
       
       {/* Main Content */}
-      <div className="pt-16 sm:pt-20 px-4 sm:px-6 pb-8">
+      <div className="pt-16 sm:pt-14 px-4 sm:px-6 pb-8">
         <div className="max-w-3xl lg:max-w-4xl mx-auto">
           
           {/* Welcome Section */}

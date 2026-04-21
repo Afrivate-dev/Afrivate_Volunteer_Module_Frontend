@@ -197,7 +197,7 @@ const VolunteerDetails = () => {
     return (
       <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pt-20 px-4 py-12 text-center text-gray-500">Loading...</div>
+        <div className="pt-14 px-4 py-12 text-center text-gray-500">Loading...</div>
       </div>
     );
   }
@@ -209,7 +209,7 @@ const VolunteerDetails = () => {
       <NavBar />
       
       {/* Main Content */}
-      <div className="pt-20 px-4 md:px-8 lg:px-12 pb-8">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
         <div className="max-w-5xl mx-auto">
           {/* Job Header Section */}
           <div className="mb-6">
