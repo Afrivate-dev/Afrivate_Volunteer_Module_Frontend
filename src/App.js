@@ -135,7 +135,7 @@ function App() {
           <Route path="/bookmarks" element={<RequireAuth role="pathfinder"><Bookmarks /></RequireAuth>} />
           <Route path="/available-opportunities" element={<RequireAuth role="pathfinder"><AvailableOpportunities /></RequireAuth>} />
           <Route path="/enabler-profile/:id" element={<RequireAuth role="pathfinder"><EnablerProfileView /></RequireAuth>} />
-          <Route path="/edit-new-profile" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathfinder/profile-setup" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
           <Route path="/road" element={<Road />} />
@@ -177,7 +177,7 @@ function App() {
             path="/profile"
             element={
               <RequireAuth>
-                <RoleRedirect pathfinder="/edit-new-profile" enabler="/enabler/profile" />
+                <RoleRedirect pathfinder="/profile" enabler="/enabler/profile" />
               </RequireAuth>
             }
           />

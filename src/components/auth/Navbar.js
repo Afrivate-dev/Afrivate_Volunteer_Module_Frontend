@@ -152,7 +152,7 @@ const NavBar = () => {
                 <i className="fas fa-bookmark"></i> Bookmarks
               </li>
             </Link>
-            <Link to="/edit-new-profile">
+            <Link to="/profile">
               <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
                 <i className="fas fa-user"></i> Profile
               </li>

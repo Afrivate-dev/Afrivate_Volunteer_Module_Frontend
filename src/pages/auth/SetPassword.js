@@ -50,7 +50,7 @@ const SetPassword = () => {
         confirm_password: formData.confirmPassword,
       });
       const r = getRole();
-      navigate(r === "enabler" ? "/enabler/settings" : "/edit-new-profile", { replace: true });
+      navigate(r === "enabler" ? "/enabler/settings" : "/profile", { replace: true });
     } catch (err) {
       setServerError(getApiErrorMessage(err));
     } finally {

@@ -395,7 +395,7 @@ const PathfinderSettings = () => {
                 {formData.title && <p className="text-gray-600 text-sm">{formData.title}</p>}
               </div>
               <Link
-                to="/pathfinder/edit-profile"
+                to="/profile"
                 className="ml-auto text-[#6A00B1] text-sm font-semibold hover:underline"
               >
                 Edit profile
