@@ -57,12 +57,10 @@ const Applicants = () => {
         // Map to the format needed by the UI - include full cover_letter text
         const mappedApps = forOpp.map((app) => {
           const { name, email } = parseContactDetails(app.cover_letter);
-          const bookmarkPathfinderId =
-            app.pathfinder ?? app.pathfinder_id ?? app.pathfinder_profile ?? app.user ?? app.user_id;
           return {
             id: app.id,
-            userId: app.user ?? app.user_id,
-            bookmarkPathfinderId,
+            userId: app.applicant_id,
+            bookmarkPathfinderId: app.applicant_id,
             pathfinderName: name,
             pathfinderEmail: email,
             opportunityTitle: app.opportunity_title || titleFromOpp,
@@ -307,7 +305,7 @@ const Applicants = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/enabler/pathfinder/${app.userId ?? app.id}`, {
+                            navigate(`/enabler/pathfinder/${app.userId}`, {
                               state: { opportunityId: parseInt(opportunityId, 10) },
                             });
                           }}
