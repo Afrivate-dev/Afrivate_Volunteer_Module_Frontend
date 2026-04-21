@@ -8,7 +8,7 @@ import { useUser } from "../../context/UserContext";
 
 const PathfinderSettings = () => {
   const navigate = useNavigate();
-  const { logout, refetchUser } = useUser();
+  const { logout } = useUser();
   const fileInputRef = useRef(null);
   const documentInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
