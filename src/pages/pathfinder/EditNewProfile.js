@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { useUser } from "../../context/UserContext";
 import { profile, getApiErrorMessage } from "../../services/api";
