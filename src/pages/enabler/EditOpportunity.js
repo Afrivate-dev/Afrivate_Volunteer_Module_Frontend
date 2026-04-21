@@ -23,6 +23,8 @@ const EditOpportunity = () => {
     opportunityType: "volunteering",
   });
   const [customQuestions, setCustomQuestions] = useState([]);
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [newQuestion, setNewQuestion] = useState("");
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [opportunityFound, setOpportunityFound] = useState(false);
 
@@ -76,9 +78,11 @@ const EditOpportunity = () => {
   };
 
   const addCustomQuestion = () => {
-    const q = window.prompt("Enter your question for applicants:");
-    if (q && q.trim()) {
-      setCustomQuestions((prev) => [...prev, { id: `q-${Date.now()}`, question: q.trim() }]);
+    const q = newQuestion.trim();
+    if (q) {
+      setCustomQuestions((prev) => [...prev, { id: `q-${Date.now()}`, question: q }]);
+      setNewQuestion("");
+      setShowAddQuestion(false);
     }
   };
   
@@ -330,7 +334,42 @@ const EditOpportunity = () => {
                   <button type="button" onClick={() => removeCustomQuestion(q.id)} className="text-red-500 hover:text-red-700 text-sm font-semibold">Remove</button>
                 </div>
               ))}
-              <button type="button" onClick={addCustomQuestion} className="mt-2 text-[#6A00B1] font-semibold text-sm hover:underline">+ Add question</button>
+              {showAddQuestion ? (
+                <div className="mt-2 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                  <textarea
+                    value={newQuestion}
+                    onChange={(e) => setNewQuestion(e.target.value)}
+                    placeholder="Enter your question for applicants"
+                    rows={2}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
+                  />
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={addCustomQuestion}
+                      disabled={!newQuestion.trim()}
+                      className="px-3 py-1.5 bg-[#6A00B1] text-white text-sm rounded-lg hover:bg-[#5A0091] disabled:opacity-50"
+                    >
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }}
+                      className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAddQuestion(true)}
+                  className="mt-2 text-[#6A00B1] font-semibold text-sm hover:underline"
+                >
+                  + Add question
+                </button>
+              )}
             </div>
             <div className="flex gap-3 pt-4">
               <button

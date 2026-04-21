@@ -456,12 +456,6 @@ const PathfinderSettings = () => {
             >
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors"
-            >
-              Save Changes
-            </button>
           </div>
 
           {/* Profile photo */}
@@ -497,178 +491,26 @@ const PathfinderSettings = () => {
             </div>
           </div>
 
-          {/* Personal information */}
+          {/* Profile summary (read-only) */}
           <div className="mb-8">
-            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Personal information</h2>
-            <p className="text-gray-600 text-sm mb-4">
-              Last name, contact email, address, state and country are required.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">First name</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Ama"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-purple-100 flex items-center justify-center">
+                {profilePhotoUrl ? (
+                  <img src={profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[#6A00B1] font-bold text-xl">{displayName.charAt(0)}</span>
+                )}
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-2">Last name *</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Mensah"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
+                <p className="font-bold text-gray-900 text-lg leading-tight">{displayName}</p>
+                {formData.title && <p className="text-gray-600 text-sm">{formData.title}</p>}
               </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Other name</label>
-                <input
-                  type="text"
-                  name="other_name"
-                  value={formData.other_name}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Kofi"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Professional title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Software Engineer"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Contact email *</label>
-                <input
-                  type="email"
-                  name="contact_email"
-                  value={formData.contact_email}
-                  onChange={handleInputChange}
-                  placeholder="you@example.com"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Phone number</label>
-                <input
-                  type="tel"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleInputChange}
-                  placeholder="+234..."
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="123 Main Street"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">State *</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Lagos"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Country *</label>
-                <input
-                  type="text"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  placeholder="e.g. Nigeria"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Languages</label>
-                <input
-                  type="text"
-                  name="languages"
-                  value={formData.languages}
-                  onChange={handleInputChange}
-                  placeholder="e.g. English, French"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Website</label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  placeholder="https://..."
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-2">Gmail</label>
-                <input
-                  type="email"
-                  name="gmail"
-                  value={formData.gmail}
-                  onChange={handleInputChange}
-                  placeholder="you@gmail.com"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-gray-600 mb-2">About</label>
-                <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleInputChange}
-                  placeholder="Tell enablers about yourself..."
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-gray-600 mb-2">Work experience</label>
-                <textarea
-                  name="work_experience"
-                  value={formData.work_experience}
-                  onChange={handleInputChange}
-                  placeholder="Describe your work experience..."
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm text-gray-600 mb-2">Short bio</label>
-                <input
-                  type="text"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  placeholder="One-line bio"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
-                />
-              </div>
+              <Link
+                to="/pathfinder/edit-profile"
+                className="ml-auto text-[#6A00B1] text-sm font-semibold hover:underline"
+              >
+                Edit profile
+              </Link>
             </div>
 
             {/* Social links */}
@@ -850,13 +692,6 @@ const PathfinderSettings = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handlePutCredentialName(cred.id, cred.document_name ?? cred.name ?? "")}
-                        className="text-gray-600 text-sm font-semibold hover:underline"
-                      >
-                        Save (PUT)
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => openCredentialDetails(cred.id)}
                         className="text-gray-700 text-sm font-semibold hover:underline"
                       >
@@ -916,12 +751,6 @@ const PathfinderSettings = () => {
               className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-50 transition-colors w-full"
             >
               Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors w-full"
-            >
-              Save Changes
             </button>
           </div>
         </div>

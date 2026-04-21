@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { useUser } from "../../context/UserContext";
 import { profile, getApiErrorMessage, auth } from "../../services/api";
@@ -45,6 +45,7 @@ function extractSections(text) {
 }
 
 const EditNewProfile = () => {
+  const navigate = useNavigate();
   const { refetchUser } = useUser();
   const photoInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
@@ -93,6 +94,8 @@ const EditNewProfile = () => {
   const [pwdConfirm, setPwdConfirm] = useState("");
   const [pwdSaving, setPwdSaving] = useState(false);
   const [pwdMessage, setPwdMessage] = useState(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(null);
 
   const parseResumeFile = useCallback((file) => {
     if (!file) return;
@@ -196,6 +199,16 @@ const EditNewProfile = () => {
     loadProfile();
   }, [loadProfile]);
 
+  useEffect(() => {
+    if (redirectCountdown === null) return;
+    if (redirectCountdown <= 0) {
+      navigate("/pathf");
+      return;
+    }
+    const t = setTimeout(() => setRedirectCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [redirectCountdown, navigate]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -272,6 +285,7 @@ const EditNewProfile = () => {
   const handleSave = async () => {
     setSaving(true);
     setError(null);
+    const wasFirstSave = !loadedProfileId;
 
     const first = (formData.first_name || "").trim() || "User";
     const last = (formData.last_name || "").trim();
@@ -348,6 +362,10 @@ const EditNewProfile = () => {
       setError(null);
       setSuccessMessage("Profile saved successfully.");
       setTimeout(() => setSuccessMessage(null), 4000);
+      setIsPreviewMode(true);
+      if (wasFirstSave) {
+        setRedirectCountdown(5);
+      }
     } catch (err) {
       console.error("Error saving profile:", err);
       setError(getApiErrorMessage(err) || "Failed to save profile. Please try again.");
@@ -480,16 +498,106 @@ const EditNewProfile = () => {
     );
   }
 
+  if (isPreviewMode) {
+    const displayName = [formData.first_name, formData.last_name].filter(Boolean).join(" ") || "Pathfinder";
+    return (
+      <div className="min-h-screen bg-white font-sans relative">
+        <NavBar />
+        <div className="pt-20 px-4 md:px-6 pb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
+              {successMessage && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+                  {successMessage}
+                </div>
+              )}
+              {redirectCountdown !== null && redirectCountdown > 0 && (
+                <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-lg mb-4">
+                  Redirecting to your dashboard in {redirectCountdown}s…
+                </div>
+              )}
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-extrabold text-black">Profile Preview</h1>
+                <button
+                  type="button"
+                  onClick={() => setIsPreviewMode(false)}
+                  className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091]"
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 flex items-center justify-center">
+                  {profilePhotoUrl ? (
+                    <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <i className="fa fa-user text-2xl text-gray-400" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-black">{displayName}</p>
+                  {formData.title && <p className="text-gray-600 text-sm">{formData.title}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                {formData.contact_email && (
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Email</p>
+                    <p className="text-gray-800">{formData.contact_email}</p>
+                  </div>
+                )}
+                {formData.phone_number && (
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Phone</p>
+                    <p className="text-gray-800">{formData.phone_number}</p>
+                  </div>
+                )}
+                {formData.address && (
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Address</p>
+                    <p className="text-gray-800">{formData.address}</p>
+                  </div>
+                )}
+                {(formData.state || formData.country) && (
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Location</p>
+                    <p className="text-gray-800">{[formData.state, formData.country].filter(Boolean).join(", ")}</p>
+                  </div>
+                )}
+                {formData.about && (
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">About</p>
+                    <p className="text-gray-800 whitespace-pre-wrap">{formData.about}</p>
+                  </div>
+                )}
+                {skills.length > 0 && (
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Skills</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((s, i) => (
+                        <span key={i} className="bg-purple-100 text-[#6A00B1] px-2 py-1 rounded text-xs">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white font-sans relative">
       <NavBar />
-      
+
       {/* Main Content Container */}
       <div className="pt-20 px-4 md:px-6 pb-6">
         <div className="max-w-4xl mx-auto">
           {/* Background Container */}
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
-            
+
             {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">

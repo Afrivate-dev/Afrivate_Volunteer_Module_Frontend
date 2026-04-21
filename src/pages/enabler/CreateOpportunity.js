@@ -150,6 +150,7 @@ const CreateOpportunity = () => {
   const handlePreview = () => {
     if (canPreview()) {
       setShowPreview(true);
+      setCurrentStep(4);
     }
   };
 
@@ -254,12 +255,12 @@ const CreateOpportunity = () => {
               </div>
             </div>
 
-            {showPreview && currentStep === 3 && (
+            {currentStep === 4 && (
               <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-purple-900">Preview & Verify Information</h3>
                   <button
-                    onClick={() => setShowPreview(false)}
+                    onClick={() => setCurrentStep(3)}
                     className="text-purple-600 hover:text-purple-800"
                   >
                     <i className="fa fa-edit"></i> Edit
@@ -613,46 +614,19 @@ const CreateOpportunity = () => {
                   )}
                 </div>
 
-                {currentStep === 3 && !showPreview && (
-                  <div className="flex justify-between mt-6 md:mt-8">
-                    <button
-                      onClick={handlePreview}
-                      disabled={!canPreview()}
-                      className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-colors ${
-                        canPreview()
-                          ? 'bg-[#6A00B1] text-white hover:bg-[#5A0091]'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      Preview & Verify
-                    </button>
-                  </div>
-                )}
-
-                {currentStep === 4 && (
-                  <div className="flex justify-end mt-6 md:mt-8 gap-3">
-                    <button
-                      onClick={() => {
-                        setShowPreview(true);
-                        setCurrentStep(3);
-                      }}
-                      className="px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      Back
-                    </button>
-                    <button
-                      onClick={handlePost}
-                      disabled={!canPost() || posting}
-                      className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold text-white transition-colors ${
-                        canPost() && !posting
-                          ? 'bg-[#6A00B1] hover:bg-[#5A0091]'
-                          : 'bg-gray-300 cursor-not-allowed'
-                      }`}
-                    >
-                      {posting ? 'Posting...' : 'Post Opportunity'}
-                    </button>
-                  </div>
-                )}
+                <div className="flex justify-between mt-6 md:mt-8">
+                  <button
+                    onClick={handlePreview}
+                    disabled={!canPreview()}
+                    className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-colors ${
+                      canPreview()
+                        ? 'bg-[#6A00B1] text-white hover:bg-[#5A0091]'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Preview & Verify
+                  </button>
+                </div>
               </div>
             )}
           </div>
