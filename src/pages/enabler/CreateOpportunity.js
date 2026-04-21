@@ -139,10 +139,6 @@ const CreateOpportunity = () => {
     return false;
   };
 
-  const canPost = () => {
-    return formData.location.trim() !== "" && formData.timeCommitment.trim() !== "";
-  };
-
   const canPreview = () => {
     return formData.location.trim() !== "" && formData.timeCommitment.trim() !== "";
   };

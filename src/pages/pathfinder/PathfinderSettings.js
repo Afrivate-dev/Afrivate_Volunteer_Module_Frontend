@@ -5,13 +5,6 @@ import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
 import { profile, auth, getApiErrorMessage } from "../../services/api";
 import { useUser } from "../../context/UserContext";
-import {
-  buildPathfinderBaseDetails,
-  buildPathfinderProfileBody,
-  stripBaseDetailsId,
-  normalizeSocialLink,
-} from "../../utils/pathfinderProfilePayload";
-import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 
 const PathfinderSettings = () => {
   const navigate = useNavigate();
@@ -153,89 +146,6 @@ const PathfinderSettings = () => {
     }
   };
 
-  const handleSave = async () => {
-    const first = (formData.first_name || "").trim() || "User";
-    const last = (formData.last_name || "").trim();
-    const contactEmail = (formData.contact_email || "").trim();
-    const address = (formData.address || "").trim();
-    const state = (formData.state || "").trim();
-    const country = (formData.country || "").trim();
-
-    if (!last || !contactEmail || !address || !state || !country) {
-      setToast({
-        isOpen: true,
-        message: "Last name, email, address, state and country are required.",
-        type: "error",
-      });
-      return;
-    }
-
-    try {
-      const baseDetails = buildPathfinderBaseDetails({
-        bio: formData.bio,
-        contact_email: contactEmail,
-        phone_number: formData.phone_number,
-        address,
-        state,
-        country,
-        website: formData.website,
-        id: loadedBaseDetailsIdRef.current != null ? loadedBaseDetailsIdRef.current : undefined,
-      });
-
-      const normalizedForSync = (socialLinks || [])
-        .map((l) => normalizeSocialLink(l))
-        .filter(Boolean);
-      const useRest =
-        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
-        socialLinksHaveRestIds(normalizedForSync);
-
-      const profileData = buildPathfinderProfileBody({
-        first_name: first,
-        last_name: last,
-        other_name: formData.other_name,
-        title: formData.title,
-        about: formData.about,
-        work_experience: formData.work_experience,
-        languages: formData.languages,
-        gmail: formData.gmail,
-        base_details: baseDetails,
-        social_links: useRest ? [] : normalizedForSync,
-      });
-
-      try {
-        await profile.pathfinderUpdate(profileData);
-      } catch (updateErr) {
-        if (updateErr.status === 404 || !loadedProfileIdRef.current) {
-          const createPayload = stripBaseDetailsId(profileData);
-          await profile.pathfinderCreate(createPayload);
-        } else {
-          throw updateErr;
-        }
-      }
-
-      if (useRest) {
-        await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
-      }
-
-      await refetchUser();
-      const fresh = await profile.pathfinderGet();
-      if (fresh) {
-        const newSl = Array.isArray(fresh.social_links) ? fresh.social_links : [];
-        setSocialLinks(newSl);
-        initialSocialLinksRef.current = JSON.parse(JSON.stringify(newSl));
-      }
-
-      setToast({ isOpen: true, message: "Changes saved successfully!", type: "success" });
-    } catch (err) {
-      console.error("Error saving profile:", err);
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || err.message || "Failed to save. Try again.",
-        type: "error",
-      });
-    }
-  };
-
   const handleChangePassword = async () => {
     const old_password = (formData.currentPassword || "").trim();
     const new_password = (formData.newPassword || "").trim();
@@ -341,27 +251,6 @@ const PathfinderSettings = () => {
       setToast({
         isOpen: true,
         message: getApiErrorMessage(err) || "Could not update document name.",
-        type: "error",
-      });
-    }
-  };
-
-  const handlePutCredentialName = async (id, document_name) => {
-    const name = String(document_name || "").trim();
-    if (!name) {
-      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
-      return;
-    }
-    try {
-      await profile.credentialsPut(id, { document_name: name });
-      setCredentials((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
-      );
-      setToast({ isOpen: true, message: "Document updated (PUT).", type: "success" });
-    } catch (err) {
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || "PUT failed.",
         type: "error",
       });
     }
