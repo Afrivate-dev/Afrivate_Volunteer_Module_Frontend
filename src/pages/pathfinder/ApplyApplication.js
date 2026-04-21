@@ -127,6 +127,12 @@ const ApplyApplication = () => {
         company: job.company,
         location: job.location,
       });
+      // Parse custom questions from the description carried in location state
+      const rawDesc = job.description || job._raw?.description || "";
+      if (rawDesc) {
+        const { customQuestions: questions } = parseDescription(rawDesc);
+        setCustomQuestions(Array.isArray(questions) ? questions : []);
+      }
     } else if (!job && opportunityId) {
       // Fetch opportunity from API
       opportunities.get(opportunityId)
