@@ -11,7 +11,6 @@ const PathfinderSettings = () => {
   const { logout } = useUser();
   const fileInputRef = useRef(null);
   const documentInputRef = useRef(null);
-  const initialSocialLinksRef = useRef([]);
   const loadedBaseDetailsIdRef = useRef(null);
   const loadedProfileIdRef = useRef(null);
 
@@ -39,7 +38,6 @@ const PathfinderSettings = () => {
     newPassword: "",
     confirmNewPassword: "",
   });
-  const [socialLinks, setSocialLinks] = useState([]);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
   const [credentials, setCredentials] = useState([]);
   const [documentFile, setDocumentFile] = useState(null);
@@ -76,12 +74,6 @@ const PathfinderSettings = () => {
           website: base.website || "",
           bio: base.bio || "",
         }));
-        const sl = Array.isArray(data.social_links) ? data.social_links : [];
-        setSocialLinks(sl);
-        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
-      } else {
-        setSocialLinks([]);
-        initialSocialLinksRef.current = [];
       }
     } catch (err) {
       console.error("Error loading pathfinder profile:", err);
@@ -110,23 +102,6 @@ const PathfinderSettings = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const addSocialLink = () => {
-    setSocialLinks((prev) => [...prev, { platform_name: "", platform_url: "" }]);
-  };
-
-  const updateSocialLink = (index, field, value) => {
-    setSocialLinks((prev) => {
-      const next = [...prev];
-      if (!next[index]) next[index] = { platform_name: "", platform_url: "" };
-      next[index] = { ...next[index], [field]: value };
-      return next;
-    });
-  };
-
-  const removeSocialLink = (index) => {
-    setSocialLinks((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handlePhotoChange = async (e) => {
@@ -170,51 +145,6 @@ const PathfinderSettings = () => {
       setToast({
         isOpen: true,
         message: getApiErrorMessage(err) || "Could not change password.",
-        type: "error",
-      });
-    }
-  };
-
-  const refreshSocialLinkFromServer = async (index) => {
-    const link = socialLinks[index];
-    if (link?.id == null) return;
-    try {
-      const data = await profile.socialLinksGet(link.id);
-      setSocialLinks((prev) => {
-        const next = [...prev];
-        next[index] = {
-          ...next[index],
-          platform_name: data.platform_name ?? next[index].platform_name,
-          platform_url: data.platform_url ?? next[index].platform_url,
-        };
-        return next;
-      });
-      setToast({ isOpen: true, message: "Link refreshed from server.", type: "success" });
-    } catch (err) {
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || "Could not refresh link.",
-        type: "error",
-      });
-    }
-  };
-
-  const handleSocialLinkPut = async (index) => {
-    const link = socialLinks[index];
-    if (link?.id == null) return;
-    const platform_name = (link.platform_name || "").trim();
-    const platform_url = (link.platform_url || "").trim();
-    if (!platform_name || !platform_url) {
-      setToast({ isOpen: true, message: "Platform name and URL are required for PUT.", type: "error" });
-      return;
-    }
-    try {
-      await profile.socialLinksPut(link.id, { platform_name, platform_url });
-      setToast({ isOpen: true, message: "Social link saved (PUT).", type: "success" });
-    } catch (err) {
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || "PUT failed; try Save changes for PATCH sync.",
         type: "error",
       });
     }
@@ -402,64 +332,6 @@ const PathfinderSettings = () => {
               </Link>
             </div>
 
-            {/* Social links */}
-            <div className="mt-6">
-              <h3 className="text-lg font-bold text-black mb-2">Social links</h3>
-              <p className="text-gray-600 text-sm mb-2">Add platform name and URL (e.g. LinkedIn, https://linkedin.com/in/you)</p>
-              {socialLinks.map((link, index) => (
-                <div key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`} className="flex flex-wrap gap-2 items-center mb-2">
-                  <input
-                    type="text"
-                    value={link.platform_name || ""}
-                    onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
-                    placeholder="Platform (e.g. LinkedIn)"
-                    className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
-                  />
-                  <input
-                    type="url"
-                    value={link.platform_url || ""}
-                    onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
-                    placeholder="https://..."
-                    className="flex-1 min-w-[180px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
-                  />
-                  {link.id != null && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => refreshSocialLinkFromServer(index)}
-                        className="text-xs text-[#6A00B1] font-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
-                        title="Reload this link from the server"
-                      >
-                        Refresh
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSocialLinkPut(index)}
-                        className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        title="Save this row with PUT (full replace)"
-                      >
-                        PUT save
-                      </button>
-                    </>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removeSocialLink(index)}
-                    className="text-red-500 hover:text-red-700 p-2"
-                    title="Remove"
-                  >
-                    <i className="fa fa-times"></i>
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addSocialLink}
-                className="text-[#6A00B1] font-semibold text-sm hover:underline flex items-center gap-1"
-              >
-                <i className="fa fa-plus"></i> Add social link
-              </button>
-            </div>
           </div>
 
           {/* Change password */}
