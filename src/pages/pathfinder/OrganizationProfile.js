@@ -40,7 +40,7 @@ const OrganizationProfile = () => {
           try {
             const raw = await bookmarks.enablersSavedList();
             const list = normalizeBookmarkList(raw);
-            const row = findEnablerBookmarkRow(list, data.id);
+            const row = findEnablerBookmarkRow(list, id);
             if (row) {
               setIsBookmarked(true);
             } else {
@@ -62,7 +62,7 @@ const OrganizationProfile = () => {
   }, [id]);
 
   const handleBookmark = async () => {
-    const enablerPk = profileData?.id;
+    const enablerPk = id;
     if (enablerPk == null || !getAccessToken() || getRole() !== "pathfinder") {
       setToast({
         isOpen: true,

@@ -105,6 +105,17 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, [fetchUser]);
 
+  // Detect token/role changes made by another tab and re-sync.
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'afrivate_access' || e.key === 'afrivate_role' || e.key === null) {
+        fetchUser();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [fetchUser]);
+
   const updateUser = (newData) => {
     setUser((prev) => (prev ? { ...prev, ...newData } : null));
   };

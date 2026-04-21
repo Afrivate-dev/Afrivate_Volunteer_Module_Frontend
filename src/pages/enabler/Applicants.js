@@ -58,10 +58,10 @@ const Applicants = () => {
         const mappedApps = forOpp.map((app) => {
           const { name, email } = parseContactDetails(app.cover_letter);
           const bookmarkPathfinderId =
-            app.pathfinder ?? app.pathfinder_id ?? app.pathfinder_profile ?? app.user;
+            app.pathfinder ?? app.pathfinder_id ?? app.pathfinder_profile ?? app.user ?? app.user_id;
           return {
             id: app.id,
-            userId: app.user,
+            userId: app.user ?? app.user_id,
             bookmarkPathfinderId,
             pathfinderName: name,
             pathfinderEmail: email,
@@ -134,7 +134,7 @@ const Applicants = () => {
   };
 
   const applicantBookmarkKey = (app) =>
-    app.bookmarkPathfinderId != null ? String(app.bookmarkPathfinderId) : "";
+    app.bookmarkPathfinderId != null ? String(app.bookmarkPathfinderId) : String(app.id);
 
   const handleToggleApplicantBookmark = async (app) => {
     const key = applicantBookmarkKey(app);
@@ -307,9 +307,7 @@ const Applicants = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            const pid = app.userId ?? app.bookmarkPathfinderId;
-                            if (!pid) return;
-                            navigate(`/enabler/pathfinder/${pid}`, {
+                            navigate(`/enabler/pathfinder/${app.userId ?? app.id}`, {
                               state: { opportunityId: parseInt(opportunityId, 10) },
                             });
                           }}
