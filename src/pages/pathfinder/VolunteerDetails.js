@@ -273,7 +273,27 @@ const VolunteerDetails = () => {
                     </svg>
                   )}
                 </button>
-                <button className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button
+                  onClick={async () => {
+                    const shareData = {
+                      title: jobData.title,
+                      text: `Check out this volunteering opportunity: ${jobData.title}`,
+                      url: window.location.href,
+                    };
+                    if (navigator.share) {
+                      try { await navigator.share(shareData); } catch (_) {}
+                    } else {
+                      try {
+                        await navigator.clipboard.writeText(window.location.href);
+                        setToast({ isOpen: true, message: "Link copied to clipboard.", type: "success" });
+                      } catch (_) {
+                        setToast({ isOpen: true, message: "Could not copy link.", type: "error" });
+                      }
+                    }
+                  }}
+                  title="Share this opportunity"
+                  className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
                   <i className="fa fa-share-alt text-gray-600"></i>
                 </button>
               </div>

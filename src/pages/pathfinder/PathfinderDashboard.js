@@ -237,9 +237,11 @@ const PathfinderDashboard = () => {
                       <span className="text-[#FF0000] font-bold">
                         {item.type}
                       </span>
-                      <span className="text-[#A7A1A1] font-medium">
-                        {item.location}
-                      </span>
+                      {item.location && (
+                        <span className="text-[#A7A1A1] font-medium">
+                          {item.location}
+                        </span>
+                      )}
                     </div>
                   </div>
 
