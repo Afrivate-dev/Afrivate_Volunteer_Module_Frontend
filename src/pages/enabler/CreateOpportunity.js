@@ -329,13 +329,6 @@ const CreateOpportunity = () => {
                 <div className="mt-4 flex gap-3">
                   <button
                     type="button"
-                    onClick={handleEditFromPreview}
-                    className="px-4 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
-                  >
-                    <i className="fa fa-edit mr-1"></i> Edit Details
-                  </button>
-                  <button
-                    type="button"
                     onClick={handlePost}
                     disabled={posting}
                     className={`px-4 py-2 bg-[#6A00B1] text-white rounded-lg hover:bg-[#5A0091] transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
