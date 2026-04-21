@@ -10,7 +10,6 @@ const PathfinderSettings = () => {
   const navigate = useNavigate();
   const { logout } = useUser();
   const fileInputRef = useRef(null);
-  const documentInputRef = useRef(null);
   const loadedBaseDetailsIdRef = useRef(null);
   const loadedProfileIdRef = useRef(null);
 
@@ -39,14 +38,9 @@ const PathfinderSettings = () => {
     confirmNewPassword: "",
   });
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
-  const [credentials, setCredentials] = useState([]);
-  const [documentFile, setDocumentFile] = useState(null);
-  const [uploadingDoc, setUploadingDoc] = useState(false);
-  const [docUploadError, setDocUploadError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false });
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [loading, setLoading] = useState(true);
-  const [credDetailModal, setCredDetailModal] = useState(null);
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -84,12 +78,6 @@ const PathfinderSettings = () => {
       if (picData && picData.profile_pic) {
         setProfilePhotoUrl(picData.profile_pic);
       }
-    } catch (_) {}
-
-    try {
-      const credList = await profile.credentialsList();
-      const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
-      setCredentials(credsArray);
     } catch (_) {}
 
     setLoading(false);
@@ -147,75 +135,6 @@ const PathfinderSettings = () => {
         message: getApiErrorMessage(err) || "Could not change password.",
         type: "error",
       });
-    }
-  };
-
-  const openCredentialDetails = async (id) => {
-    setCredDetailModal({ id, loading: true });
-    try {
-      const data = await profile.credentialsGet(id);
-      setCredDetailModal({ id, data, loading: false });
-    } catch (err) {
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || "Could not load credential.",
-        type: "error",
-      });
-      setCredDetailModal(null);
-    }
-  };
-
-  const handlePatchCredentialName = async (id, document_name) => {
-    const name = String(document_name || "").trim();
-    if (!name) {
-      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
-      return;
-    }
-    try {
-      await profile.credentialsPatch(id, { document_name: name });
-      setCredentials((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
-      );
-      setToast({ isOpen: true, message: "Document name updated.", type: "success" });
-    } catch (err) {
-      setToast({
-        isOpen: true,
-        message: getApiErrorMessage(err) || "Could not update document name.",
-        type: "error",
-      });
-    }
-  };
-
-  const handleDocumentUpload = async () => {
-    if (!documentFile) return;
-    setUploadingDoc(true);
-    setDocUploadError(null);
-    try {
-      const fd = new FormData();
-      fd.append("document_name", documentFile.name || "Document");
-      fd.append("document", documentFile);
-      await profile.credentialsCreate(fd);
-      const credList = await profile.credentialsList();
-      const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
-      setCredentials(credsArray);
-      setDocumentFile(null);
-      if (documentInputRef.current) documentInputRef.current.value = "";
-      setToast({ isOpen: true, message: "Document uploaded successfully.", type: "success" });
-    } catch (err) {
-      setDocUploadError(err.message || "Failed to upload document.");
-      setToast({ isOpen: true, message: "Failed to upload document. Try again.", type: "error" });
-    } finally {
-      setUploadingDoc(false);
-    }
-  };
-
-  const handleDeleteCredential = async (id) => {
-    try {
-      await profile.credentialsDelete(id);
-      setCredentials((prev) => prev.filter((c) => c.id !== id));
-      setToast({ isOpen: true, message: "Document removed.", type: "success" });
-    } catch (_) {
-      setToast({ isOpen: true, message: "Failed to remove document.", type: "error" });
     }
   };
 
@@ -382,101 +301,6 @@ const PathfinderSettings = () => {
             </button>
           </div>
 
-          {/* Documents */}
-          <div className="mb-8">
-            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Documents</h2>
-            <p className="text-gray-600 text-sm md:text-base mb-4">
-              Add your credentials or certificates (PDF or images).
-            </p>
-            <input
-              ref={documentInputRef}
-              type="file"
-              accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
-              onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
-              className="hidden"
-            />
-            <div className="flex flex-wrap items-center gap-3 mb-3">
-              <button
-                type="button"
-                onClick={() => documentInputRef.current?.click()}
-                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors flex items-center gap-2"
-              >
-                <i className="fa fa-plus text-sm"></i>
-                Choose Document
-              </button>
-              {documentFile && (
-                <>
-                  <span className="text-sm text-gray-600">{documentFile.name}</span>
-                  <button
-                    type="button"
-                    onClick={handleDocumentUpload}
-                    disabled={uploadingDoc}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {uploadingDoc ? "Uploading..." : "Upload"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setDocumentFile(null); if (documentInputRef.current) documentInputRef.current.value = ""; }}
-                    className="text-gray-600 hover:text-gray-800 text-sm"
-                  >
-                    Cancel
-                  </button>
-                </>
-              )}
-            </div>
-            {docUploadError && <p className="text-red-500 text-sm mb-2">{docUploadError}</p>}
-            {credentials.length > 0 && (
-              <ul className="space-y-3">
-                {credentials.map((cred) => (
-                  <li key={cred.id} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                    <input
-                      type="text"
-                      value={cred.document_name ?? cred.name ?? ""}
-                      onChange={(e) =>
-                        setCredentials((prev) =>
-                          prev.map((c) =>
-                            c.id === cred.id ? { ...c, document_name: e.target.value } : c
-                          )
-                        )
-                      }
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                      placeholder="Document name"
-                    />
-                    <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePatchCredentialName(cred.id, cred.document_name ?? cred.name ?? "")}
-                        className="text-[#6A00B1] text-sm font-semibold hover:underline"
-                      >
-                        Save (PATCH)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => openCredentialDetails(cred.id)}
-                        className="text-gray-700 text-sm font-semibold hover:underline"
-                      >
-                        Details
-                      </button>
-                      {cred.document && (
-                        <a href={cred.document} target="_blank" rel="noopener noreferrer" className="text-[#6A00B1] text-sm hover:underline">
-                          Open file
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteCredential(cred.id)}
-                        className="text-red-500 hover:text-red-700 text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
           {/* Set password (Google sign-in) */}
           <div className="border-t border-gray-200 pt-8">
             <h2 className="text-xl md:text-2xl font-bold text-[#45005A] mb-2">Password</h2>
@@ -526,39 +350,6 @@ const PathfinderSettings = () => {
         confirmText="Delete Account"
         type="danger"
       />
-
-      {credDetailModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <button
-            type="button"
-            className="fixed inset-0 bg-black/50 border-0 cursor-default"
-            aria-label="Close"
-            onClick={() => setCredDetailModal(null)}
-          />
-          <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col z-10">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-black">Credential details</h3>
-              <button
-                type="button"
-                onClick={() => setCredDetailModal(null)}
-                className="text-gray-500 hover:text-gray-800 text-xl leading-none px-2"
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-4 overflow-auto">
-              {credDetailModal.loading ? (
-                <p className="text-gray-600 text-sm">Loading…</p>
-              ) : (
-                <pre className="text-xs bg-gray-50 p-3 rounded-lg overflow-auto whitespace-pre-wrap break-words">
-                  {JSON.stringify(credDetailModal.data, null, 2)}
-                </pre>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       <Toast
         isOpen={toast.isOpen}

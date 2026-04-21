@@ -11,43 +11,12 @@ import {
   normalizeSocialLink,
 } from "../../utils/pathfinderProfilePayload";
 
-function extractSections(text) {
-  const lines = text.split(/\r?\n/);
-  const sections = {};
-  let current = null;
-  lines.forEach((raw) => {
-    const line = raw.trim();
-    const lower = line.toLowerCase();
-    if (lower.startsWith("work experience")) {
-      current = "work_experience";
-      sections[current] = [];
-      return;
-    }
-    if (lower.startsWith("education")) {
-      current = "educations";
-      sections[current] = [];
-      return;
-    }
-    if (lower.startsWith("certification") || lower.startsWith("certifications")) {
-      current = "certifications";
-      sections[current] = [];
-      return;
-    }
-    if (current) {
-      if (/^[A-Z][A-Za-z ]+:$/.test(line) && !line.includes("@")) {
-        current = null;
-        return;
-      }
-      if (line) sections[current].push(line);
-    }
-  });
-  return sections;
-}
 
 const EditNewProfile = () => {
   const navigate = useNavigate();
   const { refetchUser } = useUser();
   const photoInputRef = useRef(null);
+  const documentInputRef = useRef(null);
   const initialSocialLinksRef = useRef([]);
 
   useEffect(() => {
@@ -84,48 +53,13 @@ const EditNewProfile = () => {
   const [loadedProfileId, setLoadedProfileId] = useState(null);
   const [loadedBaseDetailsId, setLoadedBaseDetailsId] = useState(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
-  const [cvFile, setCvFile] = useState(null);
-  const [uploadingCv, setUploadingCv] = useState(false);
   const [photoUploadError, setPhotoUploadError] = useState(null);
-  const [currentCvUrl, setCurrentCvUrl] = useState(null);
-  const [currentCvName, setCurrentCvName] = useState(null);
+  const [credentials, setCredentials] = useState([]);
+  const [documentFile, setDocumentFile] = useState(null);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [docUploadError, setDocUploadError] = useState(null);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [redirectCountdown, setRedirectCountdown] = useState(null);
-
-  const parseResumeFile = useCallback((file) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = reader.result;
-      if (typeof text !== "string") return;
-      const sec = extractSections(text);
-      if (sec.work_experience && sec.work_experience.length) {
-        setFormData((prev) => {
-          if (prev.work_experience) return prev;
-          return { ...prev, work_experience: sec.work_experience.join("\n") };
-        });
-      }
-      if (sec.educations && sec.educations.length) {
-        setEducations((prev) => {
-          const additions = sec.educations.filter((e) => !prev.includes(e));
-          return [...prev, ...additions];
-        });
-      }
-      if (sec.certifications && sec.certifications.length) {
-        setCertifications((prev) => {
-          const additions = sec.certifications.filter((c) => !prev.includes(c));
-          return [...prev, ...additions];
-        });
-      }
-    };
-    reader.readAsText(file);
-  }, []);
-
-  useEffect(() => {
-    if (cvFile) {
-      parseResumeFile(cvFile);
-    }
-  }, [cvFile, parseResumeFile]);
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -171,16 +105,7 @@ const EditNewProfile = () => {
       try {
         const credList = await profile.credentialsList();
         const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
-
-        // Find and set the current CV
-        const cvCred = credsArray.find((c) => 
-          (c.document_name || c.name || "").toLowerCase().includes("cv")
-        );
-        
-        if (cvCred && cvCred.document) {
-          setCurrentCvUrl(cvCred.document);
-          setCurrentCvName(cvCred.document_name || cvCred.name || "CV");
-        }
+        setCredentials(credsArray);
       } catch (_) {}
     } catch (err) {
       console.error("Error loading profile:", err);
@@ -228,52 +153,45 @@ const EditNewProfile = () => {
     }
   };
 
-  const handleCvUpload = async () => {
-    if (!cvFile) return;
-    setUploadingCv(true);
-    setError(null);
+  const handleDocumentUpload = async () => {
+    if (!documentFile) return;
+    setUploadingDoc(true);
+    setDocUploadError(null);
     try {
-      // First, find and delete any existing CV
-      const credList = await profile.credentialsList();
-      const existingCreds = Array.isArray(credList) ? credList : credList?.results || [];
-      
-      for (const cred of existingCreds) {
-        if ((cred.document_name || cred.name || "").toLowerCase().includes("cv")) {
-          try {
-            await profile.credentialsDelete(cred.id);
-          } catch (deleteErr) {
-            // Continue even if delete fails
-            console.log("Could not delete old CV:", deleteErr);
-          }
-        }
-      }
-      
-      // Now upload the new CV
       const fd = new FormData();
-      fd.append("document_name", "CV");
-      fd.append("document", cvFile);
+      fd.append("document_name", documentFile.name || "Document");
+      fd.append("document", documentFile);
       await profile.credentialsCreate(fd);
-      
-      // Clear the file input
-      setCvFile(null);
-      
-      // Reload credentials to get the new CV
-      const newCredList = await profile.credentialsList();
-      const newCreds = Array.isArray(newCredList) ? newCredList : newCredList?.results || [];
-
-      // Find and set the new CV URL
-      const newCvCred = newCreds.find((c) => 
-        (c.document_name || c.name || "").toLowerCase().includes("cv")
-      );
-      
-      if (newCvCred && newCvCred.document) {
-        setCurrentCvUrl(newCvCred.document);
-        setCurrentCvName(newCvCred.document_name || newCvCred.name || "CV");
-      }
+      const credList = await profile.credentialsList();
+      setCredentials(Array.isArray(credList) ? credList : credList?.results || []);
+      setDocumentFile(null);
+      if (documentInputRef.current) documentInputRef.current.value = "";
     } catch (err) {
-      setError(getApiErrorMessage(err) || "Failed to upload CV.");
+      setDocUploadError(getApiErrorMessage(err) || "Failed to upload document.");
     } finally {
-      setUploadingCv(false);
+      setUploadingDoc(false);
+    }
+  };
+
+  const handlePatchCredentialName = async (id, document_name) => {
+    const name = String(document_name || "").trim();
+    if (!name) return;
+    try {
+      await profile.credentialsPatch(id, { document_name: name });
+      setCredentials((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
+      );
+    } catch (err) {
+      setError(getApiErrorMessage(err) || "Could not rename document.");
+    }
+  };
+
+  const handleDeleteCredential = async (id) => {
+    try {
+      await profile.credentialsDelete(id);
+      setCredentials((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      setError(getApiErrorMessage(err) || "Failed to remove document.");
     }
   };
 
@@ -619,18 +537,23 @@ const EditNewProfile = () => {
                 </PreviewSection>
               )}
 
-              {/* Documents / CV */}
-              {currentCvUrl && (
+              {/* Documents */}
+              {credentials.filter(c => c.document).length > 0 && (
                 <PreviewSection title="Documents">
-                  <a
-                    href={currentCvUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
-                  >
-                    <i className="fa fa-file-pdf-o" />
-                    {currentCvName || "CV"}
-                  </a>
+                  <div className="flex flex-wrap gap-3">
+                    {credentials.filter(c => c.document).map((cred) => (
+                      <a
+                        key={cred.id}
+                        href={cred.document}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
+                      >
+                        <i className="fa fa-file-o" />
+                        {cred.document_name || cred.name || "Document"}
+                      </a>
+                    ))}
+                  </div>
                 </PreviewSection>
               )}
 
@@ -1128,76 +1051,91 @@ const EditNewProfile = () => {
               </button>
             </div>
 
-            {/* CV / Documents - Government Credentials API */}
+            {/* Documents / Credentials */}
             <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                CV / Resume
+                Documents
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Upload your CV (PDF or image). Used for applications and profile.
+              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
+                Upload your CV, certificates, or other credentials (PDF or image).
               </p>
-              
-              {/* Current CV Display */}
-              {currentCvUrl && !cvFile && (
-                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <i className="fa fa-file-pdf-o text-green-600 text-xl"></i>
-                    <div>
-                      <p className="text-sm font-medium text-green-800">{currentCvName || "CV"}</p>
-                      <a 
-                        href={currentCvUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs text-green-600 hover:underline"
-                      >
-                        View Current CV
-                      </a>
-                    </div>
-                  </div>
-                  <span className="text-green-600 text-xs">
-                    <i className="fa fa-check-circle mr-1"></i> Uploaded
-                  </span>
-                </div>
-              )}
-              
-              {/* File Input and Upload Button */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row items-center gap-3">
+
+              {/* Upload row */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row items-center gap-3 mb-3">
                 <input
+                  ref={documentInputRef}
                   type="file"
                   accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
-                  onChange={(e) => setCvFile(e.target.files?.[0] || null)}
+                  onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
                   className="text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#6A00B1] file:text-white file:cursor-pointer"
                 />
                 <button
                   type="button"
-                  onClick={handleCvUpload}
-                  disabled={!cvFile || uploadingCv}
+                  onClick={handleDocumentUpload}
+                  disabled={!documentFile || uploadingDoc}
                   className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {uploadingCv ? "Uploading..." : cvFile ? "Upload New CV" : "Upload CV"}
+                  {uploadingDoc ? "Uploading..." : "Upload"}
                 </button>
-              </div>
-              
-              {/* Selected file preview */}
-              {cvFile && (
-                <div className="mt-2 flex items-center gap-2">
-                  <i className="fa fa-file text-gray-500"></i>
-                  <span className="text-sm text-gray-600">{cvFile.name}</span>
-                  <button 
+                {documentFile && (
+                  <button
                     type="button"
-                    onClick={() => setCvFile(null)}
-                    className="text-red-500 hover:text-red-700 text-xs"
+                    onClick={() => { setDocumentFile(null); if (documentInputRef.current) documentInputRef.current.value = ""; }}
+                    className="text-gray-500 hover:text-gray-700 text-sm"
                   >
                     Cancel
                   </button>
-                </div>
-              )}
-              
-              {/* Success message */}
-              {currentCvUrl && !uploadingCv && !cvFile && (
-                <p className="text-green-600 text-xs mt-2">
-                  <i className="fa fa-check mr-1" /> CV uploaded successfully
-                </p>
+                )}
+              </div>
+              {docUploadError && <p className="text-red-500 text-sm mb-2">{docUploadError}</p>}
+
+              {/* Credentials list */}
+              {credentials.length > 0 && (
+                <ul className="space-y-3">
+                  {credentials.map((cred) => (
+                    <li key={cred.id} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                      <input
+                        type="text"
+                        value={cred.document_name ?? cred.name ?? ""}
+                        onChange={(e) =>
+                          setCredentials((prev) =>
+                            prev.map((c) =>
+                              c.id === cred.id ? { ...c, document_name: e.target.value } : c
+                            )
+                          )
+                        }
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                        placeholder="Document name"
+                      />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handlePatchCredentialName(cred.id, cred.document_name ?? cred.name ?? "")}
+                          className="text-[#6A00B1] text-sm font-semibold hover:underline"
+                        >
+                          Rename
+                        </button>
+                        {cred.document && (
+                          <a
+                            href={cred.document}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#6A00B1] text-sm hover:underline"
+                          >
+                            Open file
+                          </a>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCredential(cred.id)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
 
