@@ -60,7 +60,7 @@ const EditNewProfile = () => {
   const [documentFile, setDocumentFile] = useState(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [docUploadError, setDocUploadError] = useState(null);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(true);
   const [redirectCountdown, setRedirectCountdown] = useState(null);
 
   const loadProfile = useCallback(async () => {
@@ -73,6 +73,7 @@ const EditNewProfile = () => {
         // Profile has real data if any name/title/about/email field is non-empty
         const hasData = !!(data.first_name || data.last_name || data.title || data.about || data.base_details?.contact_email);
         if (hasData) isFirstSaveRef.current = false;
+        if (!hasData) setIsPreviewMode(false);
         const base = data.base_details || {};
         if (base.id != null) setLoadedBaseDetailsId(base.id);
         setFormData({
@@ -178,19 +179,6 @@ const EditNewProfile = () => {
     }
   };
 
-  const handlePatchCredentialName = async (id, document_name) => {
-    const name = String(document_name || "").trim();
-    if (!name) return;
-    try {
-      await profile.credentialsPatch(id, { document_name: name });
-      setCredentials((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
-      );
-    } catch (err) {
-      setError(getApiErrorMessage(err) || "Could not rename document.");
-    }
-  };
-
   const handleDeleteCredential = async (id) => {
     try {
       await profile.credentialsDelete(id);
@@ -275,6 +263,15 @@ const EditNewProfile = () => {
         await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
       }
 
+      // Persist any inline credential name edits
+      await Promise.all(
+        credentials
+          .filter((c) => c.id != null)
+          .map((c) =>
+            profile.credentialsPatch(c.id, { document_name: c.document_name ?? c.name ?? "" }).catch(() => {})
+          )
+      );
+
       await loadProfile();
       await refetchUser();
       isFirstSaveRef.current = false;
@@ -349,34 +346,6 @@ const EditNewProfile = () => {
 
   const removeSocialLink = (index) => {
     setSocialLinks((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const refreshSocialLinkFromServer = async (index) => {
-    const link = socialLinks[index];
-    if (link?.id == null) return;
-    try {
-      const data = await profile.socialLinksGet(link.id);
-      setSocialLinks((prev) => {
-        const next = [...prev];
-        next[index] = {
-          ...next[index],
-          platform_name: data.platform_name ?? next[index].platform_name,
-          platform_url: data.platform_url ?? next[index].platform_url,
-        };
-        return next;
-      });
-    } catch (_) {}
-  };
-
-  const handleSocialLinkPut = async (index) => {
-    const link = socialLinks[index];
-    if (link?.id == null) return;
-    const platform_name = (link.platform_name || "").trim();
-    const platform_url = (link.platform_url || "").trim();
-    if (!platform_name || !platform_url) return;
-    try {
-      await profile.socialLinksPut(link.id, { platform_name, platform_url });
-    } catch (_) {}
   };
 
   if (loading) {
@@ -1016,26 +985,6 @@ const EditNewProfile = () => {
                     placeholder="https://..."
                     className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                   />
-                  {link.id != null && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => refreshSocialLinkFromServer(index)}
-                        className="text-xs text-[#6A00B1] font-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
-                        title="Reload from server"
-                      >
-                        Refresh
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSocialLinkPut(index)}
-                        className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        title="Save changes"
-                      >
-                        PUT
-                      </button>
-                    </>
-                  )}
                   <button
                     type="button"
                     onClick={() => removeSocialLink(index)}
@@ -1114,13 +1063,6 @@ const EditNewProfile = () => {
                         placeholder="Document name"
                       />
                       <div className="flex flex-wrap items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handlePatchCredentialName(cred.id, cred.document_name ?? cred.name ?? "")}
-                          className="text-[#6A00B1] text-sm font-semibold hover:underline"
-                        >
-                          Rename
-                        </button>
                         {cred.document && (
                           <a
                             href={cred.document}
