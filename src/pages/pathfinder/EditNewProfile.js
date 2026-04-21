@@ -1030,7 +1030,7 @@ const EditNewProfile = () => {
                         type="button"
                         onClick={() => handleSocialLinkPut(index)}
                         className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        title="Save with PUT"
+                        title="Save changes"
                       >
                         PUT
                       </button>
