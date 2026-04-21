@@ -18,44 +18,29 @@ const EnablerPathfinderBookmarks = () => {
         const raw = Array.isArray(data) ? data : data?.results || [];
 
         const list = raw.map((row) => {
-          const nested =
-            row.pathfinder && typeof row.pathfinder === "object"
-              ? row.pathfinder
-              : null;
-          const pathfinderId =
-            row.pathfinder_id ??
-            (typeof row.pathfinder === "number" || typeof row.pathfinder === "string"
-              ? row.pathfinder
-              : null) ??
-            nested?.id ??
-            row.id;
-          const first = nested?.first_name || "";
-          const last = nested?.last_name || "";
-          const nameFromNested = [first, last].filter(Boolean).join(" ").trim();
-          const name =
-            row.pathfinder_name ||
-            nameFromNested ||
-            nested?.name ||
-            "Pathfinder";
-          const profileNavId =
-            row.user ??
-            row.user_id ??
-            nested?.user ??
-            pathfinderId;
-          const locationStr =
-            [nested?.address, nested?.state, nested?.country]
-              .filter(Boolean)
-              .join(", ") ||
-            row.location ||
-            "";
+          const details = row.pathfinder_details || {};
+          const baseDetails = details.base_details || {};
+
+          const first = details.first_name || "";
+          const last = details.last_name || "";
+          const name = [first, last].filter(Boolean).join(" ").trim() || "Pathfinder";
+
+          const role = details.title || "Pathfinder";
+
+          const locationStr = [baseDetails.state, baseDetails.country]
+            .filter(Boolean)
+            .join(", ");
+
+          const pathfinderUserId = row.pathfinder_user_id ?? null;
+
           return {
-            pathfinderId,
-            profileNavId,
+            bookmarkId: row.id,
+            pathfinderUserId,
             name,
-            role: nested?.title || "Pathfinder",
+            role,
             location: locationStr,
           };
-        }).filter((p) => p.pathfinderId != null);
+        }).filter((p) => p.pathfinderUserId != null);
 
         setPathfinders(list);
       } catch (err) {
@@ -69,11 +54,11 @@ const EnablerPathfinderBookmarks = () => {
     loadBookmarks();
   }, []);
 
-  const handleRemoveBookmark = async (pathfinderId) => {
+  const handleRemoveBookmark = async (pathfinderUserId) => {
     try {
-      await bookmarks.applicantsSavedDelete(pathfinderId);
+      await bookmarks.applicantsSavedDelete(pathfinderUserId);
       setPathfinders((prev) =>
-        prev.filter((p) => String(p.pathfinderId) !== String(pathfinderId))
+        prev.filter((p) => String(p.pathfinderUserId) !== String(pathfinderUserId))
       );
     } catch (err) {
       console.error("Error removing bookmark:", err);
@@ -113,7 +98,7 @@ const EnablerPathfinderBookmarks = () => {
             <div className="space-y-4">
               {pathfinders.map((pf) => (
                 <div
-                  key={String(pf.pathfinderId)}
+                  key={String(pf.pathfinderUserId)}
                   className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200 flex flex-col md:flex-row md:items-center gap-4"
                 >
                   <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
@@ -126,19 +111,19 @@ const EnablerPathfinderBookmarks = () => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => navigate(`/enabler/pathfinder/${pf.profileNavId}`)}
+                      onClick={() => navigate(`/enabler/pathfinder/${pf.pathfinderUserId}`)}
                       className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors"
                     >
                       View Profile
                     </button>
                     <button
-                      onClick={() => navigate(`/enabler/contact/${pf.profileNavId}`)}
+                      onClick={() => navigate(`/enabler/contact/${pf.pathfinderUserId}`)}
                       className="border-2 border-[#6A00B1] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-50 transition-colors"
                     >
                       Contact
                     </button>
                     <button
-                      onClick={() => handleRemoveBookmark(pf.pathfinderId)}
+                      onClick={() => handleRemoveBookmark(pf.pathfinderUserId)}
                       className="text-gray-500 hover:text-red-600 px-2 py-1 text-sm"
                       title="Remove from bookmarks"
                     >
