@@ -52,8 +52,9 @@ const Applicants = () => {
         
         // Map to the format needed by the UI - include full cover_letter text
         const mappedApps = forOpp.map((app) => {
+          console.log("Raw Application Data:", app)
           const { name, email } = parseContactDetails(app.cover_letter);
-          
+
           const actualUserId = app.applicant_id ?? app.user;
 
           const profileId = app.pathfinder_profile_id ?? app.pathfinder_profile?.id ?? actualUserId
@@ -69,7 +70,7 @@ const Applicants = () => {
             opportunityTitle: app.opportunity_title || titleFromOpp,
             status: app.status || "pending",
             applicationText: app.cover_letter || "",
-            cvUrl: app.resume || app.cv || app.cv_url || app.resume || app.document || null,
+            cvUrl: app.resume || app.profile_resume_url || null,
           };
         });
 

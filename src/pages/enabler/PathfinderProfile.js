@@ -140,6 +140,14 @@ const PathfinderProfile = () => {
             : [];
           const email = base.contact_email || data.gmail || "";
 
+          let cvUrl = data.resume || data.profile_resume_url || data.cv_url || null
+          if (!cvUrl && Array.isArray(data.credentials)) {
+            const cvCred = data.credentials.find(c => 
+              (c.document_name || c.name || "").toLowerCase().includes("cv")
+            );
+            if (cvCred) cvUrl = cvCred.document;
+          }
+
           setPathfinder({
             id: data.id,
             name,
@@ -152,6 +160,7 @@ const PathfinderProfile = () => {
             certifications,
             workExperience,
             email,
+            cvUrl,
           });
           if (data.id != null) {
             await checkBookmarkStatus(data.id);
@@ -272,6 +281,20 @@ const PathfinderProfile = () => {
           
           {/* Header Actions */}
           <div className="flex justify-end gap-3 mb-6">
+
+            {pathfinder.cvUrl && (
+              <a
+                href={pathfinder.cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#E0C6FF] text-[#6A00B1] px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#D0B6FF] transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download CV
+              </a>
+            )}
             <button
               onClick={handleBookmark}
               className={`w-10 h-10 flex items-center justify-center border rounded-lg transition-colors ${

@@ -29,6 +29,7 @@ const ApplyApplication = () => {
   const [cvFile, setCvFile] = useState(null);
   const [profileCvUrl, setProfileCvUrl] = useState(null);
   const [profileCvName, setProfileCvName] = useState(null);
+  const [profileCvId, setProfileCvId] = useState(null)
   const [uploadingProfileCv, setUploadingProfileCv] = useState(false);
   const [customAnswers, setCustomAnswers] = useState({});
 
@@ -179,6 +180,8 @@ const ApplyApplication = () => {
           if (cvCred && cvCred.document) {
             setProfileCvUrl(cvCred.document);
             setProfileCvName(cvCred.document_name || cvCred.name || "CV");
+
+            setProfileCvId(cvCred.id)
           }
         } catch (_) {
           // ignore
@@ -211,38 +214,36 @@ const ApplyApplication = () => {
 
   // upload a file to the profile credentials as the user's CV and update state
   const uploadProfileCv = async (file) => {
-    if (!file) return;
+    if (!file) return null;
     setUploadingProfileCv(true);
     try {
-      // delete any existing cv credential first
       const credList = await apiClient.profile.credentialsList();
       const existing = Array.isArray(credList) ? credList : credList?.results || [];
       for (const cred of existing) {
         if ((cred.document_name || cred.name || "").toLowerCase().includes("cv")) {
-          try {
-            await apiClient.profile.credentialsDelete(cred.id);
-          } catch (err) {
-            console.log("could not delete old cv", err);
-          }
+          try { await apiClient.profile.credentialsDelete(cred.id); } catch (err) {}
         }
       }
       const fd = new FormData();
       fd.append("document_name", "CV");
       fd.append("document", file);
       await apiClient.profile.credentialsCreate(fd);
-      // reload
+      
       const newList = await apiClient.profile.credentialsList();
       const arr = Array.isArray(newList) ? newList : newList?.results || [];
-      const newCv = arr.find((c) =>
-        (c.document_name || c.name || "").toLowerCase().includes("cv"),
-      );
+      const newCv = arr.find((c) => (c.document_name || c.name || "").toLowerCase().includes("cv"));
+      
       if (newCv && newCv.document) {
         setProfileCvUrl(newCv.document);
         setProfileCvName(newCv.document_name || newCv.name || "CV");
+        setProfileCvId(newCv.id); 
+        setCvFile(null);
+        return newCv.id; 
       }
-      setCvFile(null);
+      return null;
     } catch (err) {
       console.error("CV upload failed", err);
+      return null;
     } finally {
       setUploadingProfileCv(false);
     }
@@ -251,13 +252,15 @@ const ApplyApplication = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if the user picked a new CV but didn't manually upload yet, upload it now
+    let finalCvId = profileCvId;
+
+    // If the user picked a new CV but didn't manually upload yet, upload it now
     if (cvFile) {
       try {
-        await uploadProfileCv(cvFile);
+        const newId = await uploadProfileCv(cvFile);
+        if (newId) finalCvId = newId; 
       } catch (err) {
         console.error("Error uploading CV before submission", err);
-        // continue even if upload failed, submission can still go through
       }
     }
 
@@ -270,7 +273,6 @@ const ApplyApplication = () => {
       return;
     }
 
-    // Build a rich cover letter that includes all answers so enablers see everything
     const lines = [];
     if (formData.name.trim() || formData.email.trim()) {
       lines.push("Contact details:");
@@ -303,6 +305,10 @@ const ApplyApplication = () => {
       opportunity: parseInt(opportunityId),
       cover_letter: coverLetter,
     };
+
+    if (finalCvId) {
+      applicationData.profile_resume = finalCvId;
+    }
 
     try {
       if (existingApplication?.id) {
