@@ -27,16 +27,18 @@ function mapSavedToJob(s) {
   };
 }
 
-function mapSavedToEnabler(s) {
-  const enabler = s.enabler_details || {};
-  const enablerId = s.enabler_id ?? s.enabler ?? enabler.id ?? s.id;
-  return {
-    id: enablerId,
-    name: enabler.organization_name || enabler.name || "Organization",
-    about: enabler.about || enabler.bio || "No description provided.",
-    location: enabler.location || "",
-    _raw: s,
-  }
+function mapSavedToEnabler(s) { 
+  const enabler = s.enabler_details || {}; 
+  
+  const userId = enabler.base_details?.user_id ?? enabler.base_details?.id ?? enabler.id ?? s.id;
+  
+  return { 
+    id: userId, 
+    name: enabler.organization_name || enabler.name || "Organization", 
+    about: enabler.about || enabler.base_details?.bio || "No description provided.", 
+    location: enabler.location || "", 
+    _raw: s, 
+  } 
 }
 
 const Bookmarks = () => {
@@ -112,7 +114,9 @@ const Bookmarks = () => {
   };
 
   const handleViewEnablerDetails = (enabler) => {
-    navigate(`/organization/${enabler.id}`); 
+    console.log("Full Enabler Object:", enabler);
+    console.log("Navigating to ID:", enabler.id);
+    navigate(`/enabler-profile/${enabler.id}`); 
   };
 
   return (
