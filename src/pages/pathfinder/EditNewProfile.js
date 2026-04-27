@@ -271,6 +271,24 @@ const EditNewProfile = () => {
     setSaving(true);
     setError(null);
 
+    let finalSkills = [...skills];
+    if (newSkill.trim()) {
+      finalSkills.push(newSkill.trim());
+      setNewSkill("");
+    }
+
+    let finalEducations = [...educations];
+    if (newEducation.trim()) {
+      finalEducations.push(newEducation.trim());
+      setNewEducation("");
+    }
+
+    let finalCertifications = [...certifications];
+    if (newCertification.trim()) {
+      finalCertifications.push(newCertification.trim());
+      setNewCertification("");
+    }
+
     const first = (formData.first_name || "").trim() || "User";
     const last = (formData.last_name || "").trim();
     if (!last) {
@@ -300,7 +318,7 @@ const EditNewProfile = () => {
         id: loadedBaseDetailsId != null ? loadedBaseDetailsId : undefined,
       });
 
-      const normalizedForSync = (socialLinks || [])
+      const normalizedForSync = (socialLinks ||[])
         .map((l) => normalizeSocialLink(l))
         .filter(Boolean);
       const useRest =
@@ -317,14 +335,18 @@ const EditNewProfile = () => {
         languages: formData.languages,
         gmail: formData.gmail,
         base_details: baseDetails,
-        social_links: Array.isArray(socialLinks) ? socialLinks : [],
-        skills,
-        educations,
-        certifications,
+        social_links: Array.isArray(socialLinks) ? socialLinks :[],
       });
+
+      profileData.skills = finalSkills.map(s => ({ name: typeof s === 'string' ? s : s.name }));
+      profileData.educations = finalEducations.map(e => ({ name: typeof e === 'string' ? e : e.name }));
+      profileData.certifications = finalCertifications.map(c => ({ name: typeof c === 'string' ? c : c.name }));
+
       if (useRest) {
         delete profileData.social_links;
       }
+
+      console.log("PAYLOAD LEAVING EditNewProfile.js:", profileData);
 
       try {
         await profile.pathfinderUpdate(profileData);
@@ -340,6 +362,10 @@ const EditNewProfile = () => {
       if (useRest) {
         await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
       }
+
+      setSkills(finalSkills);
+      setEducations(finalEducations);
+      setCertifications(finalCertifications);
 
       await loadProfile();
       setError(null);
