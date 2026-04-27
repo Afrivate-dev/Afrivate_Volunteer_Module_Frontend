@@ -21,19 +21,48 @@ const Recommendations = () => {
         
         if (Array.isArray(appsData)) {
           const byEmail = {};
+          
           appsData.forEach((a) => {
-            const email = (a.user_name || "").toLowerCase();
-            if (!email || byEmail[email]) return;
+            const fallbackEmail = (a.user_name || "").toLowerCase();
+            if (!fallbackEmail || byEmail[fallbackEmail]) return;
+            
+            // Extract the nested profile data
+            const profile = a.pathfinder_profile || {};
+            const base = profile.base_details || {};
+            
+            // 1. Format the Full Name
+            const firstName = profile.first_name || "";
+            const lastName = profile.last_name || "";
+            const fullName = `${firstName} ${lastName}`.trim() || a.user_name || "Applicant";
+            
+            // 2. Format the Skills Array
+            let skillsString = "None specified";
+            if (Array.isArray(profile.skills) && profile.skills.length > 0) {
+              // In case skills are objects {name: 'React'} or strings 'React'
+              skillsString = profile.skills
+                .map(s => (typeof s === 'object' ? s.name || s.skill || "" : s))
+                .filter(Boolean)
+                .join(", ");
+            } else if (typeof profile.skills === 'string' && profile.skills) {
+              skillsString = profile.skills;
+            }
+
+            // 3. Extract Experience/Title
+            const exp = profile.work_experience || profile.title || "Volunteering experience";
+            
+            // 4. Construct the Pathfinder Object
             const pf = {
               id: a.user || a.id,
-              name: a.user_name || "Applicant",
-              experience: "Volunteering experience",
-              skills: "—",
-              role: "Pathfinder",
-              location: "",
-              email: email,
+              name: fullName,
+              experience: exp,
+              skills: skillsString || "None specified",
+              role: profile.title || "Pathfinder",
+              location:[base.state, base.country].filter(Boolean).join(", "),
+              email: base.contact_email || profile.gmail || fallbackEmail,
+              profilePic: base.profile_pic || null
             };
-            byEmail[email] = pf;
+            
+            byEmail[fallbackEmail] = pf;
           });
           
           const list = Object.values(byEmail);
@@ -49,7 +78,7 @@ const Recommendations = () => {
     };
     
     loadRecommendations();
-  }, []);
+  },[]);
 
   const filterPathfinders = (pathfinders) => {
     if (!search.trim()) return pathfinders;
@@ -64,6 +93,48 @@ const Recommendations = () => {
 
   const filteredTopMatches = filterPathfinders(topMatches);
   const filteredOtherMatches = filterPathfinders(otherMatches);
+
+  // Helper component to render a pathfinder card
+  const PathfinderCard = ({ pathfinder }) => (
+    <div className="bg-gray-100 rounded-lg p-3 md:p-4 flex flex-col md:flex-row items-start gap-3 md:gap-4">
+      <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden">
+        {pathfinder.profilePic ? (
+          <img src={pathfinder.profilePic} alt={pathfinder.name} className="w-full h-full object-cover" />
+        ) : (
+          <i className="fa fa-user text-gray-500 text-xl"></i>
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0 w-full md:w-auto">
+        <h3 className="font-bold text-black text-base md:text-lg mb-1 md:mb-2 truncate">
+          {pathfinder.name}
+        </h3>
+        <p className="text-gray-700 text-xs md:text-sm mb-1 truncate">
+          <span className="font-semibold">Experience:</span> {pathfinder.experience}
+        </p>
+        <p className="text-gray-700 text-xs md:text-sm line-clamp-2">
+          <span className="font-semibold">Skills:</span> {pathfinder.skills}
+        </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:flex-shrink-0">
+        <button
+          onClick={() => navigate(`/enabler/pathfinder/${pathfinder.id}`)}
+          className="bg-[#E0C6FF] text-[#6A00B1] px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#D0B6FF] transition-colors whitespace-nowrap"
+        >
+          View Profile
+        </button>
+        {pathfinder.email && (
+          <a
+            href={`mailto:${pathfinder.email}`}
+            className="bg-[#6A00B1] text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap text-center"
+          >
+            Contact
+          </a>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -84,7 +155,7 @@ const Recommendations = () => {
             <i className="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
             <input
               type="text"
-              placeholder="Search pathfinders..."
+              placeholder="Search by name, skills, or experience..."
               className="w-full border border-gray-300 rounded-lg px-9 py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] bg-white text-gray-700"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -105,43 +176,7 @@ const Recommendations = () => {
                   </h2>
                   <div className="space-y-3">
                     {filteredTopMatches.map((pathfinder) => (
-                      <div
-                        key={pathfinder.id}
-                        className="bg-gray-100 rounded-lg p-3 md:p-4 flex flex-col md:flex-row items-start gap-3 md:gap-4"
-                      >
-                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-                          <i className="fa fa-user text-gray-500 text-xl"></i>
-                        </div>
-
-                        <div className="flex-1 min-w-0 w-full md:w-auto">
-                          <h3 className="font-bold text-black text-base md:text-lg mb-1 md:mb-2">
-                            {pathfinder.name}
-                          </h3>
-                          <p className="text-gray-700 text-xs md:text-sm mb-1">
-                            Experience: {pathfinder.experience}
-                          </p>
-                          <p className="text-gray-700 text-xs md:text-sm">
-                            Skills: {pathfinder.skills}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:flex-shrink-0">
-                          <button
-                            onClick={() => navigate(`/enabler/pathfinder/${pathfinder.id}`)}
-                            className="bg-[#E0C6FF] text-[#6A00B1] px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#D0B6FF] transition-colors whitespace-nowrap"
-                          >
-                            View Profile
-                          </button>
-                          {pathfinder.email && (
-                            <a
-                              href={`mailto:${pathfinder.email}`}
-                              className="bg-[#6A00B1] text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap text-center"
-                            >
-                              Contact
-                            </a>
-                          )}
-                        </div>
-                      </div>
+                      <PathfinderCard key={pathfinder.id} pathfinder={pathfinder} />
                     ))}
                   </div>
                 </div>
@@ -154,43 +189,7 @@ const Recommendations = () => {
                   </h2>
                   <div className="space-y-3">
                     {filteredOtherMatches.map((pathfinder) => (
-                      <div
-                        key={pathfinder.id}
-                        className="bg-gray-100 rounded-lg p-3 md:p-4 flex flex-col md:flex-row items-start gap-3 md:gap-4"
-                      >
-                        <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-                          <i className="fa fa-user text-gray-500 text-xl"></i>
-                        </div>
-
-                        <div className="flex-1 min-w-0 w-full md:w-auto">
-                          <h3 className="font-bold text-black text-base md:text-lg mb-1 md:mb-2">
-                            {pathfinder.name}
-                          </h3>
-                          <p className="text-gray-700 text-xs md:text-sm mb-1">
-                            Experience: {pathfinder.experience}
-                          </p>
-                          <p className="text-gray-700 text-xs md:text-sm">
-                            Skills: {pathfinder.skills}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto md:flex-shrink-0">
-                          <button
-                            onClick={() => navigate(`/enabler/pathfinder/${pathfinder.id}`)}
-                            className="bg-[#E0C6FF] text-[#6A00B1] px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#D0B6FF] transition-colors whitespace-nowrap"
-                          >
-                            View Profile
-                          </button>
-                          {pathfinder.email && (
-                            <a
-                              href={`mailto:${pathfinder.email}`}
-                              className="bg-[#6A00B1] text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap text-center"
-                            >
-                              Contact
-                            </a>
-                          )}
-                        </div>
-                      </div>
+                      <PathfinderCard key={pathfinder.id} pathfinder={pathfinder} />
                     ))}
                   </div>
                 </div>
