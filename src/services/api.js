@@ -72,7 +72,8 @@ export function getRole() {
   return localStorage.getItem(ROLE_KEY);
 }
 
-/** Whether we are currently retrying after a 401 refresh (avoid infinite loop). */
+// Module-level flag — a closure variable inside the retry block would reset on each call,
+// so this must live at module scope to survive across the two separate request() invocations.
 let isRetryingAfter401 = false;
 
 async function request(method, path, options = {}) {
@@ -97,7 +98,7 @@ async function request(method, path, options = {}) {
     config.body = options.data instanceof FormData ? options.data : JSON.stringify(options.data);
   }
 
-  // Content-Type must not be set when sending FormData (browser sets multipart boundary)
+  // Browser must set Content-Type itself for FormData so it can include the multipart boundary.
   if (config.body instanceof FormData) {
     delete headers["Content-Type"];
   }
@@ -119,7 +120,8 @@ async function request(method, path, options = {}) {
     } catch (_) {}
   }
 
-  // On 401, try to refresh token and retry once (unless we are already retrying)
+  // Retry once on 401: refresh the access token, then replay the original request.
+  // isRetryingAfter401 prevents a refresh failure from triggering another refresh attempt.
   if (res.status === 401 && !isRetryingAfter401) {
     const refresh = getRefreshToken();
     if (refresh) {

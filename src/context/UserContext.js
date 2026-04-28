@@ -51,18 +51,16 @@ export const UserProvider = ({ children }) => {
 
   const fetchUser = useCallback(async () => {
     setError(null);
-    
-    // Check for token first
+
     const access = api.getAccessToken();
     if (!access) {
       setUser(null);
       setLoading(false);
       return;
     }
-    
+
     const role = api.getRole();
-    
-    // Only fetch profile if role is explicitly set
+    // Role must be present before calling a profile endpoint — each role has a different URL.
     if (!role) {
       setLoading(false);
       return;
@@ -105,7 +103,8 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, [fetchUser]);
 
-  // Detect token/role changes made by another tab and re-sync.
+  // The `storage` event only fires in OTHER tabs (not the current one), so this
+  // keeps multiple open tabs in sync when the user logs in or out elsewhere.
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'afrivate_access' || e.key === 'afrivate_role' || e.key === null) {
@@ -134,6 +133,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
+    // `refetchUser` is exposed so pages can trigger a re-sync after saving profile data.
     <UserContext.Provider value={{ user, loading, error, updateUser, logout, refetchUser: fetchUser, clearError }}>
       {children}
     </UserContext.Provider>

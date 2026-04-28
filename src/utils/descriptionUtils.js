@@ -1,8 +1,6 @@
-/**
- * Utility functions for combining and parsing multi-section opportunity descriptions.
- * Since the backend only has a single `description` field, we embed multiple sections
- * using markers that can be parsed back out for display.
- */
+// The backend stores only a single `description` string per opportunity.
+// We embed all additional sections (responsibilities, custom questions, etc.)
+// using named text markers so they can be round-tripped through the API.
 
 const SECTION_MARKERS = {
   DESCRIPTION: "[DESCRIPTION]",
@@ -93,6 +91,7 @@ export function parseDescription(combinedDescription) {
     combinedDescription.includes(marker)
   );
 
+  // Older opportunities stored a plain description with no markers — preserve as-is.
   if (!hasMarkers) {
     result.description = combinedDescription.trim();
     return result;

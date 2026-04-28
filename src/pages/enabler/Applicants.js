@@ -54,11 +54,13 @@ const Applicants = () => {
           );
         }
         
-        // Map to the format needed by the UI - include full cover_letter text
         const mappedApps = forOpp.map((app) => {
           const { name, email } = parseContactDetails(app.cover_letter);
           return {
             id: app.id,
+            // applicant_id is the Django auth user ID (not the application row ID).
+            // It's the correct key for /profile/pathfinderprofile/user/<id>/ and
+            // for /bookmark/applicants/saved/<pathfinder_id>/.
             userId: app.applicant_id,
             bookmarkPathfinderId: app.applicant_id,
             pathfinderName: name,
@@ -162,6 +164,8 @@ const Applicants = () => {
       }
     } catch (err) {
       console.error("Bookmark toggle failed:", err);
+      // Django REST Framework surfaces duplicate-bookmark errors in non_field_errors,
+      // not in detail, so check both fields.
       const backendMsg =
         err?.body?.non_field_errors?.[0] ||
         err?.body?.detail ||

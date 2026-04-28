@@ -31,6 +31,8 @@ const EnablerPathfinderBookmarks = () => {
             .filter(Boolean)
             .join(", ");
 
+          // pathfinder_user_id is the Django auth user ID — use this for navigation
+          // and DELETE, NOT row.pathfinder_details.id (which is the profile record ID).
           const pathfinderUserId = row.pathfinder_user_id ?? null;
 
           return {
@@ -40,6 +42,7 @@ const EnablerPathfinderBookmarks = () => {
             role,
             location: locationStr,
           };
+        // Rows with a null pathfinder_user_id indicate a stale or orphaned bookmark — skip them.
         }).filter((p) => p.pathfinderUserId != null);
 
         setPathfinders(list);

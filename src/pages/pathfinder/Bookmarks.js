@@ -70,6 +70,8 @@ const Bookmarks = () => {
         const location = [baseDetails.state, baseDetails.country]
           .filter(Boolean)
           .join(", ");
+        // enabler_user_id is the Django auth user ID needed for navigation and DELETE;
+        // the fallback chain handles older API response shapes.
         const enablerUserId = row.enabler_user_id ?? row.enabler_id ?? row.enabler ?? null;
         return { enablerUserId, name, location };
       }).filter((o) => o.enablerUserId != null);
@@ -101,6 +103,8 @@ const Bookmarks = () => {
   useEffect(() => {
     loadBookmarks();
     loadOrgBookmarks();
+    // Reload on window focus so bookmarks stay in sync when the user returns
+    // from another tab where they may have added or removed a bookmark.
     const handleFocus = () => { loadBookmarks(); loadOrgBookmarks(); };
     window.addEventListener('focus', handleFocus);
     return () => {

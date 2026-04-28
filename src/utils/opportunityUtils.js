@@ -8,10 +8,9 @@ export function getOrgName(item) {
   return n.trim() || "Organization";
 }
 
-/**
- * Navigate to the standard volunteer details page, fetching fresh opportunity data.
- * Used by multiple pathfinder views to ensure the details page always has the latest data.
- */
+// Always use this instead of navigate("/volunteer-details", { state: { job } }) directly.
+// Direct navigation passed the abbreviated preview object which stripped the `description`
+// field, breaking custom question parsing in ApplyApplication.
 export async function navigateToVolunteerDetails(navigate, opportunityId, options = {}) {
   const { existingApplication = null, fallbackJob = null } = options;
 
@@ -24,6 +23,8 @@ export async function navigateToVolunteerDetails(navigate, opportunityId, option
     description: data.description,
     created_by: data.created_by,
     link: data.link,
+    // _raw carries the full API response; ApplyApplication reads _raw.description
+    // to access the [CUSTOM_QUESTIONS] marker that may be absent from the preview string.
     _raw: data,
   });
 

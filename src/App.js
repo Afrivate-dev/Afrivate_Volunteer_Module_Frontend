@@ -78,6 +78,8 @@ class ErrorBoundary extends Component {
   }
 }
 
+// Used on legacy routes (/dashboard, /profile without role context) to send the user
+// to their role-appropriate destination after UserContext resolves.
 function RoleRedirect({ pathfinder, enabler }) {
   const { user, loading } = useUser();
   if (loading) {
@@ -134,6 +136,7 @@ function App() {
           <Route path="/bookmarks" element={<RequireAuth role="pathfinder"><Bookmarks /></RequireAuth>} />
           <Route path="/available-opportunities" element={<RequireAuth role="pathfinder"><AvailableOpportunities /></RequireAuth>} />
           <Route path="/enabler-profile/:id" element={<RequireAuth role="pathfinder"><EnablerProfileView /></RequireAuth>} />
+          {/* Both /profile and /pathfinder/profile-setup render the same component; the latter is used by onboarding links. */}
           <Route path="/profile" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathfinder/profile-setup" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />

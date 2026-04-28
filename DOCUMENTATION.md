@@ -1,5 +1,8 @@
 # Documentation
 
+> **Note (light branch):** Several sections below are outdated. The authoritative reference is [FRONTEND_CHANGES.md](FRONTEND_CHANGES.md).  
+> Specifically: the route `/opportunity` no longer exists (redirects to `/available-opportunities`); the profile route is `/profile` not `/edit-new-profile`; bookmark endpoints have changed; pathfinder profile by user ID now uses `/profile/pathfinderprofile/user/{userId}/` not `/profile/view-profile/{id}/`.
+
 **Afrivate Volunteer Module — Plain English Guide**
 
 This document explains the **website** (the React app in this project) in everyday language: who it is for, what each area does, how a typical visit flows, and how it talks to the **backend server** (API). You do not need to be a programmer to read the overview sections; the API section is a reference for anyone checking endpoints.
@@ -52,7 +55,7 @@ Routes come from `src/App.js`. **“Auth”** means you must be logged in; **rol
 | `/` | Landing | Main marketing / entry. |
 | `/landingpathfinder` | Landing (pathfinder) | Pathfinder-focused landing. |
 | `/landingenabler` | Landing (enabler) | Enabler-focused landing. |
-| `/opportunity` | Opportunities list | Browse open opportunities (pathfinder-oriented). |
+| `/available-opportunities` | Opportunities list | Browse open opportunities (pathfinder-oriented). `/opportunity` redirects here. |
 | `/volunteer-details` | Volunteer details | One opportunity’s detail (often opened with state from list). |
 | `/organization/:id` | Organization profile | **Public** view of an enabler/organization by **user id** (from API). Bookmark if logged in as pathfinder. |
 | `/about` | About | About the product/company. |
@@ -73,7 +76,7 @@ Routes come from `src/App.js`. **“Auth”** means you must be logged in; **rol
 | `/bookmarks` | Saved **opportunities** (not org bookmark list). |
 | `/available-opportunities` | Discover opportunities (filters/search). |
 | `/enabler-profile/:id` | View an enabler profile (alternate route; auth required). |
-| `/edit-new-profile`, `/pathfinder/profile-setup` | Edit pathfinder profile (same editor). |
+| `/profile`, `/pathfinder/profile-setup` | Edit pathfinder profile (same editor). |
 
 ### Enabler (logged in, role = enabler)
 
@@ -155,7 +158,7 @@ All calls go through **`src/services/api.js`**. Full URLs: `{REACT_APP_API_BASE_
 | Get enabler by user id (public org) | GET | `/profile/enablerprofile/user/{userId}/` |
 | Enabler create/update/patch | POST/PUT/PATCH | `/profile/enablerprofile/` |
 | Get my pathfinder profile | GET | `/profile/pathfinderprofile/` |
-| Get pathfinder by id (enabler view) | GET | `/profile/view-profile/{id}/` |
+| Get pathfinder by id (enabler view) | GET | `/profile/pathfinderprofile/user/{userId}/` |
 | Pathfinder create/update/patch | POST/PUT/PATCH | `/profile/pathfinderprofile/` |
 | Profile picture | GET/PATCH | `/profile/profile/picture/` |
 | Credentials (CV, etc.) | GET/POST/DELETE | `/profile/credentials/` … |
@@ -164,10 +167,9 @@ All calls go through **`src/services/api.js`**. Full URLs: `{REACT_APP_API_BASE_
 
 | Plain English | HTTP | Path |
 |---------------|------|------|
-| List generic bookmarks | GET | `/bookmark/` |
-| Create / delete bookmark | POST / DELETE | `/bookmark/`, `/bookmark/{id}/delete/` |
-| Pathfinder: saved opportunities | GET/POST/DELETE | `/bookmark/opportunities/saved/` … |
-| Enabler: saved applicants | GET/POST/DELETE | `/bookmark/applicants/saved/` … |
+| Pathfinder: saved opportunities | GET/POST/DELETE | `/bookmark/opportunities/saved/`, `/bookmark/opportunities/saved/{opportunityId}/` |
+| Pathfinder: saved organisations | GET/POST/DELETE | `/bookmark/enablers/saved/`, `/bookmark/enablers/saved/{enablerId}/` |
+| Enabler: saved applicants/pathfinders | GET/POST/DELETE | `/bookmark/applicants/saved/`, `/bookmark/applicants/saved/{pathfinderId}/` |
 
 ### Opportunities
 

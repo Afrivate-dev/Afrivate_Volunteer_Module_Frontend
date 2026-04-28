@@ -17,8 +17,11 @@ const EditNewProfile = () => {
   const { refetchUser } = useUser();
   const photoInputRef = useRef(null);
   const documentInputRef = useRef(null);
+  // Snapshot of social links as loaded from the server; used as "previous" state
+  // for syncSocialLinksRestApi so we can diff additions, changes, and deletions.
   const initialSocialLinksRef = useRef([]);
-  // true until loadProfile finds a profile with meaningful data already saved
+  // useRef (not useState) so the value is always current inside handleSave() without
+  // causing extra re-renders and without the stale-closure problem during the countdown.
   const isFirstSaveRef = useRef(true);
 
   useEffect(() => {
@@ -225,6 +228,9 @@ const EditNewProfile = () => {
       const normalizedForSync = (socialLinks || [])
         .map((l) => normalizeSocialLink(l))
         .filter(Boolean);
+      // If the server returned social links with `id` fields they must be managed
+      // via individual REST endpoints (/profile/social-links/<id>/) rather than
+      // embedded in the profile body, which only works for brand-new links.
       const useRest =
         socialLinksHaveRestIds(initialSocialLinksRef.current) ||
         socialLinksHaveRestIds(normalizedForSync);
@@ -279,6 +285,8 @@ const EditNewProfile = () => {
       setSuccessMessage("Profile saved successfully.");
       setTimeout(() => setSuccessMessage(null), 4000);
       setIsPreviewMode(true);
+      // Only start the countdown after the very first profile save so returning
+      // users are not redirected every time they update their profile.
       if (wasFirstSave) {
         setRedirectCountdown(5);
       }
