@@ -137,7 +137,6 @@ function App() {
           <Route path="/available-opportunities" element={<RequireAuth role="pathfinder"><AvailableOpportunities /></RequireAuth>} />
           <Route path="/enabler-profile/:id" element={<RequireAuth role="pathfinder"><EnablerProfileView /></RequireAuth>} />
           {/* Both /profile and /pathfinder/profile-setup render the same component; the latter is used by onboarding links. */}
-          <Route path="/profile" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathfinder/profile-setup" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
           <Route path="/pathf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
           <Route path="/road" element={<Road />} />
@@ -179,7 +178,7 @@ function App() {
             path="/profile"
             element={
               <RequireAuth>
-                <RoleRedirect pathfinder="/profile" enabler="/enabler/profile" />
+                <RoleRedirect pathfinder="/pathfinder/profile-setup" enabler="/enabler/profile" />
               </RequireAuth>
             }
           />
