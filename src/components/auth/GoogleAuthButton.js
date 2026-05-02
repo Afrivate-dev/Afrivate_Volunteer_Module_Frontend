@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import * as api from '../../services/api';
 import { useUser } from '../../context/UserContext';
@@ -20,6 +20,18 @@ export function GoogleAuthButton({
 }) {
   const navigate = useNavigate();
   const { refetchUser } = useUser();
+  const containerRef = useRef(null);
+  const [buttonWidth, setButtonWidth] = useState(400);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w && w > 0) setButtonWidth(Math.floor(w));
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleSuccess = async (credentialResponse) => {
     const idToken = credentialResponse?.credential;
@@ -134,7 +146,7 @@ export function GoogleAuthButton({
   }
 
   return (
-    <div className={`w-full ${className}`}>
+    <div ref={containerRef} className={`w-full ${className}`} style={{ width: '100%' }}>
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
@@ -143,8 +155,8 @@ export function GoogleAuthButton({
         size="large"
         text={mode === 'signup' ? 'signup_with' : 'signin_with'}
         shape="rectangular"
-        width="100%"
-        containerProps={{ style: { width: '100%', justifyContent: 'center' } }}
+        width={buttonWidth}
+        containerProps={{ style: { width: '100%' } }}
       />
     </div>
   );
