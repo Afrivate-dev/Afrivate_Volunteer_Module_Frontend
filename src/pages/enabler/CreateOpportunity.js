@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import { useUser } from "../../context/UserContext";
 import Toast from "../../components/common/Toast";
 import { opportunities } from "../../services/api";
 import { combineDescription, createOpportunityLink } from "../../utils/descriptionUtils";
 
 const CreateOpportunity = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
 
   useEffect(() => {
     document.title = "Create Opportunity - AfriVate";
@@ -150,10 +152,37 @@ const CreateOpportunity = () => {
     }
   };
 
+  const profileIncomplete = user?.hasProfile === false || !user?.name;
+
+  if (profileIncomplete) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <EnablerNavbar />
+        <div className="pt-14 px-4 md:px-8 pb-8">
+          <div className="max-w-lg mx-auto mt-16 text-center">
+            <div className="bg-purple-50 border border-purple-200 rounded-[30px] p-8">
+              <i className="fa-solid fa-building text-4xl text-[#6A00B1] mb-4 block" />
+              <h2 className="text-xl font-bold text-black mb-2">Profile not complete</h2>
+              <p className="text-gray-600 mb-6">
+                Please complete your organisation profile before posting opportunities.
+              </p>
+              <Link
+                to="/enabler/profile-setup"
+                className="inline-block bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
+              >
+                Complete profile
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       <EnablerNavbar />
-      
+
       <div className="pt-14 px-4 md:px-6 pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-[30px] p-6 md:p-8 shadow-sm">

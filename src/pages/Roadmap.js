@@ -45,7 +45,7 @@ export default function Roadmap() {
       {/* Top bar */}
       <NavBar />
 
-      <main className="max-w-5xl mx-auto px-4">
+      <main className="max-w-5xl mx-auto px-4 pt-14">
         <section className="text-center pt-10 sm:pt-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black">Your Personalized RoadMap</h1>
           <p className="mt-2 text-sm sm:text-base text-black/60">Crafted by your AI Growth Companion, this roadmap is your guide to achieving your career goals.</p>
