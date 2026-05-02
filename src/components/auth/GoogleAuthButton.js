@@ -41,11 +41,18 @@ export function GoogleAuthButton({
         let detectedRole = api.getRole();
         if (!detectedRole || (detectedRole !== 'enabler' && detectedRole !== 'pathfinder')) {
           detectedRole = null;
+        }
+
+        let profileExists = false;
+
+        if (!detectedRole) {
+          // Role not in JWT — detect by probing profile endpoints and track whether a profile exists.
           try {
             const enabler = await api.profile.enablerGet();
             if (enabler && enabler.id != null) {
               api.setRole('enabler');
               detectedRole = 'enabler';
+              profileExists = true;
             }
           } catch (enablerErr) {
             if (enablerErr.status !== 403 && enablerErr.status !== 404) {
@@ -60,6 +67,7 @@ export function GoogleAuthButton({
               if (pathfinder && pathfinder.id != null) {
                 api.setRole('pathfinder');
                 detectedRole = 'pathfinder';
+                profileExists = true;
               }
             } catch (pathfinderErr) {
               const msg = api.getApiErrorMessage(pathfinderErr) || 'Could not load your profile';
@@ -72,20 +80,34 @@ export function GoogleAuthButton({
               return;
             }
           }
+        } else {
+          // Role came from JWT — detection was skipped, so check for a profile separately.
+          try {
+            const profileData = detectedRole === 'enabler'
+              ? await api.profile.enablerGet()
+              : await api.profile.pathfinderGet();
+            profileExists = !!(profileData && profileData.id != null);
+          } catch (_) {
+            profileExists = false;
+          }
         }
+
         if (!detectedRole) {
           if (onErrorProp) onErrorProp('Could not determine your account type. Please contact support.');
           return;
         }
+
         await refetchUser();
+
         if (mode === 'signup') {
-          if (detectedRole === 'enabler') {
-            navigate('/enabler/profile-setup');
-          } else {
-            navigate('/pathfinder/profile-setup');
-          }
+          navigate(detectedRole === 'enabler' ? '/enabler/profile-setup' : '/pathfinder/profile-setup');
         } else {
-          navigate(detectedRole === 'enabler' ? '/enabler/dashboard' : '/pathf');
+          // login mode: send to profile setup if no profile exists yet, otherwise dashboard.
+          if (!profileExists) {
+            navigate(detectedRole === 'enabler' ? '/enabler/profile-setup' : '/pathfinder/profile-setup');
+          } else {
+            navigate(detectedRole === 'enabler' ? '/enabler/dashboard' : '/pathf');
+          }
         }
       } else if (onErrorProp) {
         onErrorProp('Sign-in succeeded but no token received');
