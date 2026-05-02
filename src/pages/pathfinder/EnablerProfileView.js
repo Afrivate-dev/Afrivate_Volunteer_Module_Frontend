@@ -15,8 +15,7 @@ const EnablerProfileView = () => {
   const { id } = useParams();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [enabler, setEnabler] = useState(null);
-  const [bookmarkId, setBookmarkId] = useState(null);
-  const [loading, setLoading] = useState(true);
+const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "error" });
 
