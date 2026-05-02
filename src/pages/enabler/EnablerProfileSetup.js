@@ -218,7 +218,7 @@ const EnablerProfileSetup = () => {
       />
       
       {/* Main Content */}
-      <div className="pt-14 px-4 md:px-6 pb-8">
+      <div className="pt-16 px-4 md:px-6 pb-8">
         <div className="max-w-2xl mx-auto">
           {/* White Card Container */}
           <div className="bg-white rounded-[30px] p-3 md:p-4 shadow-sm border border-gray-200">
