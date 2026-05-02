@@ -11,6 +11,7 @@ import SignUp from './pages/auth/SignUp';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import VerifyOTP from './pages/auth/VerifyOTP';
 import ResetPassword from './pages/auth/ResetPassword';
+import SetPassword from './pages/auth/SetPassword';
 import CreateOpportunity from './pages/enabler/CreateOpportunity';
 import Recommendations from './pages/enabler/Recommendations';
 import EnablerProfile from './pages/enabler/EnablerProfile';
@@ -156,6 +157,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/set-password" element={<RequireAuth><SetPassword /></RequireAuth>} />
           <Route path="/create-opportunity" element={<RequireAuth role="enabler"><CreateOpportunity /></RequireAuth>} />
           <Route path="/enabler/recommendations" element={<RequireAuth role="enabler"><Recommendations /></RequireAuth>} />
           <Route path="/enabler/profile" element={<RequireAuth role="enabler"><EnablerProfile /></RequireAuth>} />
