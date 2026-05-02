@@ -72,7 +72,7 @@ const NavBar = () => {
             onClick={() => setIsOpen(true)}
           ></i>
           <Link to={role === 'pathfinder' ? '/pathf' : '/'}>
-            <i className="fa-regular fa-house text-xl font-bold text-gray-800 cursor-pointer hover:text-purple-600"></i>
+            <i className="fa-solid fa-house text-xl font-bold text-gray-800 cursor-pointer hover:text-purple-600"></i>
           </Link>
         </div>
 

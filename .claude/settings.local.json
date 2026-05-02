@@ -4,7 +4,11 @@
       "Bash(find src/pages -name \"*.js\" -exec wc -l {} \\\\;)",
       "Bash(git -C \"C:/Users/USER/All/Afrivate_Volunteer_Module_Frontend\" status)",
       "Bash(git -C \"C:/Users/USER/All/Afrivate_Volunteer_Module_Frontend\" add src/context/UserContext.js src/pages/enabler/Applicants.js src/pages/pathfinder/OrganizationProfile.js)",
-      "Bash(git -C C:/Users/USER/All/Afrivate_Volunteer_Module_Frontend commit -m ' *)"
+      "Bash(git -C C:/Users/USER/All/Afrivate_Volunteer_Module_Frontend commit -m ' *)",
+      "Bash(xargs sed *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)"
     ]
   }
 }

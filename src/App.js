@@ -90,8 +90,14 @@ function RoleRedirect({ pathfinder, enabler }) {
     );
   }
   const role = (user?.role || '').toLowerCase();
-  if (role === 'pathfinder') return <Navigate to={pathfinder} replace />;
-  if (role === 'enabler') return <Navigate to={enabler} replace />;
+  if (role === 'pathfinder') {
+    if (user?.hasProfile === false) return <Navigate to="/pathfinder/profile-setup" replace />;
+    return <Navigate to={pathfinder} replace />;
+  }
+  if (role === 'enabler') {
+    if (user?.hasProfile === false) return <Navigate to="/enabler/profile-setup" replace />;
+    return <Navigate to={enabler} replace />;
+  }
   return <Navigate to="/" replace />;
 }
 

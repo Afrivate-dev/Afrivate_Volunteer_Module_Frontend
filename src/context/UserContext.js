@@ -72,28 +72,36 @@ export const UserProvider = ({ children }) => {
         if (data && data.id != null) {
           setUser(normalizeEnablerProfile(data));
         } else {
-          setUser(null);
+          setUser({ id: null, name: '', role: 'Enabler', hasProfile: false, raw: null });
         }
         setLoading(false);
         return;
       }
-      
+
       if (role === 'pathfinder') {
         const data = await api.profile.pathfinderGet();
         if (data && data.id != null) {
           setUser(normalizePathfinderProfile(data));
         } else {
-          setUser(null);
+          setUser({ id: null, name: '', role: 'Pathfinder', hasProfile: false, raw: null });
         }
         setLoading(false);
         return;
       }
-      
+
       // Unknown role - don't try to fetch any profile
       setUser(null);
     } catch (err) {
       console.error("Error fetching user profile:", err);
-      setUser(null);
+      // Preserve role so RoleRedirect can still route to profile-setup instead of treating
+      // the user as unauthenticated. A 404 (no profile yet) is the common case here.
+      if (role === 'pathfinder') {
+        setUser({ id: null, name: '', role: 'Pathfinder', hasProfile: false, raw: null });
+      } else if (role === 'enabler') {
+        setUser({ id: null, name: '', role: 'Enabler', hasProfile: false, raw: null });
+      } else {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }

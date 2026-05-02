@@ -7,7 +7,6 @@ import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/sync
 import {
   buildPathfinderBaseDetails,
   buildPathfinderProfileBody,
-  stripBaseDetailsId,
   normalizeSocialLink,
 } from "../../utils/pathfinderProfilePayload";
 
@@ -254,19 +253,25 @@ const EditNewProfile = () => {
         delete profileData.social_links;
       }
 
-      try {
-        await profile.pathfinderUpdate(profileData);
-      } catch (updateErr) {
-        if (updateErr.status === 404 || !loadedProfileId) {
-          const createPayload = stripBaseDetailsId(profileData);
-          await profile.pathfinderCreate(createPayload);
-        } else {
-          throw updateErr;
-        }
-      }
+      // Backend uses get_or_create on PATCH — single call handles both first save and updates.
+      const savedData = await profile.pathfinderPatch(profileData);
+      if (savedData?.id != null) setLoadedProfileId(savedData.id);
 
       if (useRest) {
         await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
+        // Re-fetch social links to capture server-assigned IDs for future saves.
+        try {
+          const freshLinks = await profile.socialLinksList();
+          if (Array.isArray(freshLinks)) {
+            const sl = freshLinks.map((l) => normalizeSocialLink(l)).filter(Boolean);
+            setSocialLinks(sl);
+            initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
+          }
+        } catch (_) {}
+      } else if (Array.isArray(savedData?.social_links)) {
+        const sl = savedData.social_links.map((l) => normalizeSocialLink(l)).filter(Boolean);
+        setSocialLinks(sl);
+        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
       }
 
       // Persist any inline credential name edits
@@ -278,7 +283,6 @@ const EditNewProfile = () => {
           )
       );
 
-      await loadProfile();
       await refetchUser();
       isFirstSaveRef.current = false;
       setError(null);
