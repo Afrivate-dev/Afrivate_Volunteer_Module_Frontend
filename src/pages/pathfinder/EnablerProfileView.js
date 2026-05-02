@@ -80,10 +80,8 @@ const [loading, setLoading] = useState(true);
       const foundBookmark = findEnablerBookmarkRow(bookmarksList, enablerId);
       if (foundBookmark) {
         setIsBookmarked(true);
-        setBookmarkId(foundBookmark.id ?? foundBookmark.pk ?? null);
       } else {
         setIsBookmarked(false);
-        setBookmarkId(null);
       }
     } catch (err) {
       console.error("Error checking bookmark status:", err);
@@ -97,7 +95,6 @@ const [loading, setLoading] = useState(true);
       try {
         await bookmarks.enablersSavedDelete(id);
         setIsBookmarked(false);
-        setBookmarkId(null);
         setToast({
           isOpen: true,
           message: "Removed from bookmarks.",
@@ -113,10 +110,8 @@ const [loading, setLoading] = useState(true);
       }
     } else {
       try {
-        const newBookmark = await bookmarks.enablersSavedCreate({ enabler_id: id });
-        const newId = newBookmark?.id ?? newBookmark?.pk;
+        await bookmarks.enablersSavedCreate({ enabler_id: id });
         setIsBookmarked(true);
-        setBookmarkId(newId ?? null);
         setToast({
           isOpen: true,
           message: "Organization saved to your bookmarks.",
