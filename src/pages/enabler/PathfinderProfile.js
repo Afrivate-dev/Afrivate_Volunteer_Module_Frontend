@@ -326,12 +326,11 @@ const PathfinderProfile = () => {
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
 
             {/* Contact Information */}
-            {(pathfinder.contactEmail || pathfinder.phone || pathfinder.gmail || pathfinder.website) && (
+            {(pathfinder.contactEmail || pathfinder.phone || pathfinder.website) && (
               <Section title="Contact Information">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field label="Email" value={pathfinder.contactEmail} />
                   <Field label="Phone" value={pathfinder.phone} />
-                  <Field label="Gmail" value={pathfinder.gmail} />
                   <Field label="Website" value={pathfinder.website} />
                 </div>
               </Section>

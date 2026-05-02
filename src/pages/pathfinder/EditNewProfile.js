@@ -430,12 +430,11 @@ const EditNewProfile = () => {
             <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6 space-y-0">
 
               {/* Contact information */}
-              {(formData.contact_email || formData.phone_number || formData.gmail || formData.website) && (
+              {(formData.contact_email || formData.phone_number || formData.website) && (
                 <PreviewSection title="Contact Information">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <PreviewField label="Email" value={formData.contact_email} />
                     <PreviewField label="Phone" value={formData.phone_number} />
-                    <PreviewField label="Gmail" value={formData.gmail} />
                     <PreviewField label="Website" value={formData.website} />
                   </div>
                 </PreviewSection>
@@ -677,19 +676,6 @@ const EditNewProfile = () => {
                     placeholder="your@email.com"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
                     required
-                  />
-                </div>
-
-                {/* Gmail */}
-                <div>
-                  <label className="block text-sm font-bold text-black mb-1">Gmail</label>
-                  <input
-                    type="email"
-                    name="gmail"
-                    value={formData.gmail}
-                    onChange={handleInputChange}
-                    placeholder="yourname@gmail.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
                   />
                 </div>
 
