@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logoImg from '../Assets/afrivate-logo.jpeg';
+import logoImg from '../Assets/Vector (1).png';
 import semic from '../Assets/Group 372.png';
 import blob1 from '../Assets/Blob 1.png';
 import blob2 from '../Assets/blob 2.png';
@@ -40,8 +40,11 @@ const Landingenabler = () => {
           <img
             src={logoImg}
             alt="Afrivate"
-            className="h-8 object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] sm:pl-10"
+            className="sm:h-8 h-8 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] sm:pl-10"
           />
+          <span className="ml-3 sm:text-4xl lg:text-2xl font-poppins font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-300 text-glow-white">
+            AFRIVATE
+          </span>
           <Link to="/">
           <button className="flex bg-[#9900FF4D] py-3 px-3 rounded-xl text-xs font-base font-montserrat   lg:hidden block ml-10">
            Log out
