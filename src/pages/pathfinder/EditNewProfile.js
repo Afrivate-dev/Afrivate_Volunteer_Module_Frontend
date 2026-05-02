@@ -1011,7 +1011,7 @@ const EditNewProfile = () => {
               </p>
 
               {/* Upload row */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row items-center gap-3 mb-3">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row items-center sm:justify-center gap-3 mb-3">
                 <input
                   ref={documentInputRef}
                   type="file"

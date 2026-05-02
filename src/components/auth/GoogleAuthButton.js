@@ -134,7 +134,7 @@ export function GoogleAuthButton({
   }
 
   return (
-    <div className={className}>
+    <div className={`w-full ${className}`}>
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}

@@ -185,8 +185,7 @@ const EnablerProfileSetup = () => {
              formData.state.trim() !== "" &&
              formData.address.trim() !== "";
     } else if (currentStep === 3) {
-      return formData.website.trim() !== "" && 
-             formData.employees.trim() !== "" && 
+      return formData.employees.trim() !== "" &&
              formData.role.trim() !== "";
     }
     return false;
@@ -455,7 +454,7 @@ const EnablerProfileSetup = () => {
 
                 {/* Website */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Website *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
                   <input
                     type="url"
                     name="website"
@@ -463,7 +462,6 @@ const EnablerProfileSetup = () => {
                     onChange={handleInputChange}
                     placeholder="https://organization.com"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
-                    required
                   />
                 </div>
 
