@@ -47,8 +47,9 @@ export function GoogleAuthButton({
       });
       if (data?.access) {
         api.setTokens(data.access, data.refresh);
-        if (data.role === 'enabler' || data.role === 'pathfinder') {
-          api.setRole(data.role);
+        const normalizedRole = (data.role || '').toLowerCase();
+        if (normalizedRole === 'enabler' || normalizedRole === 'pathfinder') {
+          api.setRole(normalizedRole);
         }
         let detectedRole = api.getRole();
         if (!detectedRole || (detectedRole !== 'enabler' && detectedRole !== 'pathfinder')) {
