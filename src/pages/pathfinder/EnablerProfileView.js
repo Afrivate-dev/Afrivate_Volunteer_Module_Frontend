@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Toast from "../../components/common/Toast";
-import { bookmarks, profile } from "../../services/api";
+import { bookmarks, profile, getRole } from "../../services/api";
 import { normalizeBookmarkList, findEnablerBookmarkRow } from "../../utils/bookmarkHelpers";
 
 /**
@@ -76,7 +76,7 @@ const EnablerProfileView = () => {
 
   const checkBookmarkStatus = async (enablerId) => {
     try {
-      const raw = await bookmarks.list();
+      const raw = await bookmarks.enablersSavedList();
       const bookmarksList = normalizeBookmarkList(raw);
       const foundBookmark = findEnablerBookmarkRow(bookmarksList, enablerId);
       if (foundBookmark) {
@@ -98,13 +98,13 @@ const EnablerProfileView = () => {
       try {
         let idToDelete = bookmarkId;
         if (idToDelete == null) {
-          const raw = await bookmarks.list();
+          const raw = await bookmarks.enablersSavedList();
           const list = normalizeBookmarkList(raw);
           const row = findEnablerBookmarkRow(list, enabler.id);
           idToDelete = row?.id ?? row?.pk;
         }
         if (idToDelete != null) {
-          await bookmarks.delete(idToDelete);
+          await bookmarks.enablersSavedDelete(enabler.id);
         }
         setIsBookmarked(false);
         setBookmarkId(null);
@@ -123,7 +123,7 @@ const EnablerProfileView = () => {
       }
     } else {
       try {
-        const newBookmark = await bookmarks.create({ enabler: enabler.id });
+        const newBookmark = await bookmarks.enablersSavedCreate({ enabler_id: enabler.id });
         const newId = newBookmark?.id ?? newBookmark?.pk;
         setIsBookmarked(true);
         setBookmarkId(newId ?? null);
@@ -226,17 +226,19 @@ const EnablerProfileView = () => {
                 )}
 
                 {/* Bookmark Button */}
-                <button
-                  onClick={handleBookmark}
-                  className={`mt-6 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
-                    isBookmarked
-                      ? "bg-white text-[#6A00B1] hover:bg-gray-100"
-                      : "bg-white/20 text-white border border-white hover:bg-white/30"
-                  }`}
-                >
-                  <i className={`fa fa-bookmark ${isBookmarked ? "fas" : "far"}`}></i>
-                  {isBookmarked ? "Saved" : "Save Organization"}
-                </button>
+                {getRole() === 'pathfinder' && (
+                  <button
+                    onClick={handleBookmark}
+                    className={`mt-6 px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                      isBookmarked
+                        ? "bg-white text-[#6A00B1] hover:bg-gray-100"
+                        : "bg-white/20 text-white border border-white hover:bg-white/30"
+                    }`}
+                  >
+                    <i className={`fa fa-bookmark ${isBookmarked ? "fas" : "far"}`}></i>
+                    {isBookmarked ? "Saved" : "Save Organization"}
+                  </button>
+                )}
               </div>
             </div>
           </div>
