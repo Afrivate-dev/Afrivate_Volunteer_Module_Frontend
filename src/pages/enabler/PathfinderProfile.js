@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import { bookmarks, profile, opportunities } from "../../services/api";
@@ -10,12 +10,8 @@ const PathfinderProfile = () => {
   const opportunityId = location.state?.opportunityId;
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [pathfinder, setPathfinder] = useState(null);
-  const [bookmarkId, setBookmarkId] = useState(null);
-  const [enablerId, setEnablerId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const enablerIdRef = useRef(enablerId);
-  enablerIdRef.current = enablerId;
 
   useEffect(() => {
     document.title = "Pathfinder Profile - AfriVate";
@@ -23,52 +19,14 @@ const PathfinderProfile = () => {
 
   const checkBookmarkStatus = useCallback(async (pathfinderId) => {
     try {
-      try {
-        await bookmarks.applicantsSavedGet(pathfinderId);
-        setIsBookmarked(true);
-        setBookmarkId(null);
-        return;
-      } catch (_) {}
-
       const saved = await bookmarks.applicantsSavedList();
       const list = Array.isArray(saved) ? saved : saved?.results || [];
       const idStr = String(pathfinderId);
-      const inApplicantsSaved = list.some((row) => {
+      const found = list.some((row) => {
         const pid = row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
         return pid != null && String(pid) === idStr;
       });
-      if (inApplicantsSaved) {
-        setIsBookmarked(true);
-        setBookmarkId(null);
-        return;
-      }
-
-      let myEnablerId = enablerIdRef.current;
-      if (!myEnablerId) {
-        try {
-          const me = await profile.enablerGet();
-          if (me && me.id != null) {
-            myEnablerId = me.id;
-            setEnablerId(me.id);
-          }
-        } catch (_) {}
-      }
-
-      const bookmarksList = await bookmarks.list();
-      const arr = Array.isArray(bookmarksList) ? bookmarksList : bookmarksList?.results || [];
-      const foundBookmark = arr.find(
-        (b) =>
-          b.pathfinder &&
-          String(b.pathfinder) === String(pathfinderId) &&
-          (!myEnablerId || String(b.enabler) === String(myEnablerId))
-      );
-      if (foundBookmark) {
-        setIsBookmarked(true);
-        setBookmarkId(foundBookmark.id);
-      } else {
-        setIsBookmarked(false);
-        setBookmarkId(null);
-      }
+      setIsBookmarked(found);
     } catch (err) {
       console.error("Error checking bookmark status:", err);
     }
@@ -169,59 +127,20 @@ const PathfinderProfile = () => {
   }, [id, opportunityId, checkBookmarkStatus]);
 
   const handleBookmark = async () => {
-    const oppId = location.state?.opportunityId;
-    const applicantFlow = oppId != null && oppId !== "";
-
-    if (applicantFlow) {
-      try {
-        if (isBookmarked) {
-          await bookmarks.applicantsSavedDelete(pathfinder.id);
-          setIsBookmarked(false);
-          setBookmarkId(null);
-        } else {
-          await bookmarks.applicantsSavedCreate({
-            pathfinder_id: pathfinder.id,
-            opportunity_id: Number(oppId),
-          });
-          setIsBookmarked(true);
-          setBookmarkId(null);
-        }
-      } catch (err) {
-        console.error("Error toggling applicant bookmark:", err);
-      }
-      return;
-    }
-
-    if (isBookmarked && bookmarkId) {
-      try {
-        await bookmarks.delete(bookmarkId);
+    if (!pathfinder?.id) return;
+    try {
+      if (isBookmarked) {
+        await bookmarks.applicantsSavedDelete(pathfinder.id);
         setIsBookmarked(false);
-        setBookmarkId(null);
-      } catch (err) {
-        console.error("Error removing bookmark:", err);
+      } else {
+        const payload = { pathfinder_id: pathfinder.id };
+        const oppId = location.state?.opportunityId;
+        if (oppId != null && oppId !== "") payload.opportunity_id = Number(oppId);
+        await bookmarks.applicantsSavedCreate(payload);
+        setIsBookmarked(true);
       }
-    } else {
-      try {
-        let myEnablerId = enablerId;
-        if (!myEnablerId) {
-          try {
-            const me = await profile.enablerGet();
-            if (me && me.id != null) {
-              myEnablerId = me.id;
-              setEnablerId(me.id);
-            }
-          } catch (_) {}
-        }
-        const payload = { pathfinder: pathfinder.id };
-        if (myEnablerId) payload.enabler = myEnablerId;
-        const newBookmark = await bookmarks.create(payload);
-        if (newBookmark && newBookmark.id) {
-          setIsBookmarked(true);
-          setBookmarkId(newBookmark.id);
-        }
-      } catch (err) {
-        console.error("Error creating bookmark:", err);
-      }
+    } catch (err) {
+      console.error("Error toggling bookmark:", err);
     }
   };
 
