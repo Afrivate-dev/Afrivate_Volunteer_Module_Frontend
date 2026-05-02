@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import logoImg from '../Assets/Vector (1).png';
+import logoImg from '../Assets/afrivate-logo.jpeg';
 import vector11 from '../Assets/Vector 11.png';
 import vector12 from '../Assets/Vector 12.png';
 import vector13 from '../Assets/Vector 13.png';
@@ -61,11 +61,8 @@ const Landing = () => {
           <img
             src={logoImg}
             alt="Afrivate"
-            className="h-7 w-7 sm:h-8 sm:w-8 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] flex-shrink-0"
+            className="h-8 object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] flex-shrink-0"
           />
-          <span className="ml-2 sm:ml-3 text-lg sm:text-2xl lg:text-2xl font-poppins font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-300 text-glow-white truncate">
-            AFRIVATE
-          </span>
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { profile, getRole, notifications } from '../../services/api';
+import logoImg from '../../Assets/afrivate-logo.jpeg';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -78,10 +79,8 @@ const NavBar = () => {
 
         {/* Center - Purple Banner */}
         <div className="flex-1 flex justify-center mx-2 md:mx-4">
-          <div className="bg-[#6A00B1] rounded-full px-4 md:px-6 py-1.5 md:py-2">
-            <p className="text-white text-xs md:text-sm font-medium whitespace-nowrap">
-              Afrivate is elevating life in Africa-Watch out!!
-            </p>
+          <div className="bg-[#6A00B1] rounded-full px-4 md:px-6 py-1.5 md:py-2 flex items-center justify-center">
+            <img src={logoImg} alt="Afrivate" className="h-6 object-contain" />
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoImg from '../Assets/Vector (1).png';
+import logoImg from '../Assets/afrivate-logo.jpeg';
 import vector from '../Assets/Vector (8).png';
 
 const CONTACT_EMAIL = 'contact@afrivate.org';
@@ -18,8 +18,7 @@ export default function ContactUs() {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoImg} alt="Afrivate" className="w-7 h-7 sm:w-8 sm:h-8" />
-            <span className="text-[#6A00B1] font-bold text-lg sm:text-xl">AFRIVATE</span>
+            <img src={logoImg} alt="Afrivate" className="h-8 object-contain" />
           </Link>
           <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#6A00B1] font-semibold text-xs sm:text-sm">
             <Link to="/" className="hover:underline whitespace-nowrap">Home</Link>
