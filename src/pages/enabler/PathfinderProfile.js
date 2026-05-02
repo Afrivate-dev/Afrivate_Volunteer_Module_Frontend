@@ -17,13 +17,13 @@ const PathfinderProfile = () => {
     document.title = "Pathfinder Profile - AfriVate";
   }, []);
 
-  const checkBookmarkStatus = useCallback(async (pathfinderId) => {
+  const checkBookmarkStatus = useCallback(async (pathfinderUserId) => {
     try {
       const saved = await bookmarks.applicantsSavedList();
       const list = Array.isArray(saved) ? saved : saved?.results || [];
-      const idStr = String(pathfinderId);
+      const idStr = String(pathfinderUserId);
       const found = list.some((row) => {
-        const pid = row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
+        const pid = row.pathfinder_user_id ?? row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
         return pid != null && String(pid) === idStr;
       });
       setIsBookmarked(found);
@@ -77,14 +77,8 @@ const PathfinderProfile = () => {
             ? data.documents.filter((d) => d?.document || d?.url)
             : [];
 
-          // Profile photo: check embedded fields first
-          let profilePic = data.profile_pic || base.profile_pic || null;
-          if (!profilePic) {
-            try {
-              const picData = await profile.pictureGetById(id);
-              if (picData?.profile_pic) profilePic = picData.profile_pic;
-            } catch (_) {}
-          }
+          // Profile photo is in base_details.profile_pic from the pathfinder profile GET
+          const profilePic = data.profile_pic || base.profile_pic || null;
 
           setPathfinder({
             id: data.id,
@@ -109,8 +103,8 @@ const PathfinderProfile = () => {
             documents,
           });
 
-          if (data.id != null) {
-            await checkBookmarkStatus(data.id);
+          if (id != null) {
+            await checkBookmarkStatus(id);
           }
         } else {
           setPathfinder(null);
@@ -127,13 +121,13 @@ const PathfinderProfile = () => {
   }, [id, opportunityId, checkBookmarkStatus]);
 
   const handleBookmark = async () => {
-    if (!pathfinder?.id) return;
+    if (!id) return;
     try {
       if (isBookmarked) {
-        await bookmarks.applicantsSavedDelete(pathfinder.id);
+        await bookmarks.applicantsSavedDelete(Number(id));
         setIsBookmarked(false);
       } else {
-        const payload = { pathfinder_id: pathfinder.id };
+        const payload = { pathfinder_id: Number(id) };
         const oppId = location.state?.opportunityId;
         if (oppId != null && oppId !== "") payload.opportunity_id = Number(oppId);
         await bookmarks.applicantsSavedCreate(payload);

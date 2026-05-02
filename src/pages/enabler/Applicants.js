@@ -81,7 +81,7 @@ const Applicants = () => {
             savedRows
               .map((row) => {
                 const pid =
-                  row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
+                  row.pathfinder_user_id ?? row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
                 return pid != null ? String(pid) : null;
               })
               .filter(Boolean)

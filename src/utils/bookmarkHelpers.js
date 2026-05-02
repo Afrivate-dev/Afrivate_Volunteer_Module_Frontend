@@ -9,7 +9,7 @@ export function normalizeBookmarkList(response) {
 export function findEnablerBookmarkRow(list, enablerProfileId) {
   const want = String(enablerProfileId);
   return list.find((b) => {
-    const eid = b.enabler ?? b.enabler_id ?? b.enabler?.id;
+    const eid = b.enabler_user_id ?? b.enabler ?? b.enabler_id ?? b.enabler?.id;
     return eid != null && String(eid) === want;
   });
 }
