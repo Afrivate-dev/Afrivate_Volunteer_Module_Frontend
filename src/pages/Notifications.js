@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { notifications } from "../services/api";
 import Navbar from "../components/auth/Navbar";
@@ -7,6 +7,7 @@ import EnablerNavbar from "../components/auth/EnablerNavbar";
 
 const Notifications = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,6 +78,13 @@ const Notifications = () => {
       <NavbarComponent />
       <div className="pt-14 px-4 md:px-8 lg:px-12 pb-10">
         <div className="max-w-5xl mx-auto">
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-4 flex items-center gap-2 text-[#6A00B1] font-semibold text-sm hover:text-[#5A0091] transition-colors"
+          >
+            <i className="fa-solid fa-arrow-left text-xs" />
+            Back
+          </button>
           <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-black mb-1">Notifications</h1>
