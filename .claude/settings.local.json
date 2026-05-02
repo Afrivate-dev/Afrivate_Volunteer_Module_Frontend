@@ -8,7 +8,10 @@
       "Bash(xargs sed *)",
       "Bash(git fetch *)",
       "Bash(git checkout *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'fix: add missing /set-password route protected by RequireAuth *)",
+      "Bash(git push *)"
     ]
   }
 }
