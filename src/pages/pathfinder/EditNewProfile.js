@@ -54,7 +54,6 @@ const EditNewProfile = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [loadedProfileId, setLoadedProfileId] = useState(null);
   const [loadedBaseDetailsId, setLoadedBaseDetailsId] = useState(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
   const [photoUploadError, setPhotoUploadError] = useState(null);
@@ -71,7 +70,6 @@ const EditNewProfile = () => {
     try {
       const data = await profile.pathfinderGet();
       if (data) {
-        if (data.id != null) setLoadedProfileId(data.id);
         // Profile has real data if any name/title/about/email field is non-empty
         const hasData = !!(data.first_name || data.last_name || data.title || data.about || data.base_details?.contact_email);
         if (hasData) isFirstSaveRef.current = false;
@@ -255,7 +253,6 @@ const EditNewProfile = () => {
 
       // Backend uses get_or_create on PATCH — single call handles both first save and updates.
       const savedData = await profile.pathfinderPatch(profileData);
-      if (savedData?.id != null) setLoadedProfileId(savedData.id);
 
       if (useRest) {
         await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
