@@ -40,7 +40,7 @@ const Login = () => {
     e.preventDefault();
   
     const newErrors = {};
-    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.email) newErrors.email = 'Email or username is required';
     if (!formData.password) newErrors.password = 'Password is required';
   
     if (Object.keys(newErrors).length > 0) {
@@ -163,8 +163,8 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-6 px-2">
             <Input
               name="email"
-              type="email"
-              placeholder="Email"
+              type="text"
+              placeholder="Email or Username"
               value={formData.email}
               onChange={handleChange}
               error={errors.email}
