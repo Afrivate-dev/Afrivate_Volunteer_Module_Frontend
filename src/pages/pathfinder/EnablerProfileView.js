@@ -57,8 +57,8 @@ const EnablerProfileView = () => {
             website,
             profilePic,
           });
-          if (data.id != null) {
-            checkBookmarkStatus(data.id);
+          if (id != null) {
+            checkBookmarkStatus(id);
           }
         } else {
           setEnabler(null);
@@ -92,20 +92,11 @@ const EnablerProfileView = () => {
   };
 
   const handleBookmark = async () => {
-    if (!enabler?.id) return;
+    if (!enabler) return;
 
     if (isBookmarked) {
       try {
-        let idToDelete = bookmarkId;
-        if (idToDelete == null) {
-          const raw = await bookmarks.enablersSavedList();
-          const list = normalizeBookmarkList(raw);
-          const row = findEnablerBookmarkRow(list, enabler.id);
-          idToDelete = row?.id ?? row?.pk;
-        }
-        if (idToDelete != null) {
-          await bookmarks.enablersSavedDelete(enabler.id);
-        }
+        await bookmarks.enablersSavedDelete(id);
         setIsBookmarked(false);
         setBookmarkId(null);
         setToast({
@@ -123,7 +114,7 @@ const EnablerProfileView = () => {
       }
     } else {
       try {
-        const newBookmark = await bookmarks.enablersSavedCreate({ enabler_id: enabler.id });
+        const newBookmark = await bookmarks.enablersSavedCreate({ enabler_id: id });
         const newId = newBookmark?.id ?? newBookmark?.pk;
         setIsBookmarked(true);
         setBookmarkId(newId ?? null);
