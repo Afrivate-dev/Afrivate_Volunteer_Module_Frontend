@@ -132,9 +132,13 @@ const EditProfile = () => {
       setTimeout(() => navigate("/enabler/profile"), 1200);
     } catch (err) {
       console.error("Error saving profile:", err);
+      const rawMsg = getApiErrorMessage(err) || err.message || "";
+      const msg = (rawMsg.toLowerCase().includes("website") || rawMsg.toLowerCase().includes("enter a valid url"))
+        ? "Please enter a valid website URL (e.g. https://yourwebsite.com) or leave it blank"
+        : rawMsg || "Failed to save profile. Please try again.";
       setToast({
         isOpen: true,
-        message: getApiErrorMessage(err) || err.message || "Failed to save profile. Please try again.",
+        message: msg,
         type: "error",
       });
     } finally {
@@ -310,9 +314,10 @@ const EditProfile = () => {
                 name="website"
                 value={formData.website}
                 onChange={handleInputChange}
-                placeholder="https://company.com"
+                placeholder="https://yourwebsite.com (optional)"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
               />
+              <p className="text-xs text-gray-400 mt-1">Optional; include https:// or leave blank</p>
             </div>
 
             {/* Company Details */}
