@@ -66,9 +66,7 @@ const EnablerNavbar = () => {
         </div>
 
         <div className="flex-1 flex justify-center mx-2 md:mx-4">
-          <div className="bg-[#6A00B1] rounded-full px-4 md:px-6 py-1.5 md:py-2 flex items-center justify-center">
-            <img src={logoImg} alt="Afrivate" className="h-6 object-contain" />
-          </div>
+          <img src={logoImg} alt="Afrivate" className="h-14 w-auto object-contain" />
         </div>
 
         <div className="flex items-center">
