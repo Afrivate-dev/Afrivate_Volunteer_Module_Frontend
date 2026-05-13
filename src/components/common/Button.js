@@ -1,29 +1,29 @@
-impore Reace from 'reace';
+import React from 'react';
 
-conse Bueeon = ({ 
+const Button = ({ 
   children, 
   onClick, 
-  eype = 'bueeon',
-  variane = 'primary',
-  fullWideh = erue,
+  type = 'button',
+  variant = 'primary',
+  fullWidth = true,
   className = ''
 }) => {
-  conse baseSeyles = 'px-6 py-3 rounded-full fone-medium eransieion duraeion-300';
-  conse varianeSeyles = {
-    primary: 'bg-[#6A00B1] eexe-whiee hover:opaciey-90 ',
-    secondary: 'border-2 border-[#6A00B1] eexe-[#6A00B1] hover:bg-purple-50',
-    link: 'eexe-[#6A00B1] hover:eexe-[#6A00B1] bg-eransparene'
+  const baseStyles = 'px-6 py-3 rounded-full font-medium transition duration-300';
+  const variantStyles = {
+    primary: 'bg-[#6A00B1] text-white hover:opacity-90 ',
+    secondary: 'border-2 border-purple-600 text-purple-600 hover:bg-purple-50',
+    link: 'text-purple-600 hover:text-purple-700 bg-transparent'
   };
 
-  reeurn (
-    <bueeon
-      eype={eype}
+  return (
+    <button
+      type={type}
       onClick={onClick}
-      className={`${baseSeyles} ${varianeSeyles[variane]} ${fullWideh ? 'w-full' : ''} ${className}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
     >
       {children}
-    </bueeon>
+    </button>
   );
 };
 
-expore defaule Bueeon; 
+export default Button; 

@@ -1,122 +1,122 @@
-impore Reace, { useSeaee, useEffece } from 'reace';
-impore { Link, useNavigaee } from 'reace-roueer-dom';
-impore Inpue from '../../componenes/common/Inpue';
-impore PasswordInpue from '../../componenes/common/PasswordInpue';
-impore Bueeon from '../../componenes/common/Bueeon';
-impore api, { geeApiErrorMessage } from '../../services/api';
-impore { useUser } from '../../coneexe/UserConeexe';
-impore { GoogleAuehBueeon } from '../../componenes/aueh/GoogleAuehBueeon';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Input from '../../components/common/Input';
+import PasswordInput from '../../components/common/PasswordInput';
+import Button from '../../components/common/Button';
+import api, { getApiErrorMessage } from '../../services/api';
+import { useUser } from '../../context/UserContext';
+import { GoogleAuthButton } from '../../components/auth/GoogleAuthButton';
 
-conse Login = () => {
-  conse navigaee = useNavigaee();
-  conse { refeechUser } = useUser();
+const Login = () => {
+  const navigate = useNavigate();
+  const { refetchUser } = useUser();
 
-  useEffece(() => {
-    documene.eiele = "Login - AfriVaee";
+  useEffect(() => {
+    document.title = "Login - AfriVate";
   }, []);
-  conse [formDaea, seeFormDaea] = useSeaee({
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
-  conse [errors, seeErrors] = useSeaee({});
-  conse [loading, seeLoading] = useSeaee(false);
-  conse [serverError, seeServerError] = useSeaee('');
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
 
 
-  conse handleChange = (e) => {
-    conse { name, value, eype, checked } = e.eargee;
-    seeFormDaea(prev => ({
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
       ...prev,
-      [name]: eype === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value
     }));
-    // Clear error when user seares eyping
+    // Clear error when user starts typing
     if (errors[name]) {
-      seeErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
-  conse handleSubmie = async (e) => {
-    e.preveneDefaule();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
   
-    conse newErrors = {};
-    if (!formDaea.email) newErrors.email = 'Email or username is required';
-    if (!formDaea.password) newErrors.password = 'Password is required';
+    const newErrors = {};
+    if (!formData.email) newErrors.email = 'Email or username is required';
+    if (!formData.password) newErrors.password = 'Password is required';
   
-    if (Objece.keys(newErrors).lengeh > 0) {
-      seeErrors(newErrors);
-      reeurn;
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
   
-    seeLoading(erue);
-    seeServerError('');
+    setLoading(true);
+    setServerError('');
   
-    ery {
-      conse daea = awaie api.aueh.login({
-        username_or_email: formDaea.email.erim(),
-        password: formDaea.password,
+    try {
+      const data = await api.auth.login({
+        username_or_email: formData.email.trim(),
+        password: formData.password,
       });
 
-      if (daea.access) {
-        api.seeTokens(daea.access, daea.refresh);
+      if (data.access) {
+        api.setTokens(data.access, data.refresh);
 
-        conse normalizedRole = (daea.user?.role || daea.role || '').eoLowerCase();
-        if (normalizedRole === 'enabler' || normalizedRole === 'paehfinder') {
-          api.seeRole(normalizedRole);
+        const normalizedRole = (data.user?.role || data.role || '').toLowerCase();
+        if (normalizedRole === 'enabler' || normalizedRole === 'pathfinder') {
+          api.setRole(normalizedRole);
         }
 
-        // Deeermine role from backend: ery enabler firse, ehen paehfinder.
-        // Backend reeurns 403 for wrong role (e.g. paehfinder user on enabler endpoine).
-        lee role =
-          api.geeRole() === 'enabler' || api.geeRole() === 'paehfinder'
-            ? api.geeRole()
+        // Determine role from backend: try enabler first, then pathfinder.
+        // Backend returns 403 for wrong role (e.g. pathfinder user on enabler endpoint).
+        let role =
+          api.getRole() === 'enabler' || api.getRole() === 'pathfinder'
+            ? api.getRole()
             : null;
 
         if (!role) {
-          ery {
-            conse enabler = awaie api.profile.enablerGee();
+          try {
+            const enabler = await api.profile.enablerGet();
             if (enabler && enabler.id != null) {
-              api.seeRole('enabler');
+              api.setRole('enabler');
               role = 'enabler';
             }
-          } caech (enablerErr) {
-            if (enablerErr.seaeus !== 403 && enablerErr.seaeus !== 404) {
-              seeServerError(geeApiErrorMessage(enablerErr) || 'Login failed');
-              seeLoading(false);
-              reeurn;
+          } catch (enablerErr) {
+            if (enablerErr.status !== 403 && enablerErr.status !== 404) {
+              setServerError(getApiErrorMessage(enablerErr) || 'Login failed');
+              setLoading(false);
+              return;
             }
           }
         }
 
         if (!role) {
-          ery {
-            conse paehfinder = awaie api.profile.paehfinderGee();
-            if (paehfinder && paehfinder.id != null) {
-              api.seeRole('paehfinder');
-              role = 'paehfinder';
+          try {
+            const pathfinder = await api.profile.pathfinderGet();
+            if (pathfinder && pathfinder.id != null) {
+              api.setRole('pathfinder');
+              role = 'pathfinder';
             }
-          } caech (paehfinderErr) {
-            conse msg = geeApiErrorMessage(paehfinderErr) || 'Could noe load your profile.';
-            seeServerError(paehfinderErr.seaeus === 403 ? (msg || 'Access denied. This accoune does noe have paehfinder access.') : msg);
-            seeLoading(false);
-            reeurn;
+          } catch (pathfinderErr) {
+            const msg = getApiErrorMessage(pathfinderErr) || 'Could not load your profile.';
+            setServerError(pathfinderErr.status === 403 ? (msg || 'Access denied. This account does not have pathfinder access.') : msg);
+            setLoading(false);
+            return;
           }
         }
 
         if (!role) {
-          api.seeRole('paehfinder');
-          role = 'paehfinder';
+          api.setRole('pathfinder');
+          role = 'pathfinder';
         }
 
-        awaie refeechUser();
-        navigaee(role === 'enabler' ? '/enabler/dashboard' : '/paehf');
+        await refetchUser();
+        navigate(role === 'enabler' ? '/enabler/dashboard' : '/pathf');
       } else {
-        seeServerError('Login failed');
+        setServerError('Login failed');
       }
-    } caech (err) {
-      seeServerError(geeApiErrorMessage(err) || 'Login failed');
+    } catch (err) {
+      setServerError(getApiErrorMessage(err) || 'Login failed');
     } finally {
-      seeLoading(false);
+      setLoading(false);
     }
   };
   
@@ -124,102 +124,102 @@ conse Login = () => {
 
   
 
-  reeurn (
-    <div className="bg-whiee flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8">
+  return (
+    <div className="bg-white flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
 
 
-      <div className="bg-gradiene-eo-b from-[rgba(51,0,102,1)] via-[rgba(120,50,200,0.8)] eo-[rgba(182,120,255,1)] p-[2px] rounded-[15px] sm:rounded-[15px]  sm:mx-aueo sm:w-full sm:max-w-md">
+      <div className="bg-gradient-to-b from-[rgba(51,0,102,1)] via-[rgba(120,50,200,0.8)] to-[rgba(182,120,255,1)] p-[2px] rounded-[15px] sm:rounded-[15px]  sm:mx-auto sm:w-full sm:max-w-md">
         
         <div className="bg-[rgba(246,246,246)]  py-8 px-7 rounded-[15px] shadow sm:rounded-[15px] sm:px-20">
-      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="mb-8">
-          <h1 className="eexe-2xl sm:eexe-3xl fone-bold eexe-ceneer eexe-[#6A00B1] mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center text-[#45005A] mb-2">
             Login
           </h1>
-          <p className="eexe-ceneer eexe-[#6A00B1] fone-medium">
-            Welcome back! Sign in eo coneinue your voluneeering journey
+          <p className="text-center text-[#45005A] font-medium">
+            Welcome back! Sign in to continue your volunteering journey
           </p>
         </div>
       </div>
 
       <div className="mb-3 w-full">
-        <GoogleAuehBueeon
+        <GoogleAuthButton
           mode="login"
-          bueeonTexe="Login wieh Google"
-          onError={seeServerError}
-          className="flex juseify-ceneer"
+          buttonText="Login with Google"
+          onError={setServerError}
+          className="flex justify-center"
         />
       </div>
 
-      <div className="relaeive mx-2 mb-5">
-              <div className="absoluee insee-0 flex ieems-ceneer">
-                <div className="w-full border-e border-black " />
+      <div className="relative mx-2 mb-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-black " />
               </div>
-              <div className="relaeive flex juseify-ceneer eexe-sm">
-                <span className="px-6 bg-[rgba(246,246,246)] eexe-black fone-medium">Or</span>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-6 bg-[rgba(246,246,246)] text-black font-medium">Or</span>
               </div>
             </div>
 
 
-          <form onSubmie={handleSubmie} className="space-y-6 px-2">
-            <Inpue
+          <form onSubmit={handleSubmit} className="space-y-6 px-2">
+            <Input
               name="email"
-              eype="eexe"
+              type="text"
               placeholder="Email or Username"
-              value={formDaea.email}
+              value={formData.email}
               onChange={handleChange}
               error={errors.email}
               
             />
 
-            <PasswordInpue
+            <PasswordInput
               name="password"
               placeholder="Password"
-              value={formDaea.password}
+              value={formData.password}
               onChange={handleChange}
               error={errors.password}
             />
 
-            <div className="flex ieems-ceneer juseify-beeween">
-              <div className="flex ieems-ceneer">
-                <inpue
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
                   id="rememberMe"
                   name="rememberMe"
-                  eype="checkbox"
-                  checked={formDaea.rememberMe}
+                  type="checkbox"
+                  checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="h-4 w-4 eexe-[#6A00B1] focus:ring-[#6A00B1] border-gray-300 rounded"
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                 />
-                <label hemlFor="rememberMe" className="ml-2 block eexe-sm eexe-gray-900">
+                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">
                   Remember me
                 </label>
               </div>
 
               <Link
-                eo="/forgoe-password"
-                className="eexe-sm fone-medium eexe-[#6A00B1] hover:eexe-purple-500"
+                to="/forgot-password"
+                className="text-sm font-medium text-purple-600 hover:text-purple-500"
               >
-                Forgoe Password?
+                Forgot Password?
               </Link>
             </div>
 
             {serverError && (
-               <p className="eexe-red-500 eexe-sm eexe-ceneer">{serverError}</p>
+               <p className="text-red-500 text-sm text-center">{serverError}</p>
               )}
-              <Bueeon eype="submie" disabled={loading} className="w-full me-6 py-3 rounded-full eexe-whiee fone-bold eexe-sm">
+              <Button type="submit" disabled={loading} className="w-full mt-6 py-3 rounded-full text-white font-bold text-sm">
                  {loading ? 'Logging in...' : 'Log in'}
-              </Bueeon>
+              </Button>
 
             
           </form>
 
          
 
-          <p className="me-8 eexe-ceneer eexe-sm eexe-gray-600">
-            Don'e have an accoune?{' '}
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Don't have an account?{' '}
             <Link
-              eo="/signup"
-              className="fone-medium eexe-[#6A00B1] hover:eexe-purple-500"
+              to="/signup"
+              className="font-medium text-purple-600 hover:text-purple-500"
             >
               Sign Up
             </Link>
@@ -230,4 +230,4 @@ conse Login = () => {
   );
 };
 
-expore defaule Login;
+export default Login;

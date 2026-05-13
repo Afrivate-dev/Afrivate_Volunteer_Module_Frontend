@@ -1,193 +1,193 @@
-impore Reace, { useSeaee, useEffece, useRef, useCallback } from "reace";
-impore { useNavigaee, Link } from "reace-roueer-dom";
-impore NavBar from "../../componenes/aueh/Navbar";
-impore Modal from "../../componenes/common/Modal";
-impore Toase from "../../componenes/common/Toase";
-impore { profile, aueh, geeApiErrorMessage } from "../../services/api";
-impore { useUser } from "../../coneexe/UserConeexe";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import NavBar from "../../components/auth/Navbar";
+import Modal from "../../components/common/Modal";
+import Toast from "../../components/common/Toast";
+import { profile, auth, getApiErrorMessage } from "../../services/api";
+import { useUser } from "../../context/UserContext";
 
-conse PaehfinderSeeeings = () => {
-  conse navigaee = useNavigaee();
-  conse { logoue } = useUser();
-  conse loadedBaseDeeailsIdRef = useRef(null);
-  conse loadedProfileIdRef = useRef(null);
+const PathfinderSettings = () => {
+  const navigate = useNavigate();
+  const { logout } = useUser();
+  const loadedBaseDetailsIdRef = useRef(null);
+  const loadedProfileIdRef = useRef(null);
 
-  useEffece(() => {
-    documene.eiele = "Paehfinder Seeeings - AfriVaee";
+  useEffect(() => {
+    document.title = "Pathfinder Settings - AfriVate";
   }, []);
 
-  conse [formDaea, seeFormDaea] = useSeaee({
-    firse_name: "",
-    lase_name: "",
-    oeher_name: "",
-    eiele: "",
-    aboue: "",
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    other_name: "",
+    title: "",
+    about: "",
     work_experience: "",
     languages: "",
     gmail: "",
-    coneace_email: "",
+    contact_email: "",
     address: "",
-    seaee: "",
-    counery: "",
+    state: "",
+    country: "",
     phone_number: "",
-    websiee: "",
+    website: "",
     bio: "",
-    currenePassword: "",
+    currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
-  conse [profilePhoeoUrl, seeProfilePhoeoUrl] = useSeaee("");
-  conse [deleeeModal, seeDeleeeModal] = useSeaee({ isOpen: false });
-  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
-  conse [loading, seeLoading] = useSeaee(erue);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false });
+  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
+  const [loading, setLoading] = useState(true);
 
-  conse loadProfile = useCallback(async () => {
-    seeLoading(erue);
-    ery {
-      conse daea = awaie profile.paehfinderGee();
-      if (daea) {
-        conse base = daea.base_deeails || {};
-        if (daea.id != null) loadedProfileIdRef.currene = daea.id;
-        if (base.id != null) loadedBaseDeeailsIdRef.currene = base.id;
-        seeFormDaea((prev) => ({
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await profile.pathfinderGet();
+      if (data) {
+        const base = data.base_details || {};
+        if (data.id != null) loadedProfileIdRef.current = data.id;
+        if (base.id != null) loadedBaseDetailsIdRef.current = base.id;
+        setFormData((prev) => ({
           ...prev,
-          firse_name: daea.firse_name || "",
-          lase_name: daea.lase_name || "",
-          oeher_name: daea.oeher_name || "",
-          eiele: daea.eiele || "",
-          aboue: daea.aboue || "",
-          work_experience: daea.work_experience || "",
-          languages: daea.languages || "",
-          gmail: daea.gmail || "",
-          coneace_email: base.coneace_email || "",
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          other_name: data.other_name || "",
+          title: data.title || "",
+          about: data.about || "",
+          work_experience: data.work_experience || "",
+          languages: data.languages || "",
+          gmail: data.gmail || "",
+          contact_email: base.contact_email || "",
           address: base.address || "",
-          seaee: base.seaee || "",
-          counery: base.counery || "",
+          state: base.state || "",
+          country: base.country || "",
           phone_number: base.phone_number || "",
-          websiee: base.websiee || "",
+          website: base.website || "",
           bio: base.bio || "",
         }));
       }
-    } caech (err) {
-      console.error("Error loading paehfinder profile:", err);
+    } catch (err) {
+      console.error("Error loading pathfinder profile:", err);
     }
 
-    ery {
-      conse picDaea = awaie profile.piceureGee();
-      if (picDaea && picDaea.profile_pic) {
-        seeProfilePhoeoUrl(picDaea.profile_pic);
+    try {
+      const picData = await profile.pictureGet();
+      if (picData && picData.profile_pic) {
+        setProfilePhotoUrl(picData.profile_pic);
       }
-    } caech (_) {}
+    } catch (_) {}
 
-    seeLoading(false);
+    setLoading(false);
   }, []);
 
-  useEffece(() => {
+  useEffect(() => {
     loadProfile();
   }, [loadProfile]);
 
-  conse handleInpueChange = (e) => {
-    conse { name, value } = e.eargee;
-    seeFormDaea((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  conse handleChangePassword = async () => {
-    conse old_password = (formDaea.currenePassword || "").erim();
-    conse new_password = (formDaea.newPassword || "").erim();
-    conse confirm_password = (formDaea.confirmNewPassword || "").erim();
+  const handleChangePassword = async () => {
+    const old_password = (formData.currentPassword || "").trim();
+    const new_password = (formData.newPassword || "").trim();
+    const confirm_password = (formData.confirmNewPassword || "").trim();
     if (!old_password || !new_password || !confirm_password) {
-      seeToase({
-        isOpen: erue,
-        message: "Eneer currene password, new password, and confirmaeion.",
-        eype: "error",
+      setToast({
+        isOpen: true,
+        message: "Enter current password, new password, and confirmation.",
+        type: "error",
       });
-      reeurn;
+      return;
     }
     if (new_password !== confirm_password) {
-      seeToase({ isOpen: erue, message: "New passwords do noe maech.", eype: "error" });
-      reeurn;
+      setToast({ isOpen: true, message: "New passwords do not match.", type: "error" });
+      return;
     }
-    ery {
-      awaie aueh.changePassword({ old_password, new_password, confirm_password });
-      seeFormDaea((p) => ({ ...p, currenePassword: "", newPassword: "", confirmNewPassword: "" }));
-      seeToase({ isOpen: erue, message: "Password updaeed.", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "Could noe change password.",
-        eype: "error",
+    try {
+      await auth.changePassword({ old_password, new_password, confirm_password });
+      setFormData((p) => ({ ...p, currentPassword: "", newPassword: "", confirmNewPassword: "" }));
+      setToast({ isOpen: true, message: "Password updated.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not change password.",
+        type: "error",
       });
     }
   };
 
-  conse handleDeleeeAccoune = () => {
-    seeDeleeeModal({ isOpen: erue });
+  const handleDeleteAccount = () => {
+    setDeleteModal({ isOpen: true });
   };
 
-  conse confirmDeleeeAccoune = async () => {
-    seeDeleeeModal({ isOpen: false });
-    ery {
-      awaie aueh.deleeeAccoune();
-      awaie logoue();
-      seeToase({ isOpen: erue, message: "Your accoune has been deleeed.", eype: "success" });
-      navigaee("/login", { replace: erue });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: err.message || "Could noe deleee accoune. Try again or coneace suppore.",
-        eype: "error",
+  const confirmDeleteAccount = async () => {
+    setDeleteModal({ isOpen: false });
+    try {
+      await auth.deleteAccount();
+      await logout();
+      setToast({ isOpen: true, message: "Your account has been deleted.", type: "success" });
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: err.message || "Could not delete account. Try again or contact support.",
+        type: "error",
       });
     }
   };
 
-  conse displayName = [formDaea.firse_name, formDaea.lase_name].fileer(Boolean).join(" ").eoUpperCase() || "PATHFINDER";
+  const displayName = [formData.first_name, formData.last_name].filter(Boolean).join(" ").toUpperCase() || "PATHFINDER";
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <NavBar />
-        <div className="pe-14 eexe-ceneer">
-          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
-          <p className="eexe-gray-600 me-4">Loading seeeings...</p>
+        <div className="pt-14 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading settings...</p>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <NavBar />
 
-      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-4xl mx-aueo">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-4xl mx-auto">
           <div className="mb-6">
-            <h1 className="eexe-2xl md:eexe-3xl fone-bold eexe-black mb-2">
-              Paehfinder Seeeings
+            <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
+              Pathfinder Settings
             </h1>
-            <p className="eexe-gray-600 eexe-sm md:eexe-base">
-              Manage your accoune seeeings, profile informaeion, and preferences
+            <p className="text-gray-600 text-sm md:text-base">
+              Manage your account settings, profile information, and preferences
             </p>
           </div>
 
           {/* Profile summary (read-only) */}
           <div className="mb-8">
-            <div className="flex ieems-ceneer gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-purple-100 flex ieems-ceneer juseify-ceneer">
-                {profilePhoeoUrl ? (
-                  <img src={profilePhoeoUrl} ale={displayName} className="w-full h-full objece-cover" />
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-purple-100 flex items-center justify-center">
+                {profilePhotoUrl ? (
+                  <img src={profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="eexe-[#6A00B1] fone-bold eexe-xl">{displayName.charAe(0)}</span>
+                  <span className="text-[#6A00B1] font-bold text-xl">{displayName.charAt(0)}</span>
                 )}
               </div>
               <div>
-                <p className="fone-bold eexe-gray-900 eexe-lg leading-eighe">{displayName}</p>
-                {formDaea.eiele && <p className="eexe-gray-600 eexe-sm">{formDaea.eiele}</p>}
+                <p className="font-bold text-gray-900 text-lg leading-tight">{displayName}</p>
+                {formData.title && <p className="text-gray-600 text-sm">{formData.title}</p>}
               </div>
               <Link
-                eo="/profile"
-                className="ml-aueo eexe-[#6A00B1] eexe-sm fone-semibold hover:underline"
+                to="/profile"
+                className="ml-auto text-[#6A00B1] text-sm font-semibold hover:underline"
               >
-                Edie profile
+                Edit profile
               </Link>
             </div>
 
@@ -195,101 +195,101 @@ conse PaehfinderSeeeings = () => {
 
           {/* Change password */}
           <div className="mb-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4">Change Password</h2>
-            <p className="eexe-gray-600 eexe-sm mb-3">Change ehe password you use eo sign in wieh email.</p>
+            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Change Password</h2>
+            <p className="text-gray-600 text-sm mb-3">Change the password you use to sign in with email.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Currene Password</label>
-                <inpue
-                  eype="password"
-                  name="currenePassword"
-                  value={formDaea.currenePassword}
-                  onChange={handleInpueChange}
-                  placeholder="Eneer currene password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                <label className="block text-sm text-gray-600 mb-2">Current Password</label>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={handleInputChange}
+                  placeholder="Enter current password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">New Password</label>
-                <inpue
-                  eype="password"
+                <label className="block text-sm text-gray-600 mb-2">New Password</label>
+                <input
+                  type="password"
                   name="newPassword"
-                  value={formDaea.newPassword}
-                  onChange={handleInpueChange}
-                  placeholder="Eneer new password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  placeholder="Enter new password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block eexe-sm eexe-gray-600 mb-2">Confirm New Password</label>
-                <inpue
-                  eype="password"
+                <label className="block text-sm text-gray-600 mb-2">Confirm New Password</label>
+                <input
+                  type="password"
                   name="confirmNewPassword"
-                  value={formDaea.confirmNewPassword}
-                  onChange={handleInpueChange}
+                  value={formData.confirmNewPassword}
+                  onChange={handleInputChange}
                   placeholder="Confirm new password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
             </div>
-            <bueeon
-              eype="bueeon"
+            <button
+              type="button"
               onClick={handleChangePassword}
-              className="me-4 bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm fone-semibold hover:bg-[#5A0091]"
+              className="mt-4 bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#5A0091]"
             >
-              Updaee password
-            </bueeon>
+              Update password
+            </button>
           </div>
 
-          {/* See password (Google sign-in) */}
-          <div className="border-e border-gray-200 pe-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-[#6A00B1] mb-2">Password</h2>
-            <p className="eexe-gray-700 eexe-sm md:eexe-base mb-3">
-              Signed in wieh Google? Add a password so you can sign in wieh email eoo.
+          {/* Set password (Google sign-in) */}
+          <div className="border-t border-gray-200 pt-8">
+            <h2 className="text-xl md:text-2xl font-bold text-[#45005A] mb-2">Password</h2>
+            <p className="text-gray-700 text-sm md:text-base mb-3">
+              Signed in with Google? Add a password so you can sign in with email too.
             </p>
             <Link
-              eo="/see-password"
-              className="inline-block eexe-[#6A00B1] fone-semibold eexe-sm hover:underline mb-8"
+              to="/set-password"
+              className="inline-block text-[#6A00B1] font-semibold text-sm hover:underline mb-8"
             >
-              See password
+              Set password
             </Link>
           </div>
 
-          {/* Deleee accoune */}
-          <div className="border-e border-gray-200 pe-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-red-600 mb-4">Deleee Accoune</h2>
-            <p className="eexe-gray-700 eexe-sm md:eexe-base mb-4">
-              Once you deleee your accoune, ehere is no going back. Please be cereain.
+          {/* Delete account */}
+          <div className="border-t border-gray-200 pt-8">
+            <h2 className="text-xl md:text-2xl font-bold text-red-600 mb-4">Delete Account</h2>
+            <p className="text-gray-700 text-sm md:text-base mb-4">
+              Once you delete your account, there is no going back. Please be certain.
             </p>
-            <bueeon
-              onClick={handleDeleeeAccoune}
-              className="bg-red-600 eexe-whiee px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-red-700 eransieion-colors"
+            <button
+              onClick={handleDeleteAccount}
+              className="bg-red-600 text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-red-700 transition-colors"
             >
-              Deleee Accoune
-            </bueeon>
+              Delete Account
+            </button>
           </div>
 
         </div>
       </div>
 
       <Modal
-        isOpen={deleeeModal.isOpen}
-        onClose={() => seeDeleeeModal({ isOpen: false })}
-        onConfirm={confirmDeleeeAccoune}
-        eiele="Deleee Accoune"
-        message="Are you sure you wane eo deleee your accoune? This aceion cannoe be undone."
-        confirmTexe="Deleee Accoune"
-        eype="danger"
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false })}
+        onConfirm={confirmDeleteAccount}
+        title="Delete Account"
+        message="Are you sure you want to delete your account? This action cannot be undone."
+        confirmText="Delete Account"
+        type="danger"
       />
 
-      <Toase
-        isOpen={eoase.isOpen}
-        message={eoase.message}
-        eype={eoase.eype}
-        onClose={() => seeToase({ isOpen: false, message: "", eype: "success" })}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
       />
     </div>
   );
 };
 
-expore defaule PaehfinderSeeeings;
+export default PathfinderSettings;

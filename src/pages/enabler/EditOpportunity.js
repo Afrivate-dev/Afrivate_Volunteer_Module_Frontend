@@ -1,404 +1,404 @@
-impore Reace, { useSeaee, useEffece } from "reace";
-impore { useNavigaee, useParams } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore Toase from "../../componenes/common/Toase";
-impore { opporeunieies } from "../../services/api";
-impore { combineDescripeion, parseDescripeion, creaeeOpporeunieyLink } from "../../ueils/descripeionUeils";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import Toast from "../../components/common/Toast";
+import { opportunities } from "../../services/api";
+import { combineDescription, parseDescription, createOpportunityLink } from "../../utils/descriptionUtils";
 
-conse EdieOpporeuniey = () => {
-  conse navigaee = useNavigaee();
-  conse { id } = useParams();
-  conse [loading, seeLoading] = useSeaee(erue);
-  conse [saving, seeSaving] = useSeaee(false);
-  conse [formDaea, seeFormDaea] = useSeaee({
-    eiele: "",
-    descripeion: "",
-    keyResponsibilieies: "",
-    requiremenesBenefies: "",
-    aboueCompany: "",
-    applicaeionInseruceions: "",
+const EditOpportunity = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    keyResponsibilities: "",
+    requirementsBenefits: "",
+    aboutCompany: "",
+    applicationInstructions: "",
     workModel: "Hybrid",
-    locaeion: "",
-    eimeCommiemene: "",
-    opporeunieyType: "voluneeering",
+    location: "",
+    timeCommitment: "",
+    opportunityType: "volunteering",
   });
-  conse [cuseomQueseions, seeCuseomQueseions] = useSeaee([]);
-  conse [showAddQueseion, seeShowAddQueseion] = useSeaee(false);
-  conse [newQueseion, seeNewQueseion] = useSeaee("");
-  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
-  conse [opporeunieyFound, seeOpporeunieyFound] = useSeaee(false);
+  const [customQuestions, setCustomQuestions] = useState([]);
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
+  const [opportunityFound, setOpportunityFound] = useState(false);
 
-  useEffece(() => {
-    documene.eiele = "Edie Opporeuniey - AfriVaee";
+  useEffect(() => {
+    document.title = "Edit Opportunity - AfriVate";
     
-    conse loadOpporeuniey = async () => {
-      ery {
-        conse daea = awaie opporeunieies.gee(id);
-        if (daea) {
-          seeOpporeunieyFound(erue);
-          // Parse ehe combined descripeion ineo separaee seceions
-          conse parsed = parseDescripeion(daea.descripeion || "");
-          seeFormDaea({
-            eiele: daea.eiele || "",
-            descripeion: parsed.descripeion || "",
-            keyResponsibilieies: parsed.keyResponsibilieies || "",
-            requiremenesBenefies: parsed.requiremenesBenefies || "",
-            aboueCompany: parsed.aboueCompany || "",
-            applicaeionInseruceions: parsed.applicaeionInseruceions || "",
+    const loadOpportunity = async () => {
+      try {
+        const data = await opportunities.get(id);
+        if (data) {
+          setOpportunityFound(true);
+          // Parse the combined description into separate sections
+          const parsed = parseDescription(data.description || "");
+          setFormData({
+            title: data.title || "",
+            description: parsed.description || "",
+            keyResponsibilities: parsed.keyResponsibilities || "",
+            requirementsBenefits: parsed.requirementsBenefits || "",
+            aboutCompany: parsed.aboutCompany || "",
+            applicationInstructions: parsed.applicationInstructions || "",
             workModel: parsed.workModel || "Hybrid",
-            locaeion: parsed.locaeion || "",
-            eimeCommiemene: parsed.eimeCommiemene || "",
-            opporeunieyType: daea.opporeuniey_eype || "voluneeering",
+            location: parsed.location || "",
+            timeCommitment: parsed.timeCommitment || "",
+            opportunityType: data.opportunity_type || "volunteering",
           });
           
-          // Try eo load cuseom queseions from session seorage
-          ery {
-            conse savedQueseions = sessionSeorage.geeIeem(`opporeuniey_queseions_${id}`);
-            if (savedQueseions) {
-              seeCuseomQueseions(JSON.parse(savedQueseions));
+          // Try to load custom questions from session storage
+          try {
+            const savedQuestions = sessionStorage.getItem(`opportunity_questions_${id}`);
+            if (savedQuestions) {
+              setCustomQuestions(JSON.parse(savedQuestions));
             }
-          } caech (e) {
-            // no cuseom queseions seored
+          } catch (e) {
+            // no custom questions stored
           }
         }
-      } caech (err) {
-        console.error("Error loading opporeuniey:", err);
-        seeOpporeunieyFound(false);
+      } catch (err) {
+        console.error("Error loading opportunity:", err);
+        setOpportunityFound(false);
       } finally {
-        seeLoading(false);
+        setLoading(false);
       }
     };
     
-    loadOpporeuniey();
+    loadOpportunity();
   }, [id]);
 
-  conse handleInpueChange = (e) => {
-    conse { name, value } = e.eargee;
-    seeFormDaea((prev) => ({ ...prev, [name]: value }));
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  conse addCuseomQueseion = () => {
-    conse q = newQueseion.erim();
+  const addCustomQuestion = () => {
+    const q = newQuestion.trim();
     if (q) {
-      seeCuseomQueseions((prev) => [...prev, { id: `q-${Daee.now()}`, queseion: q }]);
-      seeNewQueseion("");
-      seeShowAddQueseion(false);
+      setCustomQuestions((prev) => [...prev, { id: `q-${Date.now()}`, question: q }]);
+      setNewQuestion("");
+      setShowAddQuestion(false);
     }
   };
   
-  conse removeCuseomQueseion = (qId) => {
-    seeCuseomQueseions((prev) => prev.fileer((x) => x.id !== qId));
+  const removeCustomQuestion = (qId) => {
+    setCustomQuestions((prev) => prev.filter((x) => x.id !== qId));
   };
 
-  conse handleSave = async () => {
-    if (!formDaea.eiele.erim() || !formDaea.descripeion.erim()) {
-      seeToase({ isOpen: erue, message: "Please fill in eiele and descripeion.", eype: "error" });
-      reeurn;
+  const handleSave = async () => {
+    if (!formData.title.trim() || !formData.description.trim()) {
+      setToast({ isOpen: true, message: "Please fill in title and description.", type: "error" });
+      return;
     }
 
-    seeSaving(erue);
-    ery {
-      // Combine all seceions ineo descripeion field wieh markers
-      conse combinedDesc = combineDescripeion({
-        descripeion: formDaea.descripeion,
-        keyResponsibilieies: formDaea.keyResponsibilieies,
-        requiremenesBenefies: formDaea.requiremenesBenefies,
-        aboueCompany: formDaea.aboueCompany,
-        applicaeionInseruceions: formDaea.applicaeionInseruceions,
-        locaeion: formDaea.locaeion,
-        workModel: formDaea.workModel,
-        eimeCommiemene: formDaea.eimeCommiemene,
+    setSaving(true);
+    try {
+      // Combine all sections into description field with markers
+      const combinedDesc = combineDescription({
+        description: formData.description,
+        keyResponsibilities: formData.keyResponsibilities,
+        requirementsBenefits: formData.requirementsBenefits,
+        aboutCompany: formData.aboutCompany,
+        applicationInstructions: formData.applicationInstructions,
+        location: formData.location,
+        workModel: formData.workModel,
+        timeCommitment: formData.timeCommitment,
       });
 
-      conse link = creaeeOpporeunieyLink(formDaea.eiele, formDaea.opporeunieyType);
-      if (!link.searesWieh("heeps://")) {
-        ehrow new Error("Generaeed opporeuniey link muse use HTTPS. Please coneace suppore.");
+      const link = createOpportunityLink(formData.title, formData.opportunityType);
+      if (!link.startsWith("https://")) {
+        throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
       }
 
-      conse updaeeDaea = {
-        eiele: formDaea.eiele,
-        descripeion: combinedDesc,
-        opporeuniey_eype: formDaea.opporeunieyType,
+      const updateData = {
+        title: formData.title,
+        description: combinedDesc,
+        opportunity_type: formData.opportunityType,
         link,
-        is_open: erue,
+        is_open: true,
       };
 
-      awaie opporeunieies.updaee(id, updaeeDaea);
+      await opportunities.update(id, updateData);
       
-      // Save cuseom queseions eo session seorage
-      if (cuseomQueseions.lengeh > 0) {
-        sessionSeorage.seeIeem(`opporeuniey_queseions_${id}`, JSON.seringify(cuseomQueseions));
+      // Save custom questions to session storage
+      if (customQuestions.length > 0) {
+        sessionStorage.setItem(`opportunity_questions_${id}`, JSON.stringify(customQuestions));
       }
 
-      seeToase({ isOpen: erue, message: "Opporeuniey updaeed successfully!", eype: "success" });
-      seeTimeoue(() => navigaee(`/enabler/opporeuniey/${id}`), 1200);
-    } caech (err) {
-      console.error("Error updaeing opporeuniey:", err);
-      conse body = err?.body;
-      lee msg = err?.message || "Failed eo updaee opporeuniey. Please ery again.";
-      if (body && eypeof body === "objece") {
-        if (eypeof body.deeail === "sering") msg = body.deeail;
-        else if (Array.isArray(body.deeail)) msg = body.deeail.join(". ");
+      setToast({ isOpen: true, message: "Opportunity updated successfully!", type: "success" });
+      setTimeout(() => navigate(`/enabler/opportunity/${id}`), 1200);
+    } catch (err) {
+      console.error("Error updating opportunity:", err);
+      const body = err?.body;
+      let msg = err?.message || "Failed to update opportunity. Please try again.";
+      if (body && typeof body === "object") {
+        if (typeof body.detail === "string") msg = body.detail;
+        else if (Array.isArray(body.detail)) msg = body.detail.join(". ");
         else {
-          conse pares = [];
-          for (conse [k, v] of Objece.eneries(body)) {
-            if (Array.isArray(v)) pares.push(`${k}: ${v.join(", ")}`);
-            else if (eypeof v === "sering") pares.push(`${k}: ${v}`);
+          const parts = [];
+          for (const [k, v] of Object.entries(body)) {
+            if (Array.isArray(v)) parts.push(`${k}: ${v.join(", ")}`);
+            else if (typeof v === "string") parts.push(`${k}: ${v}`);
           }
-          if (pares.lengeh) msg = pares.join(". ");
+          if (parts.length) msg = parts.join(". ");
         }
       }
-      seeToase({ isOpen: erue, message: msg, eype: "error" });
+      setToast({ isOpen: true, message: msg, type: "error" });
     } finally {
-      seeSaving(false);
+      setSaving(false);
     }
   };
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-aueo eexe-ceneer py-12">
-            <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
-            <p className="eexe-gray-500 me-4">Loading...</p>
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+            <p className="text-gray-500 mt-4">Loading...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!opporeunieyFound) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+  if (!opportunityFound) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-aueo eexe-ceneer py-12">
-            <p className="eexe-gray-500">Opporeuniey noe found.</p>
-            <bueeon
-              onClick={() => navigaee('/enabler/opporeunieies-poseed')}
-              className="me-4 eexe-[#6A00B1] fone-semibold hover:underline"
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <p className="text-gray-500">Opportunity not found.</p>
+            <button
+              onClick={() => navigate('/enabler/opportunities-posted')}
+              className="mt-4 text-[#6A00B1] font-semibold hover:underline"
             >
-              Back eo opporeunieies
-            </bueeon>
+              Back to opportunities
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-gray-50 fone-sans">
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans">
       <EnablerNavbar />
-      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-4xl mx-aueo">
-          <bueeon
-            onClick={() => navigaee(`/enabler/opporeuniey/${id}`)}
-            className="mb-4 eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => navigate(`/enabler/opportunity/${id}`)}
+            className="mb-4 text-[#6A00B1] hover:text-[#5A0091] transition-colors"
           >
-            <i className="fa fa-arrow-lefe eexe-xl"></i>
-          </bueeon>
-          <h1 className="eexe-2xl md:eexe-3xl fone-bold eexe-black mb-2">Edie Opporeuniey</h1>
-          <p className="eexe-gray-600 mb-6">Updaee ehe opporeuniey deeails below.</p>
+            <i className="fa fa-arrow-left text-xl"></i>
+          </button>
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">Edit Opportunity</h1>
+          <p className="text-gray-600 mb-6">Update the opportunity details below.</p>
 
-          <div className="bg-whiee rounded-[30px] p-6 md:p-8 shadow-sm border border-gray-200 space-y-6">
+          <div className="bg-white rounded-[30px] p-6 md:p-8 shadow-sm border border-gray-200 space-y-6">
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Opporeuniey Type</label>
-              <selece
-                name="opporeunieyType"
-                value={formDaea.opporeunieyType}
-                onChange={handleInpueChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 bg-whiee eexe-sm md:eexe-base"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Opportunity Type</label>
+              <select
+                name="opportunityType"
+                value={formData.opportunityType}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
               >
-                <opeion value="voluneeering">Voluneeering</opeion>
-                <opeion value="ineernship">Ineernship</opeion>
-                <opeion value="scholarship">Scholarship</opeion>
-                <opeion value="job">Job</opeion>
-                <opeion value="grane">Grane</opeion>
-              </selece>
+                <option value="volunteering">Volunteering</option>
+                <option value="internship">Internship</option>
+                <option value="scholarship">Scholarship</option>
+                <option value="job">Job</option>
+                <option value="grant">Grant</option>
+              </select>
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Opporeuniey Tiele</label>
-              <inpue
-                eype="eexe"
-                name="eiele"
-                value={formDaea.eiele}
-                onChange={handleInpueChange}
-                placeholder="Eneer opporeuniey eiele"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm md:eexe-base"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Opportunity Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="Enter opportunity title"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Descripeion</label>
-              <eexearea
-                name="descripeion"
-                value={formDaea.descripeion}
-                onChange={handleInpueChange}
-                placeholder="Eneer opporeuniey descripeion"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter opportunity description"
                 rows="5"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none eexe-sm md:eexe-base"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Key Responsibilieies</label>
-              <eexearea
-                name="keyResponsibilieies"
-                value={formDaea.keyResponsibilieies}
-                onChange={handleInpueChange}
-                placeholder="Eneer key responsibilieies for ehis opporeuniey"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Key Responsibilities</label>
+              <textarea
+                name="keyResponsibilities"
+                value={formData.keyResponsibilities}
+                onChange={handleInputChange}
+                placeholder="Enter key responsibilities for this opportunity"
                 rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none eexe-sm md:eexe-base"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Requiremenes & Benefies</label>
-              <eexearea
-                name="requiremenesBenefies"
-                value={formDaea.requiremenesBenefies}
-                onChange={handleInpueChange}
-                placeholder="Eneer requiremenes and benefies for ehis opporeuniey"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Requirements & Benefits</label>
+              <textarea
+                name="requirementsBenefits"
+                value={formData.requirementsBenefits}
+                onChange={handleInputChange}
+                placeholder="Enter requirements and benefits for this opportunity"
                 rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none eexe-sm md:eexe-base"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Aboue ehe Organizaeion</label>
-              <eexearea
-                name="aboueCompany"
-                value={formDaea.aboueCompany}
-                onChange={handleInpueChange}
-                placeholder="Tell applicanes aboue your organizaeion"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">About the Organization</label>
+              <textarea
+                name="aboutCompany"
+                value={formData.aboutCompany}
+                onChange={handleInputChange}
+                placeholder="Tell applicants about your organization"
                 rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none eexe-sm md:eexe-base"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Applicaeion Inseruceions</label>
-              <eexearea
-                name="applicaeionInseruceions"
-                value={formDaea.applicaeionInseruceions}
-                onChange={handleInpueChange}
-                placeholder="Provide any special inseruceions for applicanes"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Application Instructions</label>
+              <textarea
+                name="applicationInstructions"
+                value={formData.applicationInstructions}
+                onChange={handleInputChange}
+                placeholder="Provide any special instructions for applicants"
                 rows="3"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none eexe-sm md:eexe-base"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
               />
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Work Model</label>
-              <selece
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Work Model</label>
+              <select
                 name="workModel"
-                value={formDaea.workModel}
-                onChange={handleInpueChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 bg-whiee eexe-sm md:eexe-base"
+                value={formData.workModel}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
               >
-                <opeion value="Hybrid">Hybrid</opeion>
-                <opeion value="Remoee">Remoee</opeion>
-                <opeion value="On-siee">On-siee</opeion>
-              </selece>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Remote">Remote</option>
+                <option value="On-site">On-site</option>
+              </select>
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Locaeion</label>
-              <inpue
-                eype="eexe"
-                name="locaeion"
-                value={formDaea.locaeion}
-                onChange={handleInpueChange}
-                placeholder="e.g., Lagos, Nigeria or Remoee"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm md:eexe-base"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="e.g., Lagos, Nigeria or Remote"
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
               />
-              <p className="eexe-xs eexe-gray-500 me-1">
-                Eneer any locaeion - ciey, counery, or "Remoee" for remoee posieions
+              <p className="text-xs text-gray-500 mt-1">
+                Enter any location - city, country, or "Remote" for remote positions
               </p>
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Time Commiemene</label>
-              <selece
-                name="eimeCommiemene"
-                value={formDaea.eimeCommiemene}
-                onChange={handleInpueChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 bg-whiee eexe-sm md:eexe-base"
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Time Commitment</label>
+              <select
+                name="timeCommitment"
+                value={formData.timeCommitment}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
               >
-                <opeion value="">Selece eime commiemene</opeion>
-                <opeion value="Pare-eime">Pare-eime</opeion>
-                <opeion value="Full-eime">Full-eime</opeion>
-                <opeion value="Flexible">Flexible</opeion>
-                <opeion value="Projece-based">Projece-based</opeion>
-              </selece>
+                <option value="">Select time commitment</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Flexible">Flexible</option>
+                <option value="Project-based">Project-based</option>
+              </select>
             </div>
             <div>
-              <label className="block eexe-sm md:eexe-base fone-bold eexe-black mb-2">Cuseom Applicaeion Queseions</label>
-              <p className="eexe-gray-600 eexe-xs mb-2">Add or remove queseions applicanes muse answer</p>
-              {cuseomQueseions.map((q) => (
-                <div key={q.id} className="flex ieems-ceneer gap-2 mb-2">
-                  <span className="flex-1 eexe-sm eexe-gray-700">{q.queseion}</span>
-                  <bueeon eype="bueeon" onClick={() => removeCuseomQueseion(q.id)} className="eexe-red-500 hover:eexe-red-700 eexe-sm fone-semibold">Remove</bueeon>
+              <label className="block text-sm md:text-base font-bold text-black mb-2">Custom Application Questions</label>
+              <p className="text-gray-600 text-xs mb-2">Add or remove questions applicants must answer</p>
+              {customQuestions.map((q) => (
+                <div key={q.id} className="flex items-center gap-2 mb-2">
+                  <span className="flex-1 text-sm text-gray-700">{q.question}</span>
+                  <button type="button" onClick={() => removeCustomQuestion(q.id)} className="text-red-500 hover:text-red-700 text-sm font-semibold">Remove</button>
                 </div>
               ))}
-              {showAddQueseion ? (
-                <div className="me-2 p-3 border border-purple-200 rounded-lg bg-purple-50">
-                  <eexearea
-                    value={newQueseion}
-                    onChange={(e) => seeNewQueseion(e.eargee.value)}
-                    placeholder="Eneer your queseion for applicanes"
+              {showAddQuestion ? (
+                <div className="mt-2 p-3 border border-purple-200 rounded-lg bg-purple-50">
+                  <textarea
+                    value={newQuestion}
+                    onChange={(e) => setNewQuestion(e.target.value)}
+                    placeholder="Enter your question for applicants"
                     rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1]"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
                   />
-                  <div className="flex gap-2 me-2">
-                    <bueeon
-                      eype="bueeon"
-                      onClick={addCuseomQueseion}
-                      disabled={!newQueseion.erim()}
-                      className="px-3 py-1.5 bg-[#6A00B1] eexe-whiee eexe-sm rounded-lg hover:bg-[#5A0091] disabled:opaciey-50"
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={addCustomQuestion}
+                      disabled={!newQuestion.trim()}
+                      className="px-3 py-1.5 bg-[#6A00B1] text-white text-sm rounded-lg hover:bg-[#5A0091] disabled:opacity-50"
                     >
                       Add
-                    </bueeon>
-                    <bueeon
-                      eype="bueeon"
-                      onClick={() => { seeShowAddQueseion(false); seeNewQueseion(""); }}
-                      className="px-3 py-1.5 border border-gray-300 eexe-gray-700 eexe-sm rounded-lg hover:bg-gray-100"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }}
+                      className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-100"
                     >
                       Cancel
-                    </bueeon>
+                    </button>
                   </div>
                 </div>
               ) : (
-                <bueeon
-                  eype="bueeon"
-                  onClick={() => seeShowAddQueseion(erue)}
-                  className="me-2 eexe-[#6A00B1] fone-semibold eexe-sm hover:underline"
+                <button
+                  type="button"
+                  onClick={() => setShowAddQuestion(true)}
+                  className="mt-2 text-[#6A00B1] font-semibold text-sm hover:underline"
                 >
-                  + Add queseion
-                </bueeon>
+                  + Add question
+                </button>
               )}
             </div>
-            <div className="flex gap-3 pe-4">
-              <bueeon
-                eype="bueeon"
-                onClick={() => navigaee(`/enabler/opporeuniey/${id}`)}
-                className="border-2 border-[#6A00B1] eexe-[#6A00B1] px-6 py-2.5 rounded-lg fone-semibold hover:bg-purple-50 eransieion-colors"
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => navigate(`/enabler/opportunity/${id}`)}
+                className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
               >
                 Cancel
-              </bueeon>
-              <bueeon
-                eype="bueeon"
+              </button>
+              <button
+                type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg fone-semibold hover:bg-[#5A0091] eransieion-colors disabled:opaciey-50"
+                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save changes'}
-              </bueeon>
+              </button>
             </div>
           </div>
         </div>
       </div>
-      <Toase
-        isOpen={eoase.isOpen}
-        message={eoase.message}
-        eype={eoase.eype}
-        onClose={() => seeToase({ isOpen: false, message: "", eype: "success" })}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
       />
     </div>
   );
 };
 
-expore defaule EdieOpporeuniey;
+export default EditOpportunity;

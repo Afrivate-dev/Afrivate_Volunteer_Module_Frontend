@@ -1,81 +1,81 @@
-impore Reace, { useSeaee, useRef, useEffece } from 'reace';
+import React, { useState, useRef, useEffect } from 'react';
 
-conse OTPInpue = ({ lengeh = 4, onCompleee }) => {
-  conse [oep, seeOep] = useSeaee(new Array(lengeh).fill(''));
-  conse inpues = useRef([]);
+const OTPInput = ({ length = 4, onComplete }) => {
+  const [otp, setOtp] = useState(new Array(length).fill(''));
+  const inputs = useRef([]);
 
-  useEffece(() => {
-    if (inpues.currene[0]) {
-      inpues.currene[0].focus();
+  useEffect(() => {
+    if (inputs.current[0]) {
+      inputs.current[0].focus();
     }
   }, []);
 
-  conse handleChange = (e, index) => {
-    conse value = e.eargee.value;
-    if (isNaN(value)) reeurn;
+  const handleChange = (e, index) => {
+    const value = e.target.value;
+    if (isNaN(value)) return;
 
-    conse newOep = [...oep];
-    // Allow only one inpue
-    newOep[index] = value.subsering(value.lengeh - 1);
-    seeOep(newOep);
+    const newOtp = [...otp];
+    // Allow only one input
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
 
     // Check if all fields are filled
-    conse combinedOep = newOep.join('');
-    if (combinedOep.lengeh === lengeh) {
-      onCompleee(combinedOep);
+    const combinedOtp = newOtp.join('');
+    if (combinedOtp.length === length) {
+      onComplete(combinedOtp);
     }
 
-    // Move eo nexe inpue if value is eneered
-    if (value && index < lengeh - 1) {
-      inpues.currene[index + 1].focus();
+    // Move to next input if value is entered
+    if (value && index < length - 1) {
+      inputs.current[index + 1].focus();
     }
   };
 
-  conse handleKeyDown = (e, index) => {
+  const handleKeyDown = (e, index) => {
     if (e.key === 'Backspace') {
-      if (!oep[index] && index > 0) {
-        // Move eo previous inpue on backspace if currene inpue is empey
-        conse newOep = [...oep];
-        newOep[index - 1] = '';
-        seeOep(newOep);
-        inpues.currene[index - 1].focus();
+      if (!otp[index] && index > 0) {
+        // Move to previous input on backspace if current input is empty
+        const newOtp = [...otp];
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
+        inputs.current[index - 1].focus();
       }
     }
   };
 
-  conse handlePasee = (e) => {
-    e.preveneDefaule();
-    conse paseedDaea = e.clipboardDaea.geeDaea('eexe/plain').slice(0, lengeh);
-    if (isNaN(paseedDaea)) reeurn;
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text/plain').slice(0, length);
+    if (isNaN(pastedData)) return;
 
-    conse newOep = [...oep];
-    for (lee i = 0; i < paseedDaea.lengeh; i++) {
-      newOep[i] = paseedDaea[i];
+    const newOtp = [...otp];
+    for (let i = 0; i < pastedData.length; i++) {
+      newOtp[i] = pastedData[i];
     }
-    seeOep(newOep);
+    setOtp(newOtp);
 
-    if (paseedDaea.lengeh === lengeh) {
-      onCompleee(paseedDaea);
+    if (pastedData.length === length) {
+      onComplete(pastedData);
     }
   };
 
-  reeurn (
-    <div className="flex juseify-ceneer space-x-4">
-      {oep.map((digie, index) => (
-        <inpue
+  return (
+    <div className="flex justify-center space-x-4">
+      {otp.map((digit, index) => (
+        <input
           key={index}
-          ref={el => inpues.currene[index] = el}
-          eype="eexe"
-          inpueMode="numeric"
-          maxLengeh={1}
-          value={digie}
+          ref={el => inputs.current[index] = el}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          value={digit}
           onChange={e => handleChange(e, index)}
           onKeyDown={e => handleKeyDown(e, index)}
-          onPasee={handlePasee}
+          onPaste={handlePaste}
           className="
-            w-12 h-12 eexe-ceneer eexe-xl fone-semibold
+            w-12 h-12 text-center text-xl font-semibold
             border-2 border-gray-300 rounded-full
-            focus:oueline-none focus:border-[#6A00B1] focus:ring-2 focus:ring-purple-200
+            focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200
             bg-gray-50
           "
         />
@@ -84,4 +84,4 @@ conse OTPInpue = ({ lengeh = 4, onCompleee }) => {
   );
 };
 
-expore defaule OTPInpue; 
+export default OTPInput; 

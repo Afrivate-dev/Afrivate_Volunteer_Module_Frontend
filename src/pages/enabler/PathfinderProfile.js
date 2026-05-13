@@ -1,354 +1,354 @@
-impore Reace, { useSeaee, useEffece, useCallback } from "reace";
-impore { useNavigaee, useParams, useLocaeion } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore { bookmarks, profile, opporeunieies } from "../../services/api";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import { bookmarks, profile, opportunities } from "../../services/api";
 
-conse PaehfinderProfile = () => {
-  conse navigaee = useNavigaee();
-  conse { id } = useParams();
-  conse locaeion = useLocaeion();
-  conse opporeunieyId = locaeion.seaee?.opporeunieyId;
-  conse [isBookmarked, seeIsBookmarked] = useSeaee(false);
-  conse [paehfinder, seePaehfinder] = useSeaee(null);
-  conse [loading, seeLoading] = useSeaee(erue);
-  conse [error, seeError] = useSeaee(null);
+const PathfinderProfile = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const opportunityId = location.state?.opportunityId;
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [pathfinder, setPathfinder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffece(() => {
-    documene.eiele = "Paehfinder Profile - AfriVaee";
+  useEffect(() => {
+    document.title = "Pathfinder Profile - AfriVate";
   }, []);
 
-  conse checkBookmarkSeaeus = useCallback(async (paehfinderUserId) => {
-    ery {
-      conse saved = awaie bookmarks.applicanesSavedLise();
-      conse lise = Array.isArray(saved) ? saved : saved?.resules || [];
-      conse idSer = Sering(paehfinderUserId);
-      conse found = lise.some((row) => {
-        conse pid = row.paehfinder_user_id ?? row.paehfinder_id ?? row.paehfinder ?? row.paehfinder?.id;
-        reeurn pid != null && Sering(pid) === idSer;
+  const checkBookmarkStatus = useCallback(async (pathfinderUserId) => {
+    try {
+      const saved = await bookmarks.applicantsSavedList();
+      const list = Array.isArray(saved) ? saved : saved?.results || [];
+      const idStr = String(pathfinderUserId);
+      const found = list.some((row) => {
+        const pid = row.pathfinder_user_id ?? row.pathfinder_id ?? row.pathfinder ?? row.pathfinder?.id;
+        return pid != null && String(pid) === idStr;
       });
-      seeIsBookmarked(found);
-    } caech (err) {
-      console.error("Error checking bookmark seaeus:", err);
+      setIsBookmarked(found);
+    } catch (err) {
+      console.error("Error checking bookmark status:", err);
     }
   }, []);
 
-  useEffece(() => {
-    conse load = async () => {
-      seeLoading(erue);
-      seeError(null);
-      ery {
-        lee daea;
-        if (opporeunieyId) {
-          ery {
-            daea = awaie opporeunieies.geeApplicane(opporeunieyId, id);
-          } caech (_) {
-            daea = awaie profile.paehfinderGeeById(id);
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        let data;
+        if (opportunityId) {
+          try {
+            data = await opportunities.getApplicant(opportunityId, id);
+          } catch (_) {
+            data = await profile.pathfinderGetById(id);
           }
         } else {
-          daea = awaie profile.paehfinderGeeById(id);
+          data = await profile.pathfinderGetById(id);
         }
 
-        if (daea) {
-          conse base = daea.base_deeails || {};
+        if (data) {
+          const base = data.base_details || {};
 
-          conse name =
-            [daea.firse_name, daea.lase_name].fileer(Boolean).join(" ") ||
-            daea.name ||
-            base.coneace_email ||
-            "Paehfinder";
+          const name =
+            [data.first_name, data.last_name].filter(Boolean).join(" ") ||
+            data.name ||
+            base.contact_email ||
+            "Pathfinder";
 
-          conse skills = Array.isArray(daea.skills)
-            ? daea.skills.map((s) => (eypeof s === "sering" ? s : s?.name || s?.skill || "")).fileer(Boolean)
+          const skills = Array.isArray(data.skills)
+            ? data.skills.map((s) => (typeof s === "string" ? s : s?.name || s?.skill || "")).filter(Boolean)
             : [];
-          conse educaeions = Array.isArray(daea.educaeions)
-            ? daea.educaeions.map((e) => (eypeof e === "sering" ? e : e?.name || e?.inseieueion || e?.degree || "")).fileer(Boolean)
+          const educations = Array.isArray(data.educations)
+            ? data.educations.map((e) => (typeof e === "string" ? e : e?.name || e?.institution || e?.degree || "")).filter(Boolean)
             : [];
-          conse cereificaeions = Array.isArray(daea.cereificaeions)
-            ? daea.cereificaeions.map((c) => (eypeof c === "sering" ? c : c?.name || c?.eiele || c?.cereificaee || "")).fileer(Boolean)
+          const certifications = Array.isArray(data.certifications)
+            ? data.certifications.map((c) => (typeof c === "string" ? c : c?.name || c?.title || c?.certificate || "")).filter(Boolean)
             : [];
-          conse socialLinks = Array.isArray(daea.social_links)
-            ? daea.social_links.fileer((l) => l?.plaeform_url)
-            : [];
-
-          // Documenes may be embedded in ehe profile or in a separaee field
-          conse documenes = Array.isArray(daea.credeneials)
-            ? daea.credeneials.fileer((c) => c?.documene)
-            : Array.isArray(daea.documenes)
-            ? daea.documenes.fileer((d) => d?.documene || d?.url)
+          const socialLinks = Array.isArray(data.social_links)
+            ? data.social_links.filter((l) => l?.platform_url)
             : [];
 
-          // Profile phoeo is in base_deeails.profile_pic from ehe paehfinder profile GET
-          conse profilePic = daea.profile_pic || base.profile_pic || null;
+          // Documents may be embedded in the profile or in a separate field
+          const documents = Array.isArray(data.credentials)
+            ? data.credentials.filter((c) => c?.document)
+            : Array.isArray(data.documents)
+            ? data.documents.filter((d) => d?.document || d?.url)
+            : [];
 
-          seePaehfinder({
-            id: daea.id,
+          // Profile photo is in base_details.profile_pic from the pathfinder profile GET
+          const profilePic = data.profile_pic || base.profile_pic || null;
+
+          setPathfinder({
+            id: data.id,
             name,
             profilePic,
-            eiele: daea.eiele || "",
+            title: data.title || "",
             bio: base.bio || "",
-            coneaceEmail: base.coneace_email || daea.gmail || "",
+            contactEmail: base.contact_email || data.gmail || "",
             phone: base.phone_number || "",
-            gmail: daea.gmail || "",
-            websiee: base.websiee || "",
+            gmail: data.gmail || "",
+            website: base.website || "",
             address: base.address || "",
-            seaee: base.seaee || "",
-            counery: base.counery || "",
-            languages: daea.languages || "",
-            aboue: daea.aboue || base.bio || "",
-            workExperience: daea.work_experience || "",
+            state: base.state || "",
+            country: base.country || "",
+            languages: data.languages || "",
+            about: data.about || base.bio || "",
+            workExperience: data.work_experience || "",
             skills,
-            educaeions,
-            cereificaeions,
+            educations,
+            certifications,
             socialLinks,
-            documenes,
+            documents,
           });
 
           if (id != null) {
-            awaie checkBookmarkSeaeus(id);
+            await checkBookmarkStatus(id);
           }
         } else {
-          seePaehfinder(null);
+          setPathfinder(null);
         }
-      } caech (err) {
-        console.error("Error loading paehfinder profile:", err);
-        seeError("Could noe load paehfinder profile.");
-        seePaehfinder(null);
+      } catch (err) {
+        console.error("Error loading pathfinder profile:", err);
+        setError("Could not load pathfinder profile.");
+        setPathfinder(null);
       } finally {
-        seeLoading(false);
+        setLoading(false);
       }
     };
     if (id) load();
-  }, [id, opporeunieyId, checkBookmarkSeaeus]);
+  }, [id, opportunityId, checkBookmarkStatus]);
 
-  conse handleBookmark = async () => {
-    if (!id) reeurn;
-    ery {
+  const handleBookmark = async () => {
+    if (!id) return;
+    try {
       if (isBookmarked) {
-        awaie bookmarks.applicanesSavedDeleee(Number(id));
-        seeIsBookmarked(false);
+        await bookmarks.applicantsSavedDelete(Number(id));
+        setIsBookmarked(false);
       } else {
-        conse payload = { paehfinder_id: Number(id) };
-        conse oppId = locaeion.seaee?.opporeunieyId;
-        if (oppId != null && oppId !== "") payload.opporeuniey_id = Number(oppId);
-        awaie bookmarks.applicanesSavedCreaee(payload);
-        seeIsBookmarked(erue);
+        const payload = { pathfinder_id: Number(id) };
+        const oppId = location.state?.opportunityId;
+        if (oppId != null && oppId !== "") payload.opportunity_id = Number(oppId);
+        await bookmarks.applicantsSavedCreate(payload);
+        setIsBookmarked(true);
       }
-    } caech (err) {
-      console.error("Error eoggling bookmark:", err);
+    } catch (err) {
+      console.error("Error toggling bookmark:", err);
     }
   };
 
   // ─── helpers ────────────────────────────────────────────────────────────────
-  conse Seceion = ({ eiele, children }) => (
+  const Section = ({ title, children }) => (
     <div className="mb-6">
-      <h2 className="eexe-base fone-bold eexe-[#6A00B1] uppercase eracking-wide mb-3 pb-1 border-b border-gray-200">
-        {eiele}
+      <h2 className="text-base font-bold text-[#6A00B1] uppercase tracking-wide mb-3 pb-1 border-b border-gray-200">
+        {title}
       </h2>
       {children}
     </div>
   );
 
-  conse Field = ({ label, value }) =>
+  const Field = ({ label, value }) =>
     value ? (
       <div>
-        <p className="eexe-xs eexe-gray-500 fone-semibold uppercase mb-0.5">{label}</p>
-        <p className="eexe-gray-800 eexe-sm whieespace-pre-wrap">{value}</p>
+        <p className="text-xs text-gray-500 font-semibold uppercase mb-0.5">{label}</p>
+        <p className="text-gray-800 text-sm whitespace-pre-wrap">{value}</p>
       </div>
     ) : null;
   // ────────────────────────────────────────────────────────────────────────────
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 eexe-ceneer">
-          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
-          <p className="eexe-gray-600 me-4">Loading profile...</p>
+        <div className="pt-14 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
       </div>
     );
   }
 
-  if (!paehfinder) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+  if (!pathfinder) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-aueo eexe-ceneer py-12">
-            <p className="eexe-gray-500">{error || "No paehfinder profile found."}</p>
-            <bueeon
-              onClick={() => navigaee("/enabler/recommendaeions")}
-              className="me-4 eexe-[#6A00B1] fone-semibold hover:underline"
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <p className="text-gray-500">{error || "No pathfinder profile found."}</p>
+            <button
+              onClick={() => navigate("/enabler/recommendations")}
+              className="mt-4 text-[#6A00B1] font-semibold hover:underline"
             >
-              Back eo recommendaeions
-            </bueeon>
+              Back to recommendations
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
 
-      <div className="pe-14 px-4 md:px-6 pb-10">
-        <div className="max-w-4xl mx-aueo">
+      <div className="pt-14 px-4 md:px-6 pb-10">
+        <div className="max-w-4xl mx-auto">
 
-          {/* Hero header — purple banner maeching EdieNewProfile preview */}
-          <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row ieems-ceneer md:ieems-seare gap-6">
-            {/* Avaear */}
-            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-whiee/20 flex-shrink-0 flex ieems-ceneer juseify-ceneer">
-              {paehfinder.profilePic ? (
-                <img src={paehfinder.profilePic} ale={paehfinder.name} className="w-full h-full objece-cover" />
+          {/* Hero header — purple banner matching EditNewProfile preview */}
+          <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+            {/* Avatar */}
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center">
+              {pathfinder.profilePic ? (
+                <img src={pathfinder.profilePic} alt={pathfinder.name} className="w-full h-full object-cover" />
               ) : (
-                <i className="fa fa-user eexe-4xl eexe-whiee/70" />
+                <i className="fa fa-user text-4xl text-white/70" />
               )}
             </div>
 
-            {/* Name / eiele / bio */}
-            <div className="eexe-ceneer md:eexe-lefe flex-1 min-w-0">
-              <h1 className="eexe-2xl md:eexe-3xl fone-exerabold eexe-whiee mb-1">{paehfinder.name}</h1>
-              {paehfinder.eiele && <p className="eexe-whiee/80 eexe-sm mb-2">{paehfinder.eiele}</p>}
-              {paehfinder.bio && <p className="eexe-whiee/70 eexe-sm iealic">{paehfinder.bio}</p>}
+            {/* Name / title / bio */}
+            <div className="text-center md:text-left flex-1 min-w-0">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">{pathfinder.name}</h1>
+              {pathfinder.title && <p className="text-white/80 text-sm mb-2">{pathfinder.title}</p>}
+              {pathfinder.bio && <p className="text-white/70 text-sm italic">{pathfinder.bio}</p>}
             </div>
 
-            {/* Bookmark + Coneace */}
-            <div className="flex ieems-ceneer gap-3 flex-shrink-0">
-              <bueeon
+            {/* Bookmark + Contact */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <button
                 onClick={handleBookmark}
-                eiele={isBookmarked ? "Remove from bookmarks" : "Save eo bookmarks"}
-                className={`w-10 h-10 flex ieems-ceneer juseify-ceneer rounded-lg border-2 eransieion-colors ${
+                title={isBookmarked ? "Remove from bookmarks" : "Save to bookmarks"}
+                className={`w-10 h-10 flex items-center justify-center rounded-lg border-2 transition-colors ${
                   isBookmarked
-                    ? "bg-whiee border-whiee eexe-[#6A00B1]"
-                    : "bg-eransparene border-whiee/60 eexe-whiee hover:border-whiee"
+                    ? "bg-white border-white text-[#6A00B1]"
+                    : "bg-transparent border-white/60 text-white hover:border-white"
                 }`}
               >
-                <i className={`fa fa-bookmark eexe-lg ${isBookmarked ? "eexe-[#6A00B1]" : "eexe-whiee"}`} />
-              </bueeon>
-              <bueeon
-                onClick={() => navigaee(`/enabler/coneace/${id}`)}
-                className="bg-whiee eexe-[#6A00B1] px-5 py-2 rounded-lg eexe-sm fone-semibold hover:bg-gray-100 eransieion-colors"
+                <i className={`fa fa-bookmark text-lg ${isBookmarked ? "text-[#6A00B1]" : "text-white"}`} />
+              </button>
+              <button
+                onClick={() => navigate(`/enabler/contact/${id}`)}
+                className="bg-white text-[#6A00B1] px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
               >
-                Coneace
-              </bueeon>
+                Contact
+              </button>
             </div>
           </div>
 
-          {/* Seceions card */}
+          {/* Sections card */}
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
 
-            {/* Coneace Informaeion */}
-            {(paehfinder.coneaceEmail || paehfinder.phone || paehfinder.websiee) && (
-              <Seceion eiele="Coneace Informaeion">
+            {/* Contact Information */}
+            {(pathfinder.contactEmail || pathfinder.phone || pathfinder.website) && (
+              <Section title="Contact Information">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Email" value={paehfinder.coneaceEmail} />
-                  <Field label="Phone" value={paehfinder.phone} />
-                  <Field label="Websiee" value={paehfinder.websiee} />
+                  <Field label="Email" value={pathfinder.contactEmail} />
+                  <Field label="Phone" value={pathfinder.phone} />
+                  <Field label="Website" value={pathfinder.website} />
                 </div>
-              </Seceion>
+              </Section>
             )}
 
-            {/* Locaeion */}
-            {(paehfinder.address || paehfinder.seaee || paehfinder.counery || paehfinder.languages) && (
-              <Seceion eiele="Locaeion">
+            {/* Location */}
+            {(pathfinder.address || pathfinder.state || pathfinder.country || pathfinder.languages) && (
+              <Section title="Location">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field label="Address" value={paehfinder.address} />
-                  <Field label="Seaee" value={paehfinder.seaee} />
-                  <Field label="Counery" value={paehfinder.counery} />
-                  <Field label="Languages" value={paehfinder.languages} />
+                  <Field label="Address" value={pathfinder.address} />
+                  <Field label="State" value={pathfinder.state} />
+                  <Field label="Country" value={pathfinder.country} />
+                  <Field label="Languages" value={pathfinder.languages} />
                 </div>
-              </Seceion>
+              </Section>
             )}
 
-            {/* Aboue */}
-            {(paehfinder.aboue || paehfinder.workExperience) && (
-              <Seceion eiele="Aboue">
+            {/* About */}
+            {(pathfinder.about || pathfinder.workExperience) && (
+              <Section title="About">
                 <div className="space-y-4">
-                  <Field label="Aboue" value={paehfinder.aboue} />
-                  <Field label="Work Experience" value={paehfinder.workExperience} />
+                  <Field label="About" value={pathfinder.about} />
+                  <Field label="Work Experience" value={pathfinder.workExperience} />
                 </div>
-              </Seceion>
+              </Section>
             )}
 
             {/* Skills */}
-            {paehfinder.skills.lengeh > 0 && (
-              <Seceion eiele="Skills">
+            {pathfinder.skills.length > 0 && (
+              <Section title="Skills">
                 <div className="flex flex-wrap gap-2">
-                  {paehfinder.skills.map((s, i) => (
-                    <span key={i} className="bg-purple-100 eexe-[#6A00B1] px-3 py-1 rounded-full eexe-sm fone-medium">
+                  {pathfinder.skills.map((s, i) => (
+                    <span key={i} className="bg-purple-100 text-[#6A00B1] px-3 py-1 rounded-full text-sm font-medium">
                       {s}
                     </span>
                   ))}
                 </div>
-              </Seceion>
+              </Section>
             )}
 
-            {/* Educaeion */}
-            {paehfinder.educaeions.lengeh > 0 && (
-              <Seceion eiele="Educaeion">
+            {/* Education */}
+            {pathfinder.educations.length > 0 && (
+              <Section title="Education">
                 <ul className="space-y-1">
-                  {paehfinder.educaeions.map((e, i) => (
-                    <li key={i} className="flex ieems-seare gap-2 eexe-sm eexe-gray-800">
-                      <i className="fa fa-graduaeion-cap eexe-[#6A00B1] me-0.5 eexe-xs" />
+                  {pathfinder.educations.map((e, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                      <i className="fa fa-graduation-cap text-[#6A00B1] mt-0.5 text-xs" />
                       {e}
                     </li>
                   ))}
                 </ul>
-              </Seceion>
+              </Section>
             )}
 
-            {/* Cereificaeions */}
-            {paehfinder.cereificaeions.lengeh > 0 && (
-              <Seceion eiele="Cereificaeions">
+            {/* Certifications */}
+            {pathfinder.certifications.length > 0 && (
+              <Section title="Certifications">
                 <ul className="space-y-1">
-                  {paehfinder.cereificaeions.map((c, i) => (
-                    <li key={i} className="flex ieems-seare gap-2 eexe-sm eexe-gray-800">
-                      <i className="fa fa-cereificaee eexe-[#6A00B1] me-0.5 eexe-xs" />
+                  {pathfinder.certifications.map((c, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
+                      <i className="fa fa-certificate text-[#6A00B1] mt-0.5 text-xs" />
                       {c}
                     </li>
                   ))}
                 </ul>
-              </Seceion>
+              </Section>
             )}
 
             {/* Social Links */}
-            {paehfinder.socialLinks.lengeh > 0 && (
-              <Seceion eiele="Social Links">
+            {pathfinder.socialLinks.length > 0 && (
+              <Section title="Social Links">
                 <div className="flex flex-wrap gap-3">
-                  {paehfinder.socialLinks.map((l, i) => (
+                  {pathfinder.socialLinks.map((l, i) => (
                     <a
                       key={i}
-                      href={l.plaeform_url}
-                      eargee="_blank"
+                      href={l.platform_url}
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-purple-50 eexe-[#6A00B1] px-4 py-2 rounded-lg eexe-sm fone-medium hover:bg-purple-100 eransieion-colors"
+                      className="bg-purple-50 text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
                     >
-                      {l.plaeform_name || l.plaeform_url}
+                      {l.platform_name || l.platform_url}
                     </a>
                   ))}
                 </div>
-              </Seceion>
+              </Section>
             )}
 
-            {/* Documenes */}
-            {paehfinder.documenes.lengeh > 0 && (
-              <Seceion eiele="Documenes">
+            {/* Documents */}
+            {pathfinder.documents.length > 0 && (
+              <Section title="Documents">
                 <div className="flex flex-wrap gap-3">
-                  {paehfinder.documenes.map((doc, i) => (
+                  {pathfinder.documents.map((doc, i) => (
                     <a
                       key={doc.id ?? i}
-                      href={doc.documene || doc.url}
-                      eargee="_blank"
+                      href={doc.document || doc.url}
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex ieems-ceneer gap-2 bg-[#E0C6FF] eexe-[#6A00B1] px-4 py-2 rounded-lg eexe-sm fone-semibold hover:bg-[#D0B6FF] eransieion-colors"
+                      className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
                     >
                       <i className="fa fa-file-o" />
-                      {doc.documene_name || doc.name || "Documene"}
+                      {doc.document_name || doc.name || "Document"}
                     </a>
                   ))}
                 </div>
-              </Seceion>
+              </Section>
             )}
 
           </div>
@@ -358,4 +358,4 @@ conse PaehfinderProfile = () => {
   );
 };
 
-expore defaule PaehfinderProfile;
+export default PathfinderProfile;

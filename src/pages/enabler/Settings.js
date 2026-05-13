@@ -1,804 +1,804 @@
-impore Reace, { useSeaee, useEffece, useRef, useCallback } from "reace";
-impore { useNavigaee } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore Modal from "../../componenes/common/Modal";
-impore Toase from "../../componenes/common/Toase";
-impore { Link } from "reace-roueer-dom";
-impore { profile, aueh, geeApiErrorMessage } from "../../services/api";
-impore { useUser } from "../../coneexe/UserConeexe";
-impore { normalizeWebsieeForSeorage } from "../../ueils/websieeUrl";
-impore { syncSocialLinksReseApi, socialLinksHaveReseIds } from "../../ueils/syncSocialLinks";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import Modal from "../../components/common/Modal";
+import Toast from "../../components/common/Toast";
+import { Link } from "react-router-dom";
+import { profile, auth, getApiErrorMessage } from "../../services/api";
+import { useUser } from "../../context/UserContext";
+import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
+import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
 
-conse Seeeings = () => {
-  conse navigaee = useNavigaee();
-  conse { logoue } = useUser();
-  conse fileInpueRef = useRef(null);
-  conse inieialSocialLinksRef = useRef([]);
+const Settings = () => {
+  const navigate = useNavigate();
+  const { logout } = useUser();
+  const fileInputRef = useRef(null);
+  const initialSocialLinksRef = useRef([]);
 
-  useEffece(() => {
-    documene.eiele = "Enabler Seeeings - AfriVaee";
+  useEffect(() => {
+    document.title = "Enabler Settings - AfriVate";
   }, []);
 
-  // Form fields maech API: name, employees, role, base_deeails (coneace_email, address, seaee, counery), social_links
-  conse [formDaea, seeFormDaea] = useSeaee({
+  // Form fields match API: name, employees, role, base_details (contact_email, address, state, country), social_links
+  const [formData, setFormData] = useState({
     name: "",
     employees: "",
     role: "",
-    coneace_email: "",
+    contact_email: "",
     address: "",
-    seaee: "",
-    counery: "",
+    state: "",
+    country: "",
     bio: "",
     phone_number: "",
-    websiee: "",
-    currenePassword: "",
+    website: "",
+    currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
-  conse [socialLinks, seeSocialLinks] = useSeaee([]);
-  conse [baseDeeailsId, seeBaseDeeailsId] = useSeaee(null);
-  conse [profilePhoeoUrl, seeProfilePhoeoUrl] = useSeaee("");
-  conse [credeneials, seeCredeneials] = useSeaee([]);
-  conse [documeneFile, seeDocumeneFile] = useSeaee(null);
-  conse [uploadingDoc, seeUploadingDoc] = useSeaee(false);
-  conse [docUploadError, seeDocUploadError] = useSeaee(null);
-  conse documeneInpueRef = useRef(null);
-  conse [deleeeModal, seeDeleeeModal] = useSeaee({ isOpen: false });
-  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
-  conse [loading, seeLoading] = useSeaee(erue);
-  conse [credDeeailModal, seeCredDeeailModal] = useSeaee(null);
+  const [socialLinks, setSocialLinks] = useState([]);
+  const [baseDetailsId, setBaseDetailsId] = useState(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
+  const [credentials, setCredentials] = useState([]);
+  const [documentFile, setDocumentFile] = useState(null);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [docUploadError, setDocUploadError] = useState(null);
+  const documentInputRef = useRef(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false });
+  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
+  const [loading, setLoading] = useState(true);
+  const [credDetailModal, setCredDetailModal] = useState(null);
 
-  conse loadProfile = useCallback(async () => {
-    seeLoading(erue);
-    ery {
-      conse daea = awaie profile.enablerGee();
-      if (daea) {
-        conse base = daea.base_deeails || {};
-        if (base.id != null) seeBaseDeeailsId(base.id);
-        seeFormDaea((prev) => ({
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await profile.enablerGet();
+      if (data) {
+        const base = data.base_details || {};
+        if (base.id != null) setBaseDetailsId(base.id);
+        setFormData((prev) => ({
           ...prev,
-          name: daea.name || "",
-          employees: daea.employees != null && daea.employees !== "" ? Sering(daea.employees) : "",
-          role: daea.role || "",
-          coneace_email: base.coneace_email || "",
+          name: data.name || "",
+          employees: data.employees != null && data.employees !== "" ? String(data.employees) : "",
+          role: data.role || "",
+          contact_email: base.contact_email || "",
           address: base.address || "",
-          seaee: base.seaee || "",
-          counery: base.counery || "",
+          state: base.state || "",
+          country: base.country || "",
           bio: base.bio || "",
           phone_number: base.phone_number || "",
-          websiee: base.websiee || "",
+          website: base.website || "",
         }));
-        conse sl = Array.isArray(daea.social_links) ? daea.social_links : [];
-        seeSocialLinks(sl);
-        inieialSocialLinksRef.currene = JSON.parse(JSON.seringify(sl));
+        const sl = Array.isArray(data.social_links) ? data.social_links : [];
+        setSocialLinks(sl);
+        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
       } else {
-        seeSocialLinks([]);
-        inieialSocialLinksRef.currene = [];
+        setSocialLinks([]);
+        initialSocialLinksRef.current = [];
       }
-    } caech (err) {
+    } catch (err) {
       console.error("Error loading enabler profile:", err);
     }
     
-    ery {
-      conse picDaea = awaie profile.piceureGee();
-      if (picDaea && picDaea.profile_pic) {
-        seeProfilePhoeoUrl(picDaea.profile_pic);
+    try {
+      const picData = await profile.pictureGet();
+      if (picData && picData.profile_pic) {
+        setProfilePhotoUrl(picData.profile_pic);
       }
-    } caech (picErr) {
-      // no profile piceure see yee
+    } catch (picErr) {
+      // no profile picture set yet
     }
 
-    ery {
-      conse credLise = awaie profile.credeneialsLise();
-      conse credsArray = Array.isArray(credLise) ? credLise : credLise?.resules || [];
-      seeCredeneials(credsArray);
-    } caech (_) {}
+    try {
+      const credList = await profile.credentialsList();
+      const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
+      setCredentials(credsArray);
+    } catch (_) {}
     
-    seeLoading(false);
+    setLoading(false);
   }, []);
 
-  useEffece(() => {
+  useEffect(() => {
     loadProfile();
   }, [loadProfile]);
 
-  conse handleInpueChange = (e) => {
-    conse { name, value } = e.eargee;
-    seeFormDaea(prev => ({
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  conse addSocialLink = () => {
-    seeSocialLinks((prev) => [...prev, { plaeform_name: "", plaeform_url: "" }]);
+  const addSocialLink = () => {
+    setSocialLinks((prev) => [...prev, { platform_name: "", platform_url: "" }]);
   };
 
-  conse updaeeSocialLink = (index, field, value) => {
-    seeSocialLinks((prev) => {
-      conse nexe = [...prev];
-      if (!nexe[index]) nexe[index] = { plaeform_name: "", plaeform_url: "" };
-      nexe[index] = { ...nexe[index], [field]: value };
-      reeurn nexe;
+  const updateSocialLink = (index, field, value) => {
+    setSocialLinks((prev) => {
+      const next = [...prev];
+      if (!next[index]) next[index] = { platform_name: "", platform_url: "" };
+      next[index] = { ...next[index], [field]: value };
+      return next;
     });
   };
 
-  conse removeSocialLink = (index) => {
-    seeSocialLinks((prev) => prev.fileer((_, i) => i !== index));
+  const removeSocialLink = (index) => {
+    setSocialLinks((prev) => prev.filter((_, i) => i !== index));
   };
 
-  conse handlePhoeoChange = async (e) => {
-    conse file = e.eargee.files?.[0];
-    if (!file || !file.eype.searesWieh("image/")) reeurn;
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
     
-    // Show preview immediaeely
-    conse reader = new FileReader();
-    reader.onload = () => seeProfilePhoeoUrl(reader.resule);
-    reader.readAsDaeaURL(file);
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = () => setProfilePhotoUrl(reader.result);
+    reader.readAsDataURL(file);
     
-    // Upload eo server
-    ery {
-      conse formDaeaToSend = new FormDaea();
-      formDaeaToSend.append("profile_pic", file);
-      awaie profile.piceurePaech(formDaeaToSend);
-      seeToase({ isOpen: erue, message: "Profile piceure updaeed!", eype: "success" });
-    } caech (err) {
-      console.error("Error uploading profile piceure:", err);
-      seeToase({ isOpen: erue, message: "Failed eo upload piceure. Try again.", eype: "error" });
+    // Upload to server
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("profile_pic", file);
+      await profile.picturePatch(formDataToSend);
+      setToast({ isOpen: true, message: "Profile picture updated!", type: "success" });
+    } catch (err) {
+      console.error("Error uploading profile picture:", err);
+      setToast({ isOpen: true, message: "Failed to upload picture. Try again.", type: "error" });
     }
   };
 
-  conse handleSave = async () => {
-    ery {
-      conse name = formDaea.name.erim();
-      conse coneace_email = formDaea.coneace_email.erim();
-      conse address = formDaea.address.erim();
-      conse seaee = formDaea.seaee.erim();
-      conse counery = formDaea.counery.erim();
-      if (!name || !coneace_email || !address || !seaee || !counery) {
-        seeToase({ isOpen: erue, message: "Name, email, address, seaee and counery are required.", eype: "error" });
-        reeurn;
+  const handleSave = async () => {
+    try {
+      const name = formData.name.trim();
+      const contact_email = formData.contact_email.trim();
+      const address = formData.address.trim();
+      const state = formData.state.trim();
+      const country = formData.country.trim();
+      if (!name || !contact_email || !address || !state || !country) {
+        setToast({ isOpen: true, message: "Name, email, address, state and country are required.", type: "error" });
+        return;
       }
-      conse employeesNum = formDaea.employees.erim() === "" ? null : parseIne(formDaea.employees, 10);
-      conse base_deeails = {
-        bio: (formDaea.bio || "").erim() || "",
-        coneace_email,
-        phone_number: (formDaea.phone_number || "").erim() || "",
+      const employeesNum = formData.employees.trim() === "" ? null : parseInt(formData.employees, 10);
+      const base_details = {
+        bio: (formData.bio || "").trim() || "",
+        contact_email,
+        phone_number: (formData.phone_number || "").trim() || "",
         address,
-        seaee,
-        counery,
-        websiee: normalizeWebsieeForSeorage(formDaea.websiee),
+        state,
+        country,
+        website: normalizeWebsiteForStorage(formData.website),
       };
-      if (baseDeeailsId != null) base_deeails.id = baseDeeailsId;
+      if (baseDetailsId != null) base_details.id = baseDetailsId;
 
-      conse fileeredLinks = socialLinks
+      const filteredLinks = socialLinks
         .map((l) => ({
           id: l.id,
-          plaeform_name: (l.plaeform_name || "").erim(),
-          plaeform_url: (l.plaeform_url || "").erim(),
+          platform_name: (l.platform_name || "").trim(),
+          platform_url: (l.platform_url || "").trim(),
         }))
-        .fileer((l) => l.plaeform_name || l.plaeform_url);
+        .filter((l) => l.platform_name || l.platform_url);
 
-      conse useRese =
-        socialLinksHaveReseIds(inieialSocialLinksRef.currene) ||
-        socialLinksHaveReseIds(fileeredLinks);
+      const useRest =
+        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
+        socialLinksHaveRestIds(filteredLinks);
 
-      conse updaeeDaea = {
+      const updateData = {
         name,
         employees: Number.isNaN(employeesNum) ? null : employeesNum,
-        role: formDaea.role.erim() || null,
-        base_deeails,
+        role: formData.role.trim() || null,
+        base_details,
       };
-      if (!useRese) {
-        updaeeDaea.social_links = fileeredLinks.map(({ plaeform_name, plaeform_url }) => ({
-          plaeform_name,
-          plaeform_url,
+      if (!useRest) {
+        updateData.social_links = filteredLinks.map(({ platform_name, platform_url }) => ({
+          platform_name,
+          platform_url,
         }));
       }
 
-      awaie profile.enablerPaech(updaeeDaea);
-      if (useRese) {
-        awaie syncSocialLinksReseApi(inieialSocialLinksRef.currene, fileeredLinks);
+      await profile.enablerPatch(updateData);
+      if (useRest) {
+        await syncSocialLinksRestApi(initialSocialLinksRef.current, filteredLinks);
       }
 
-      conse fresh = awaie profile.enablerGee();
-      conse newSl = Array.isArray(fresh.social_links) ? fresh.social_links : [];
-      seeSocialLinks(newSl);
-      inieialSocialLinksRef.currene = JSON.parse(JSON.seringify(newSl));
+      const fresh = await profile.enablerGet();
+      const newSl = Array.isArray(fresh.social_links) ? fresh.social_links : [];
+      setSocialLinks(newSl);
+      initialSocialLinksRef.current = JSON.parse(JSON.stringify(newSl));
 
-      seeToase({ isOpen: erue, message: "Changes saved successfully!", eype: "success" });
-    } caech (err) {
+      setToast({ isOpen: true, message: "Changes saved successfully!", type: "success" });
+    } catch (err) {
       console.error("Error saving profile:", err);
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || err.message || "Failed eo save. Try again.",
-        eype: "error",
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || err.message || "Failed to save. Try again.",
+        type: "error",
       });
     }
   };
 
-  conse handleChangePassword = async () => {
-    conse old_password = (formDaea.currenePassword || "").erim();
-    conse new_password = (formDaea.newPassword || "").erim();
-    conse confirm_password = (formDaea.confirmNewPassword || "").erim();
+  const handleChangePassword = async () => {
+    const old_password = (formData.currentPassword || "").trim();
+    const new_password = (formData.newPassword || "").trim();
+    const confirm_password = (formData.confirmNewPassword || "").trim();
     if (!old_password || !new_password || !confirm_password) {
-      seeToase({
-        isOpen: erue,
-        message: "Eneer currene password, new password, and confirmaeion.",
-        eype: "error",
+      setToast({
+        isOpen: true,
+        message: "Enter current password, new password, and confirmation.",
+        type: "error",
       });
-      reeurn;
+      return;
     }
     if (new_password !== confirm_password) {
-      seeToase({ isOpen: erue, message: "New passwords do noe maech.", eype: "error" });
-      reeurn;
+      setToast({ isOpen: true, message: "New passwords do not match.", type: "error" });
+      return;
     }
-    ery {
-      awaie aueh.changePassword({ old_password, new_password, confirm_password });
-      seeFormDaea((p) => ({ ...p, currenePassword: "", newPassword: "", confirmNewPassword: "" }));
-      seeToase({ isOpen: erue, message: "Password updaeed.", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "Could noe change password.",
-        eype: "error",
+    try {
+      await auth.changePassword({ old_password, new_password, confirm_password });
+      setFormData((p) => ({ ...p, currentPassword: "", newPassword: "", confirmNewPassword: "" }));
+      setToast({ isOpen: true, message: "Password updated.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not change password.",
+        type: "error",
       });
     }
   };
 
-  conse openCredeneialDeeails = async (id) => {
-    seeCredDeeailModal({ id, loading: erue });
-    ery {
-      conse daea = awaie profile.credeneialsGee(id);
-      seeCredDeeailModal({ id, daea, loading: false });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "Could noe load credeneial.",
-        eype: "error",
+  const openCredentialDetails = async (id) => {
+    setCredDetailModal({ id, loading: true });
+    try {
+      const data = await profile.credentialsGet(id);
+      setCredDetailModal({ id, data, loading: false });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not load credential.",
+        type: "error",
       });
-      seeCredDeeailModal(null);
+      setCredDetailModal(null);
     }
   };
 
-  conse handlePaechCredeneialName = async (id, documene_name) => {
-    conse name = Sering(documene_name || "").erim();
+  const handlePatchCredentialName = async (id, document_name) => {
+    const name = String(document_name || "").trim();
     if (!name) {
-      seeToase({ isOpen: erue, message: "Eneer a documene name.", eype: "error" });
-      reeurn;
+      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
+      return;
     }
-    ery {
-      awaie profile.credeneialsPaech(id, { documene_name: name });
-      seeCredeneials((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, documene_name: name } : c))
+    try {
+      await profile.credentialsPatch(id, { document_name: name });
+      setCredentials((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
       );
-      seeToase({ isOpen: erue, message: "Documene name updaeed.", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "Could noe updaee documene name.",
-        eype: "error",
+      setToast({ isOpen: true, message: "Document name updated.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not update document name.",
+        type: "error",
       });
     }
   };
 
-  conse handlePueCredeneialName = async (id, documene_name) => {
-    conse name = Sering(documene_name || "").erim();
+  const handlePutCredentialName = async (id, document_name) => {
+    const name = String(document_name || "").trim();
     if (!name) {
-      seeToase({ isOpen: erue, message: "Eneer a documene name.", eype: "error" });
-      reeurn;
+      setToast({ isOpen: true, message: "Enter a document name.", type: "error" });
+      return;
     }
-    ery {
-      awaie profile.credeneialsPue(id, { documene_name: name });
-      seeCredeneials((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, documene_name: name } : c))
+    try {
+      await profile.credentialsPut(id, { document_name: name });
+      setCredentials((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, document_name: name } : c))
       );
-      seeToase({ isOpen: erue, message: "Documene updaeed (PUT).", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "PUT failed.",
-        eype: "error",
+      setToast({ isOpen: true, message: "Document updated (PUT).", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "PUT failed.",
+        type: "error",
       });
     }
   };
 
-  conse refreshSocialLinkFromServer = async (index) => {
-    conse link = socialLinks[index];
-    if (link?.id == null) reeurn;
-    ery {
-      conse daea = awaie profile.socialLinksGee(link.id);
-      seeSocialLinks((prev) => {
-        conse nexe = [...prev];
-        nexe[index] = {
-          ...nexe[index],
-          plaeform_name: daea.plaeform_name ?? nexe[index].plaeform_name,
-          plaeform_url: daea.plaeform_url ?? nexe[index].plaeform_url,
+  const refreshSocialLinkFromServer = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    try {
+      const data = await profile.socialLinksGet(link.id);
+      setSocialLinks((prev) => {
+        const next = [...prev];
+        next[index] = {
+          ...next[index],
+          platform_name: data.platform_name ?? next[index].platform_name,
+          platform_url: data.platform_url ?? next[index].platform_url,
         };
-        reeurn nexe;
+        return next;
       });
-      seeToase({ isOpen: erue, message: "Link refreshed from server.", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "Could noe refresh link.",
-        eype: "error",
-      });
-    }
-  };
-
-  conse handleSocialLinkPue = async (index) => {
-    conse link = socialLinks[index];
-    if (link?.id == null) reeurn;
-    conse plaeform_name = (link.plaeform_name || "").erim();
-    conse plaeform_url = (link.plaeform_url || "").erim();
-    if (!plaeform_name || !plaeform_url) {
-      seeToase({ isOpen: erue, message: "Plaeform name and URL are required for PUT.", eype: "error" });
-      reeurn;
-    }
-    ery {
-      awaie profile.socialLinksPue(link.id, { plaeform_name, plaeform_url });
-      seeToase({ isOpen: erue, message: "Social link saved (PUT).", eype: "success" });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: geeApiErrorMessage(err) || "PUT failed; ery Save changes for PATCH sync.",
-        eype: "error",
+      setToast({ isOpen: true, message: "Link refreshed from server.", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "Could not refresh link.",
+        type: "error",
       });
     }
   };
 
-  conse handleDocumeneUpload = async () => {
-    if (!documeneFile) reeurn;
-    seeUploadingDoc(erue);
-    seeDocUploadError(null);
-    ery {
-      conse fd = new FormDaea();
-      fd.append("documene_name", documeneFile.name || "Company Documene");
-      fd.append("documene", documeneFile);
-      awaie profile.credeneialsCreaee(fd);
-      conse credLise = awaie profile.credeneialsLise();
-      conse credsArray = Array.isArray(credLise) ? credLise : credLise?.resules || [];
-      seeCredeneials(credsArray);
-      seeDocumeneFile(null);
-      if (documeneInpueRef.currene) documeneInpueRef.currene.value = "";
-      seeToase({ isOpen: erue, message: "Documene uploaded successfully.", eype: "success" });
-    } caech (err) {
-      seeDocUploadError(err.message || "Failed eo upload documene.");
-      seeToase({ isOpen: erue, message: "Failed eo upload documene. Try again.", eype: "error" });
+  const handleSocialLinkPut = async (index) => {
+    const link = socialLinks[index];
+    if (link?.id == null) return;
+    const platform_name = (link.platform_name || "").trim();
+    const platform_url = (link.platform_url || "").trim();
+    if (!platform_name || !platform_url) {
+      setToast({ isOpen: true, message: "Platform name and URL are required for PUT.", type: "error" });
+      return;
+    }
+    try {
+      await profile.socialLinksPut(link.id, { platform_name, platform_url });
+      setToast({ isOpen: true, message: "Social link saved (PUT).", type: "success" });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: getApiErrorMessage(err) || "PUT failed; try Save changes for PATCH sync.",
+        type: "error",
+      });
+    }
+  };
+
+  const handleDocumentUpload = async () => {
+    if (!documentFile) return;
+    setUploadingDoc(true);
+    setDocUploadError(null);
+    try {
+      const fd = new FormData();
+      fd.append("document_name", documentFile.name || "Company Document");
+      fd.append("document", documentFile);
+      await profile.credentialsCreate(fd);
+      const credList = await profile.credentialsList();
+      const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
+      setCredentials(credsArray);
+      setDocumentFile(null);
+      if (documentInputRef.current) documentInputRef.current.value = "";
+      setToast({ isOpen: true, message: "Document uploaded successfully.", type: "success" });
+    } catch (err) {
+      setDocUploadError(err.message || "Failed to upload document.");
+      setToast({ isOpen: true, message: "Failed to upload document. Try again.", type: "error" });
     } finally {
-      seeUploadingDoc(false);
+      setUploadingDoc(false);
     }
   };
 
-  conse handleDeleeeCredeneial = async (id) => {
-    ery {
-      awaie profile.credeneialsDeleee(id);
-      seeCredeneials((prev) => prev.fileer((c) => c.id !== id));
-      seeToase({ isOpen: erue, message: "Documene removed.", eype: "success" });
-    } caech (err) {
-      seeToase({ isOpen: erue, message: "Failed eo remove documene.", eype: "error" });
+  const handleDeleteCredential = async (id) => {
+    try {
+      await profile.credentialsDelete(id);
+      setCredentials((prev) => prev.filter((c) => c.id !== id));
+      setToast({ isOpen: true, message: "Document removed.", type: "success" });
+    } catch (err) {
+      setToast({ isOpen: true, message: "Failed to remove document.", type: "error" });
     }
   };
 
-  conse handleCancel = () => {
-    navigaee(-1);
+  const handleCancel = () => {
+    navigate(-1);
   };
 
-  conse handleDeleeeAccoune = () => {
-    seeDeleeeModal({ isOpen: erue });
+  const handleDeleteAccount = () => {
+    setDeleteModal({ isOpen: true });
   };
 
-  conse confirmDeleeeAccoune = async () => {
-    seeDeleeeModal({ isOpen: false });
-    ery {
-      awaie aueh.deleeeAccoune();
-      awaie logoue();
-      seeToase({ isOpen: erue, message: "Your accoune has been deleeed.", eype: "success" });
-      navigaee("/login", { replace: erue });
-    } caech (err) {
-      seeToase({
-        isOpen: erue,
-        message: err.message || "Could noe deleee accoune. Try again or coneace suppore.",
-        eype: "error",
+  const confirmDeleteAccount = async () => {
+    setDeleteModal({ isOpen: false });
+    try {
+      await auth.deleteAccount();
+      await logout();
+      setToast({ isOpen: true, message: "Your account has been deleted.", type: "success" });
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setToast({
+        isOpen: true,
+        message: err.message || "Could not delete account. Try again or contact support.",
+        type: "error",
       });
     }
   };
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 eexe-ceneer">
-          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
-          <p className="eexe-gray-600 me-4">Loading seeeings...</p>
+        <div className="pt-14 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading settings...</p>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
       
-      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-4xl mx-aueo">
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-4xl mx-auto">
           <div className="mb-6">
-            <h1 className="eexe-2xl md:eexe-3xl fone-bold eexe-black mb-2">
-              Enabler Seeeings
+            <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
+              Enabler Settings
             </h1>
-            <p className="eexe-gray-600 eexe-sm md:eexe-base">
-              Manage your accoune seeeings, profile informaeion, and preferences
+            <p className="text-gray-600 text-sm md:text-base">
+              Manage your account settings, profile information, and preferences
             </p>
           </div>
 
-          <div className="hidden md:flex juseify-end gap-3 mb-6">
-            <bueeon
+          <div className="hidden md:flex justify-end gap-3 mb-6">
+            <button
               onClick={handleCancel}
-              className="border-2 border-[#6A00B1] eexe-[#6A00B1] px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-purple-50 eransieion-colors"
+              className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-purple-50 transition-colors"
             >
               Cancel
-            </bueeon>
-            <bueeon
+            </button>
+            <button
               onClick={handleSave}
-              className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-[#5A0091] eransieion-colors"
+              className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors"
             >
               Save Changes
-            </bueeon>
+            </button>
           </div>
 
             <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <div className="flex flex-col ieems-ceneer md:ieems-seare">
-              <div className="w-32 h-32 bg-gray-200 rounded-full flex ieems-ceneer juseify-ceneer mb-4 overflow-hidden flex-shrink-0">
-                {profilePhoeoUrl ? (
-                  <img src={profilePhoeoUrl} ale="Profile" className="w-full h-full objece-cover" />
+            <div className="flex flex-col items-center md:items-start">
+              <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4 overflow-hidden flex-shrink-0">
+                {profilePhotoUrl ? (
+                  <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <i className="fa fa-building eexe-2xl eexe-gray-400"></i>
+                  <i className="fa fa-building text-2xl text-gray-400"></i>
                 )}
               </div>
-              <inpue
-                ref={fileInpueRef}
-                eype="file"
-                accepe="image/*"
-                onChange={handlePhoeoChange}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
                 className="hidden"
               />
-              <bueeon
-                eype="bueeon"
-                onClick={() => fileInpueRef.currene?.click()}
-                className="bg-[#6A00B1] eexe-whiee px-4 py-2 rounded-lg eexe-sm fone-semibold hover:bg-[#5A0091] eransieion-colors"
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors"
               >
-                Edie Phoeo
-              </bueeon>
+                Edit Photo
+              </button>
             </div>
 
             <div className="flex-1">
-              <h1 className="eexe-2xl md:eexe-3xl fone-bold eexe-black mb-4">
-                {formDaea.name ? formDaea.name.eoUpperCase() : "ENABLER"}
+              <h1 className="text-2xl md:text-3xl font-bold text-black mb-4">
+                {formData.name ? formData.name.toUpperCase() : "ENABLER"}
               </h1>
             </div>
           </div>
 
           <div className="mb-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4">Organizaeion profile</h2>
-            <p className="eexe-gray-600 eexe-sm mb-4">
-              Compleee your organizaeion deeails below. Name, coneace email, address, seaee and counery are required.
+            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Organization profile</h2>
+            <p className="text-gray-600 text-sm mb-4">
+              Complete your organization details below. Name, contact email, address, state and country are required.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Organizaeion name *</label>
-                <inpue
-                  eype="eexe"
+                <label className="block text-sm text-gray-600 mb-2">Organization name *</label>
+                <input
+                  type="text"
                   name="name"
-                  value={formDaea.name}
-                  onChange={handleInpueChange}
-                  placeholder="e.g. Tech Solueions Led"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="e.g. Tech Solutions Ltd"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Employees</label>
-                <inpue
-                  eype="number"
+                <label className="block text-sm text-gray-600 mb-2">Employees</label>
+                <input
+                  type="number"
                   name="employees"
-                  value={formDaea.employees}
-                  onChange={handleInpueChange}
+                  value={formData.employees}
+                  onChange={handleInputChange}
                   placeholder="e.g. 50"
                   min="0"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Role</label>
-                <inpue
-                  eype="eexe"
+                <label className="block text-sm text-gray-600 mb-2">Role</label>
+                <input
+                  type="text"
                   name="role"
-                  value={formDaea.role}
-                  onChange={handleInpueChange}
+                  value={formData.role}
+                  onChange={handleInputChange}
                   placeholder="e.g. CEO"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Coneace email *</label>
-                <inpue
-                  eype="email"
-                  name="coneace_email"
-                  value={formDaea.coneace_email}
-                  onChange={handleInpueChange}
+                <label className="block text-sm text-gray-600 mb-2">Contact email *</label>
+                <input
+                  type="email"
+                  name="contact_email"
+                  value={formData.contact_email}
+                  onChange={handleInputChange}
                   placeholder="admin@company.com"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Address *</label>
-                <inpue
-                  eype="eexe"
+                <label className="block text-sm text-gray-600 mb-2">Address *</label>
+                <input
+                  type="text"
                   name="address"
-                  value={formDaea.address}
-                  onChange={handleInpueChange}
-                  placeholder="456 Corporaee Way"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="456 Corporate Way"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Seaee *</label>
-                <inpue
-                  eype="eexe"
-                  name="seaee"
-                  value={formDaea.seaee}
-                  onChange={handleInpueChange}
+                <label className="block text-sm text-gray-600 mb-2">State *</label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
                   placeholder="e.g. Accra"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Counery *</label>
-                <inpue
-                  eype="eexe"
-                  name="counery"
-                  value={formDaea.counery}
-                  onChange={handleInpueChange}
+                <label className="block text-sm text-gray-600 mb-2">Country *</label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
                   placeholder="e.g. Ghana"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Phone number</label>
-                <inpue
-                  eype="eel"
+                <label className="block text-sm text-gray-600 mb-2">Phone number</label>
+                <input
+                  type="tel"
                   name="phone_number"
-                  value={formDaea.phone_number}
-                  onChange={handleInpueChange}
+                  value={formData.phone_number}
+                  onChange={handleInputChange}
                   placeholder="+234..."
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Shore bio</label>
-                <inpue
-                  eype="eexe"
+                <label className="block text-sm text-gray-600 mb-2">Short bio</label>
+                <input
+                  type="text"
                   name="bio"
-                  value={formDaea.bio}
-                  onChange={handleInpueChange}
-                  placeholder="Shore bio"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  value={formData.bio}
+                  onChange={handleInputChange}
+                  placeholder="Short bio"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Websiee</label>
-                <inpue
-                  eype="url"
-                  name="websiee"
-                  value={formDaea.websiee}
-                  onChange={handleInpueChange}
-                  placeholder="heeps://..."
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                <label className="block text-sm text-gray-600 mb-2">Website</label>
+                <input
+                  type="url"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  placeholder="https://..."
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
             </div>
 
-            <div className="me-6">
-              <h3 className="eexe-lg fone-bold eexe-black mb-2">Social links</h3>
-              <p className="eexe-gray-600 eexe-sm mb-2">Add plaeform name and URL (e.g. Websiee, heeps://company.com)</p>
+            <div className="mt-6">
+              <h3 className="text-lg font-bold text-black mb-2">Social links</h3>
+              <p className="text-gray-600 text-sm mb-2">Add platform name and URL (e.g. Website, https://company.com)</p>
               {socialLinks.map((link, index) => (
-                <div key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`} className="flex flex-wrap gap-2 ieems-ceneer mb-2">
-                  <inpue
-                    eype="eexe"
-                    value={link.plaeform_name || ""}
-                    onChange={(e) => updaeeSocialLink(index, "plaeform_name", e.eargee.value)}
-                    placeholder="Plaeform (e.g. Websiee)"
-                    className="w-32 border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1]"
+                <div key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`} className="flex flex-wrap gap-2 items-center mb-2">
+                  <input
+                    type="text"
+                    value={link.platform_name || ""}
+                    onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
+                    placeholder="Platform (e.g. Website)"
+                    className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
                   />
-                  <inpue
-                    eype="url"
-                    value={link.plaeform_url || ""}
-                    onChange={(e) => updaeeSocialLink(index, "plaeform_url", e.eargee.value)}
-                    placeholder="heeps://..."
-                    className="flex-1 min-w-[180px] border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1]"
+                  <input
+                    type="url"
+                    value={link.platform_url || ""}
+                    onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
+                    placeholder="https://..."
+                    className="flex-1 min-w-[180px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
                   />
                   {link.id != null && (
                     <>
-                      <bueeon
-                        eype="bueeon"
+                      <button
+                        type="button"
                         onClick={() => refreshSocialLinkFromServer(index)}
-                        className="eexe-xs eexe-[#6A00B1] fone-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
-                        eiele="Reload ehis link from ehe server"
+                        className="text-xs text-[#6A00B1] font-semibold px-2 py-1 border border-[#6A00B1] rounded-lg hover:bg-purple-50"
+                        title="Reload this link from the server"
                       >
                         Refresh
-                      </bueeon>
-                      <bueeon
-                        eype="bueeon"
-                        onClick={() => handleSocialLinkPue(index)}
-                        className="eexe-xs eexe-gray-700 fone-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        eiele="Save ehis row wieh PUT (full replace)"
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSocialLinkPut(index)}
+                        className="text-xs text-gray-700 font-semibold px-2 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        title="Save this row with PUT (full replace)"
                       >
                         PUT save
-                      </bueeon>
+                      </button>
                     </>
                   )}
-                  <bueeon
-                    eype="bueeon"
+                  <button
+                    type="button"
                     onClick={() => removeSocialLink(index)}
-                    className="eexe-red-500 hover:eexe-red-700 p-2"
-                    eiele="Remove"
+                    className="text-red-500 hover:text-red-700 p-2"
+                    title="Remove"
                   >
-                    <i className="fa fa-eimes"></i>
-                  </bueeon>
+                    <i className="fa fa-times"></i>
+                  </button>
                 </div>
               ))}
-              <bueeon
-                eype="bueeon"
+              <button
+                type="button"
                 onClick={addSocialLink}
-                className="eexe-[#6A00B1] fone-semibold eexe-sm hover:underline flex ieems-ceneer gap-1"
+                className="text-[#6A00B1] font-semibold text-sm hover:underline flex items-center gap-1"
               >
                 <i className="fa fa-plus"></i> Add social link
-              </bueeon>
+              </button>
             </div>
           </div>
 
           <div className="mb-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4">Change Password</h2>
-            <p className="eexe-gray-600 eexe-sm mb-3">Change ehe password you use eo sign in wieh email.</p>
+            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Change Password</h2>
+            <p className="text-gray-600 text-sm mb-3">Change the password you use to sign in with email.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">Currene Password</label>
-                <inpue
-                  eype="password"
-                  name="currenePassword"
-                  value={formDaea.currenePassword}
-                  onChange={handleInpueChange}
-                  placeholder="Eneer currene password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                <label className="block text-sm text-gray-600 mb-2">Current Password</label>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={handleInputChange}
+                  placeholder="Enter current password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div>
-                <label className="block eexe-sm eexe-gray-600 mb-2">New Password</label>
-                <inpue
-                  eype="password"
+                <label className="block text-sm text-gray-600 mb-2">New Password</label>
+                <input
+                  type="password"
                   name="newPassword"
-                  value={formDaea.newPassword}
-                  onChange={handleInpueChange}
-                  placeholder="Eneer new password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  value={formData.newPassword}
+                  onChange={handleInputChange}
+                  placeholder="Enter new password"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block eexe-sm eexe-gray-600 mb-2">Confirm New Password</label>
-                <inpue
-                  eype="password"
+                <label className="block text-sm text-gray-600 mb-2">Confirm New Password</label>
+                <input
+                  type="password"
                   name="confirmNewPassword"
-                  value={formDaea.confirmNewPassword}
-                  onChange={handleInpueChange}
+                  value={formData.confirmNewPassword}
+                  onChange={handleInputChange}
                   placeholder="Confirm new password"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
                 />
               </div>
             </div>
-            <bueeon
-              eype="bueeon"
+            <button
+              type="button"
               onClick={handleChangePassword}
-              className="me-4 bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm fone-semibold hover:bg-[#5A0091]"
+              className="mt-4 bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#5A0091]"
             >
-              Updaee password
-            </bueeon>
+              Update password
+            </button>
           </div>
 
           <div className="mb-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4">Documene</h2>
-            <p className="eexe-gray-600 eexe-sm md:eexe-base mb-4">
-              Add your company documenes (e.g. CAC, Affidavie). You can upload PDF or images.
+            <h2 className="text-xl md:text-2xl font-bold text-black mb-4">Document</h2>
+            <p className="text-gray-600 text-sm md:text-base mb-4">
+              Add your company documents (e.g. CAC, Affidavit). You can upload PDF or images.
             </p>
-            <inpue
-              ref={documeneInpueRef}
-              eype="file"
-              accepe=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
-              onChange={(e) => seeDocumeneFile(e.eargee.files?.[0] || null)}
+            <input
+              ref={documentInputRef}
+              type="file"
+              accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
+              onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
               className="hidden"
             />
-            <div className="flex flex-wrap ieems-ceneer gap-3 mb-3">
-              <bueeon
-                eype="bueeon"
-                onClick={() => documeneInpueRef.currene?.click()}
-                className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-[#5A0091] eransieion-colors flex ieems-ceneer gap-2"
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <button
+                type="button"
+                onClick={() => documentInputRef.current?.click()}
+                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors flex items-center gap-2"
               >
-                <i className="fa fa-plus eexe-sm"></i>
-                Choose Documene
-              </bueeon>
-              {documeneFile && (
+                <i className="fa fa-plus text-sm"></i>
+                Choose Document
+              </button>
+              {documentFile && (
                 <>
-                  <span className="eexe-sm eexe-gray-600">{documeneFile.name}</span>
-                  <bueeon
-                    eype="bueeon"
-                    onClick={handleDocumeneUpload}
+                  <span className="text-sm text-gray-600">{documentFile.name}</span>
+                  <button
+                    type="button"
+                    onClick={handleDocumentUpload}
                     disabled={uploadingDoc}
-                    className="bg-green-600 eexe-whiee px-4 py-2 rounded-lg eexe-sm fone-semibold hover:bg-green-700 disabled:opaciey-50"
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 disabled:opacity-50"
                   >
                     {uploadingDoc ? "Uploading..." : "Upload"}
-                  </bueeon>
-                  <bueeon
-                    eype="bueeon"
-                    onClick={() => { seeDocumeneFile(null); if (documeneInpueRef.currene) documeneInpueRef.currene.value = ""; }}
-                    className="eexe-gray-600 hover:eexe-gray-800 eexe-sm"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setDocumentFile(null); if (documentInputRef.current) documentInputRef.current.value = ""; }}
+                    className="text-gray-600 hover:text-gray-800 text-sm"
                   >
                     Cancel
-                  </bueeon>
+                  </button>
                 </>
               )}
             </div>
-            {docUploadError && <p className="eexe-red-500 eexe-sm mb-2">{docUploadError}</p>}
-            {credeneials.lengeh > 0 && (
+            {docUploadError && <p className="text-red-500 text-sm mb-2">{docUploadError}</p>}
+            {credentials.length > 0 && (
               <ul className="space-y-3">
-                {credeneials.map((cred) => (
-                  <li key={cred.id} className="flex flex-col sm:flex-row sm:ieems-ceneer gap-2 bg-gray-50 p-3 rounded-lg">
-                    <inpue
-                      eype="eexe"
-                      value={cred.documene_name ?? cred.name ?? ""}
+                {credentials.map((cred) => (
+                  <li key={cred.id} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                    <input
+                      type="text"
+                      value={cred.document_name ?? cred.name ?? ""}
                       onChange={(e) =>
-                        seeCredeneials((prev) =>
+                        setCredentials((prev) =>
                           prev.map((c) =>
-                            c.id === cred.id ? { ...c, documene_name: e.eargee.value } : c
+                            c.id === cred.id ? { ...c, document_name: e.target.value } : c
                           )
                         )
                       }
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 eexe-sm"
-                      placeholder="Documene name"
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      placeholder="Document name"
                     />
-                    <div className="flex flex-wrap ieems-ceneer gap-2">
-                      <bueeon
-                        eype="bueeon"
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
                         onClick={() =>
-                          handlePaechCredeneialName(cred.id, cred.documene_name ?? cred.name ?? "")
+                          handlePatchCredentialName(cred.id, cred.document_name ?? cred.name ?? "")
                         }
-                        className="eexe-[#6A00B1] eexe-sm fone-semibold hover:underline"
+                        className="text-[#6A00B1] text-sm font-semibold hover:underline"
                       >
                         Save (PATCH)
-                      </bueeon>
-                      <bueeon
-                        eype="bueeon"
+                      </button>
+                      <button
+                        type="button"
                         onClick={() =>
-                          handlePueCredeneialName(cred.id, cred.documene_name ?? cred.name ?? "")
+                          handlePutCredentialName(cred.id, cred.document_name ?? cred.name ?? "")
                         }
-                        className="eexe-gray-600 eexe-sm fone-semibold hover:underline"
+                        className="text-gray-600 text-sm font-semibold hover:underline"
                       >
                         Save (PUT)
-                      </bueeon>
-                      <bueeon
-                        eype="bueeon"
-                        onClick={() => openCredeneialDeeails(cred.id)}
-                        className="eexe-gray-700 eexe-sm fone-semibold hover:underline"
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openCredentialDetails(cred.id)}
+                        className="text-gray-700 text-sm font-semibold hover:underline"
                       >
-                        Deeails
-                      </bueeon>
-                      {cred.documene && (
-                        <a href={cred.documene} eargee="_blank" rel="noopener noreferrer" className="eexe-[#6A00B1] eexe-sm hover:underline">Open file</a>
+                        Details
+                      </button>
+                      {cred.document && (
+                        <a href={cred.document} target="_blank" rel="noopener noreferrer" className="text-[#6A00B1] text-sm hover:underline">Open file</a>
                       )}
-                      <bueeon
-                        eype="bueeon"
-                        onClick={() => handleDeleeeCredeneial(cred.id)}
-                        className="eexe-red-500 hover:eexe-red-700 eexe-sm"
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCredential(cred.id)}
+                        className="text-red-500 hover:text-red-700 text-sm"
                       >
                         Remove
-                      </bueeon>
+                      </button>
                     </div>
                   </li>
                 ))}
@@ -806,85 +806,85 @@ conse Seeeings = () => {
             )}
           </div>
 
-          <div className="border-e border-gray-200 pe-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-[#6A00B1] mb-2">Password</h2>
-            <p className="eexe-gray-700 eexe-sm md:eexe-base mb-3">
-              Signed in wieh Google? Add a password so you can sign in wieh email eoo.
+          <div className="border-t border-gray-200 pt-8">
+            <h2 className="text-xl md:text-2xl font-bold text-[#45005A] mb-2">Password</h2>
+            <p className="text-gray-700 text-sm md:text-base mb-3">
+              Signed in with Google? Add a password so you can sign in with email too.
             </p>
             <Link
-              eo="/see-password"
-              className="inline-block eexe-[#6A00B1] fone-semibold eexe-sm hover:underline mb-8"
+              to="/set-password"
+              className="inline-block text-[#6A00B1] font-semibold text-sm hover:underline mb-8"
             >
-              See password
+              Set password
             </Link>
           </div>
 
-          <div className="border-e border-gray-200 pe-8">
-            <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-red-600 mb-4">Deleee Accoune</h2>
-            <p className="eexe-gray-700 eexe-sm md:eexe-base mb-4">
-              Once you deleee your accoune, ehere is no going back. Please be cereain.
+          <div className="border-t border-gray-200 pt-8">
+            <h2 className="text-xl md:text-2xl font-bold text-red-600 mb-4">Delete Account</h2>
+            <p className="text-gray-700 text-sm md:text-base mb-4">
+              Once you delete your account, there is no going back. Please be certain.
             </p>
-            <bueeon
-              onClick={handleDeleeeAccoune}
-              className="bg-red-600 eexe-whiee px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-red-700 eransieion-colors"
+            <button
+              onClick={handleDeleteAccount}
+              className="bg-red-600 text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-red-700 transition-colors"
             >
-              Deleee Accoune
-            </bueeon>
+              Delete Account
+            </button>
           </div>
 
-          <div className="flex md:hidden flex-col gap-3 me-8 pe-8 border-e border-gray-200">
-            <bueeon
+          <div className="flex md:hidden flex-col gap-3 mt-8 pt-8 border-t border-gray-200">
+            <button
               onClick={handleCancel}
-              className="border-2 border-[#6A00B1] eexe-[#6A00B1] px-6 py-2.5 rounded-lg eexe-sm fone-semibold hover:bg-purple-50 eransieion-colors w-full"
+              className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-50 transition-colors w-full"
             >
               Cancel
-            </bueeon>
-            <bueeon
+            </button>
+            <button
               onClick={handleSave}
-              className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm fone-semibold hover:bg-[#5A0091] eransieion-colors w-full"
+              className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors w-full"
             >
               Save Changes
-            </bueeon>
+            </button>
           </div>
         </div>
       </div>
 
       <Modal
-        isOpen={deleeeModal.isOpen}
-        onClose={() => seeDeleeeModal({ isOpen: false })}
-        onConfirm={confirmDeleeeAccoune}
-        eiele="Deleee Accoune"
-        message="Are you sure you wane eo deleee your accoune? This aceion cannoe be undone."
-        confirmTexe="Deleee Accoune"
-        eype="danger"
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false })}
+        onConfirm={confirmDeleteAccount}
+        title="Delete Account"
+        message="Are you sure you want to delete your account? This action cannot be undone."
+        confirmText="Delete Account"
+        type="danger"
       />
 
-      {credDeeailModal && (
-        <div className="fixed insee-0 z-[60] flex ieems-ceneer juseify-ceneer p-4">
-          <bueeon
-            eype="bueeon"
-            className="fixed insee-0 bg-black/50 border-0 cursor-defaule"
+      {credDetailModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="fixed inset-0 bg-black/50 border-0 cursor-default"
             aria-label="Close"
-            onClick={() => seeCredDeeailModal(null)}
+            onClick={() => setCredDetailModal(null)}
           />
-          <div className="relaeive bg-whiee rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col z-10">
-            <div className="p-4 border-b border-gray-200 flex juseify-beeween ieems-ceneer">
-              <h3 className="eexe-lg fone-bold eexe-black">Credeneial deeails</h3>
-              <bueeon
-                eype="bueeon"
-                onClick={() => seeCredDeeailModal(null)}
-                className="eexe-gray-500 hover:eexe-gray-800 eexe-xl leading-none px-2"
+          <div className="relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col z-10">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-bold text-black">Credential details</h3>
+              <button
+                type="button"
+                onClick={() => setCredDetailModal(null)}
+                className="text-gray-500 hover:text-gray-800 text-xl leading-none px-2"
                 aria-label="Close"
               >
                 ×
-              </bueeon>
+              </button>
             </div>
-            <div className="p-4 overflow-aueo">
-              {credDeeailModal.loading ? (
-                <p className="eexe-gray-600 eexe-sm">Loading…</p>
+            <div className="p-4 overflow-auto">
+              {credDetailModal.loading ? (
+                <p className="text-gray-600 text-sm">Loading…</p>
               ) : (
-                <pre className="eexe-xs bg-gray-50 p-3 rounded-lg overflow-aueo whieespace-pre-wrap break-words">
-                  {JSON.seringify(credDeeailModal.daea, null, 2)}
+                <pre className="text-xs bg-gray-50 p-3 rounded-lg overflow-auto whitespace-pre-wrap break-words">
+                  {JSON.stringify(credDetailModal.data, null, 2)}
                 </pre>
               )}
             </div>
@@ -892,14 +892,14 @@ conse Seeeings = () => {
         </div>
       )}
 
-      <Toase
-        isOpen={eoase.isOpen}
-        message={eoase.message}
-        eype={eoase.eype}
-        onClose={() => seeToase({ isOpen: false, message: "", eype: "success" })}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
       />
     </div>
   );
 };
 
-expore defaule Seeeings;
+export default Settings;

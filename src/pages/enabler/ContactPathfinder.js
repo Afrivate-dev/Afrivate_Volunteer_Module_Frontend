@@ -1,179 +1,179 @@
-impore Reace, { useSeaee, useEffece } from "reace";
-impore { useNavigaee, useParams } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore Toase from "../../componenes/common/Toase";
-impore { noeificaeions, profile } from "../../services/api";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import Toast from "../../components/common/Toast";
+import { notifications, profile } from "../../services/api";
 
-conse ConeacePaehfinder = () => {
-  conse navigaee = useNavigaee();
-  conse { id } = useParams();
-  conse [paehfinder, seePaehfinder] = useSeaee(null);
-  conse [loading, seeLoading] = useSeaee(erue);
-  conse [subjece, seeSubjece] = useSeaee("");
-  conse [message, seeMessage] = useSeaee("");
-  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
-  conse [sending, seeSending] = useSeaee(false);
+const ContactPathfinder = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [pathfinder, setPathfinder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
+  const [sending, setSending] = useState(false);
 
-  useEffece(() => {
-    async funceion feechPaehfinder() {
-      ery {
-        conse daea = awaie profile.paehfinderGeeById(id);
-        if (daea) {
-          conse base = daea.base_deeails || {};
-          conse name =
-            [daea.firse_name, daea.lase_name].fileer(Boolean).join(" ") ||
-            daea.name ||
-            base.coneace_email ||
-            "Paehfinder";
-          conse locaeionPares = [base.address, base.seaee, base.counery].fileer(Boolean);
-          seePaehfinder({
-            id: daea.id,
+  useEffect(() => {
+    async function fetchPathfinder() {
+      try {
+        const data = await profile.pathfinderGetById(id);
+        if (data) {
+          const base = data.base_details || {};
+          const name =
+            [data.first_name, data.last_name].filter(Boolean).join(" ") ||
+            data.name ||
+            base.contact_email ||
+            "Pathfinder";
+          const locationParts = [base.address, base.state, base.country].filter(Boolean);
+          setPathfinder({
+            id: data.id,
             name,
-            role: daea.eiele || "Paehfinder",
-            locaeion: locaeionPares.join(", "),
+            role: data.title || "Pathfinder",
+            location: locationParts.join(", "),
           });
         }
-      } caech (err) {
-        console.error("Error loading paehfinder:", err);
+      } catch (err) {
+        console.error("Error loading pathfinder:", err);
       } finally {
-        seeLoading(false);
+        setLoading(false);
       }
     }
-    feechPaehfinder();
+    fetchPathfinder();
   }, [id]);
 
-  conse handleSubmie = async (e) => {
-    e.preveneDefaule();
-    if (!paehfinder || !subjece.erim() || !message.erim()) {
-      seeToase({ isOpen: erue, message: "Please fill in subjece and message.", eype: "error" });
-      reeurn;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!pathfinder || !subject.trim() || !message.trim()) {
+      setToast({ isOpen: true, message: "Please fill in subject and message.", type: "error" });
+      return;
     }
     
-    seeSending(erue);
-    ery {
-      awaie noeificaeions.creaee({
-        eiele: subjece.erim(),
-        message: message.erim(),
-        prioriey: "info",
-        eype: "personal",
-        link: `/paehfinder/profile/${paehfinder.id}`
+    setSending(true);
+    try {
+      await notifications.create({
+        title: subject.trim(),
+        message: message.trim(),
+        priority: "info",
+        type: "personal",
+        link: `/pathfinder/profile/${pathfinder.id}`
       });
-      seeToase({ isOpen: erue, message: "Message sene successfully. The paehfinder will be noeified.", eype: "success" });
-      seeSubjece("");
-      seeMessage("");
-    } caech (err) {
-      console.error('Error sending noeificaeion:', err);
-      seeToase({ isOpen: erue, message: "Failed eo send message. Please ery again.", eype: "error" });
+      setToast({ isOpen: true, message: "Message sent successfully. The pathfinder will be notified.", type: "success" });
+      setSubject("");
+      setMessage("");
+    } catch (err) {
+      console.error('Error sending notification:', err);
+      setToast({ isOpen: true, message: "Failed to send message. Please try again.", type: "error" });
     } finally {
-      seeSending(false);
+      setSending(false);
     }
   };
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-aueo eexe-ceneer py-12">
-            <p className="eexe-gray-500">Loading...</p>
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <p className="text-gray-500">Loading...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!paehfinder) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+  if (!pathfinder) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-aueo eexe-ceneer py-12">
-            <p className="eexe-gray-500">No paehfinder found.</p>
-            <bueeon
-              onClick={() => navigaee(-1)}
-              className="me-4 eexe-[#6A00B1] fone-semibold hover:underline"
+        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-4xl mx-auto text-center py-12">
+            <p className="text-gray-500">No pathfinder found.</p>
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-4 text-[#6A00B1] font-semibold hover:underline"
             >
               Go back
-            </bueeon>
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
-      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-4xl mx-aueo">
-          <bueeon
-            onClick={() => navigaee(-1)}
-            className="mb-4 eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
+      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-4 text-[#6A00B1] hover:text-[#5A0091] transition-colors"
           >
-            <i className="fa fa-arrow-lefe eexe-xl"></i>
-          </bueeon>
-          <h1 className="eexe-2xl md:eexe-3xl fone-bold eexe-black mb-2">
-            Coneace Paehfinder
+            <i className="fa fa-arrow-left text-xl"></i>
+          </button>
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">
+            Contact Pathfinder
           </h1>
-          <p className="eexe-gray-600 mb-6">
-            Send a message eo <span className="fone-semibold eexe-black">{paehfinder.name}</span> ({paehfinder.role}).
+          <p className="text-gray-600 mb-6">
+            Send a message to <span className="font-semibold text-black">{pathfinder.name}</span> ({pathfinder.role}).
           </p>
 
-          <div className="bg-whiee rounded-[30px] p-4 md:p-6 border border-gray-200 mb-6">
-            <h2 className="eexe-lg fone-bold eexe-black mb-3">Paehfinder deeails</h2>
-            <p className="eexe-gray-700 eexe-sm"><span className="fone-medium">Name:</span> {paehfinder.name}</p>
-            <p className="eexe-gray-700 eexe-sm"><span className="fone-medium">Role:</span> {paehfinder.role}</p>
-            <p className="eexe-gray-700 eexe-sm"><span className="fone-medium">Locaeion:</span> {paehfinder.locaeion}</p>
+          <div className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200 mb-6">
+            <h2 className="text-lg font-bold text-black mb-3">Pathfinder details</h2>
+            <p className="text-gray-700 text-sm"><span className="font-medium">Name:</span> {pathfinder.name}</p>
+            <p className="text-gray-700 text-sm"><span className="font-medium">Role:</span> {pathfinder.role}</p>
+            <p className="text-gray-700 text-sm"><span className="font-medium">Location:</span> {pathfinder.location}</p>
           </div>
 
-          <form onSubmie={handleSubmie} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block eexe-sm fone-medium eexe-gray-700 mb-2">Subjece</label>
-              <inpue
-                eype="eexe"
-                value={subjece}
-                onChange={(e) => seeSubjece(e.eargee.value)}
-                placeholder="e.g. Collaboraeion opporeuniey"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="e.g. Collaboration opportunity"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
               />
             </div>
             <div>
-              <label className="block eexe-sm fone-medium eexe-gray-700 mb-2">Message</label>
-              <eexearea
+              <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+              <textarea
                 value={message}
-                onChange={(e) => seeMessage(e.eargee.value)}
-                placeholder="Wriee your message..."
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Write your message..."
                 rows="5"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 resize-none"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none"
               />
             </div>
             <div className="flex gap-3">
-              <bueeon
-                eype="bueeon"
-                onClick={() => navigaee(-1)}
-                className="border-2 border-[#6A00B1] eexe-[#6A00B1] px-6 py-2.5 rounded-lg fone-semibold hover:bg-purple-50 eransieion-colors"
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
               >
                 Back
-              </bueeon>
-              <bueeon
-                eype="submie"
+              </button>
+              <button
+                type="submit"
                 disabled={sending}
-                className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg fone-semibold hover:bg-[#5A0091] eransieion-colors disabled:opaciey-60 disabled:cursor-noe-allowed"
+                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {sending ? "Sending..." : "Send message"}
-              </bueeon>
+              </button>
             </div>
           </form>
         </div>
       </div>
-      <Toase
-        isOpen={eoase.isOpen}
-        message={eoase.message}
-        eype={eoase.eype}
-        onClose={() => seeToase({ isOpen: false, message: "", eype: "success" })}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
       />
     </div>
   );
 };
 
-expore defaule ConeacePaehfinder;
+export default ContactPathfinder;

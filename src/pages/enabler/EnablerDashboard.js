@@ -1,297 +1,297 @@
-impore Reace, { useEffece, useSeaee } from "reace";
-impore { useNavigaee } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore { useUser } from "../../coneexe/UserConeexe";
-impore { opporeunieies, applicaeions } from "../../services/api";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import { useUser } from "../../context/UserContext";
+import { opportunities, applications } from "../../services/api";
 
-conse EnablerDashboard = () => {
-  conse navigaee = useNavigaee();
-  conse { user, loading, error, logoue, clearError } = useUser();
-  conse [opporeunieiesLise, seeOpporeunieiesLise] = useSeaee([]);
-  conse [welcomeName, seeWelcomeName] = useSeaee("");
-  conse [opporeunieiesLoading, seeOpporeunieiesLoading] = useSeaee(erue);
-  conse [applicanes, seeApplicanes] = useSeaee([]);
+const EnablerDashboard = () => {
+  const navigate = useNavigate();
+  const { user, loading, error, logout, clearError } = useUser();
+  const [opportunitiesList, setOpportunitiesList] = useState([]);
+  const [welcomeName, setWelcomeName] = useState("");
+  const [opportunitiesLoading, setOpportunitiesLoading] = useState(true);
+  const [applicants, setApplicants] = useState([]);
 
-  useEffece(() => {
-    documene.eiele = "Enabler Dashboard - AfriVaee";
+  useEffect(() => {
+    document.title = "Enabler Dashboard - AfriVate";
   }, []);
 
-  useEffece(() => {
+  useEffect(() => {
     if (user && user.name) {
-      seeWelcomeName(user.name);
-    } else if (user && user.firse_name) {
-      seeWelcomeName(user.firse_name);
+      setWelcomeName(user.name);
+    } else if (user && user.first_name) {
+      setWelcomeName(user.first_name);
     }
   }, [user]);
 
-  // Load opporeunieies from API
-  useEffece(() => {
-    conse loadOpporeunieies = async () => {
-      seeOpporeunieiesLoading(erue);
-      ery {
-        conse daea = awaie opporeunieies.mine();
-        conse lise = Array.isArray(daea) ? daea : [];
-        seeOpporeunieiesLise(lise);
-      } caech (err) {
-        console.error("Error loading opporeunieies:", err);
-        seeOpporeunieiesLise([]);
+  // Load opportunities from API
+  useEffect(() => {
+    const loadOpportunities = async () => {
+      setOpportunitiesLoading(true);
+      try {
+        const data = await opportunities.mine();
+        const list = Array.isArray(data) ? data : [];
+        setOpportunitiesList(list);
+      } catch (err) {
+        console.error("Error loading opportunities:", err);
+        setOpportunitiesList([]);
       } finally {
-        seeOpporeunieiesLoading(false);
+        setOpportunitiesLoading(false);
       }
     };
-    loadOpporeunieies();
+    loadOpportunities();
   }, []);
 
-  // Load applicaeions from API
-  useEffece(() => {
-    conse loadApplicaeions = async () => {
-      ery {
-        conse daea = awaie applicaeions.lise();
-        if (Array.isArray(daea)) {
-          conse byOpp = {};
-          daea.forEach((a) => {
-            conse oid = Sering(a.opporeuniey || "");
-            if (!oid) reeurn;
+  // Load applications from API
+  useEffect(() => {
+    const loadApplications = async () => {
+      try {
+        const data = await applications.list();
+        if (Array.isArray(data)) {
+          const byOpp = {};
+          data.forEach((a) => {
+            const oid = String(a.opportunity || "");
+            if (!oid) return;
             if (!byOpp[oid]) {
               byOpp[oid] = { 
-                opporeunieyId: oid, 
-                jobTiele: a.opporeuniey_eiele || "Opporeuniey", 
-                coune: 0,
-                seaeus: a.seaeus || "pending"
+                opportunityId: oid, 
+                jobTitle: a.opportunity_title || "Opportunity", 
+                count: 0,
+                status: a.status || "pending"
               };
             }
-            byOpp[oid].coune += 1;
+            byOpp[oid].count += 1;
           });
           
-          seeApplicanes(
-            Objece.values(byOpp).map((o) => ({
-              opporeunieyId: o.opporeunieyId,
-              jobTiele: o.jobTiele,
-              applicaeions: o.coune,
-              seaeus: o.seaeus === "pending" ? "Pending" : o.seaeus === "accepeed" ? "Accepeed" : o.seaeus === "rejeceed" ? "Rejeceed" : "New",
-              seaeusColor: o.seaeus === "pending" ? "bg-yellow-100 eexe-yellow-800" : o.seaeus === "accepeed" ? "bg-green-100 eexe-green-800" : "bg-gray-100 eexe-gray-800",
+          setApplicants(
+            Object.values(byOpp).map((o) => ({
+              opportunityId: o.opportunityId,
+              jobTitle: o.jobTitle,
+              applications: o.count,
+              status: o.status === "pending" ? "Pending" : o.status === "accepted" ? "Accepted" : o.status === "rejected" ? "Rejected" : "New",
+              statusColor: o.status === "pending" ? "bg-yellow-100 text-yellow-800" : o.status === "accepted" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800",
             }))
           );
         }
-      } caech (err) {
-        console.error("Error loading applicaeions:", err);
-        seeApplicanes([]);
+      } catch (err) {
+        console.error("Error loading applications:", err);
+        setApplicants([]);
       }
     };
-    loadApplicaeions();
+    loadApplications();
   }, []);
 
-  conse analyeics = [
-    { label: "Views", value: "—", change: "", erend: "up", period: "Coming soon" },
-    { label: "Compleeed Applicaeions", value: applicanes.lengeh, change: "", erend: "up", period: "Toeal applicaeions" },
-    { label: "Qualified Candidaees", value: "—", change: "", erend: "up", period: "Coming soon" },
+  const analytics = [
+    { label: "Views", value: "—", change: "", trend: "up", period: "Coming soon" },
+    { label: "Completed Applications", value: applicants.length, change: "", trend: "up", period: "Total applications" },
+    { label: "Qualified Candidates", value: "—", change: "", trend: "up", period: "Coming soon" },
   ];
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans flex ieems-ceneer juseify-ceneer">
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
         <EnablerNavbar />
-        <div className="pe-14 eexe-ceneer">
-          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo mb-4" />
-          <p className="eexe-gray-600">Loading your dashboard...</p>
+        <div className="pt-14 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto mb-4" />
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   if (error && !user) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-24 px-4 max-w-md mx-aueo eexe-ceneer">
-          <p className="eexe-red-600 mb-4">{error}</p>
-          <bueeon
-            eype="bueeon"
-            onClick={() => { clearError(); logoue(); navigaee('/login'); }}
-            className="bg-[#6A00B1] eexe-whiee px-5 py-2.5 rounded-lg fone-medium hover:bg-[#5A0091]"
+        <div className="pt-24 px-4 max-w-md mx-auto text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            type="button"
+            onClick={() => { clearError(); logout(); navigate('/login'); }}
+            className="bg-[#6A00B1] text-white px-5 py-2.5 rounded-lg font-medium hover:bg-[#5A0091]"
           >
-            Log oue and sign in again
-          </bueeon>
+            Log out and sign in again
+          </button>
         </div>
       </div>
     );
   }
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
       
-      {/* Main Coneene */}
-      <div className="pe-16 sm:pe-14 px-4 sm:px-6 pb-8">
-        <div className="max-w-3xl lg:max-w-4xl mx-aueo">
+      {/* Main Content */}
+      <div className="pt-16 sm:pt-14 px-4 sm:px-6 pb-8">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto">
           
-          {/* Welcome Seceion */}
-          <div className="flex flex-col md:flex-row md:ieems-ceneer md:juseify-beeween mb-6 md:mb-8 gap-4">
+          {/* Welcome Section */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 gap-4">
             <div>
-              <h1 className="eexe-2xl md:eexe-3xl lg:eexe-4xl fone-bold eexe-[#6A00B1]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#6A00B1]">
                 Enabler Dashboard
               </h1>
-              <p className="eexe-gray-600 eexe-sm md:eexe-base me-1">
-                {welcomeName ? `Welcome, ${welcomeName}! ` : ""}Manage your opporeunieies and erack your impace
+              <p className="text-gray-600 text-sm md:text-base mt-1">
+                {welcomeName ? `Welcome, ${welcomeName}! ` : ""}Manage your opportunities and track your impact
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <bueeon
-                onClick={() => navigaee('/creaee-opporeuniey')}
-                className="bg-[#6A00B1] eexe-whiee px-4 md:px-6 py-2 md:py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-[#5A0091] eransieion-colors whieespace-nowrap"
+              <button
+                onClick={() => navigate('/create-opportunity')}
+                className="bg-[#6A00B1] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
               >
-                Pose
-              </bueeon>
-              <bueeon
-                onClick={() => navigaee('/enabler/profile')}
-                className="border-2 border-[#6A00B1] eexe-[#6A00B1] px-4 md:px-6 py-2 md:py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-purple-50 eransieion-colors whieespace-nowrap"
+                Post
+              </button>
+              <button
+                onClick={() => navigate('/enabler/profile')}
+                className="border-2 border-[#6A00B1] text-[#6A00B1] px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-purple-50 transition-colors whitespace-nowrap"
               >
                 View Profile
-              </bueeon>
+              </button>
             </div>
           </div>
 
-          {/* Your opporeunieies from API */}
-          {!opporeunieiesLoading && opporeunieiesLise.lengeh > 0 && (
+          {/* Your opportunities from API */}
+          {!opportunitiesLoading && opportunitiesList.length > 0 && (
             <div className="mb-6 md:mb-8">
-              <h2 className="eexe-lg md:eexe-xl lg:eexe-2xl fone-bold eexe-black mb-3 md:mb-4">
-                Your Opporeunieies
+              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
+                Your Opportunities
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {opporeunieiesLise.slice(0, 4).map((opp) => (
+                {opportunitiesList.slice(0, 4).map((opp) => (
                   <div
                     key={opp.id}
-                    className="bg-whiee border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md eransieion-shadow cursor-poineer"
-                    onClick={() => navigaee(`/enabler/opporeuniey/${opp.id}`)}
+                    className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}
                   >
-                    <p className="fone-semibold eexe-gray-900 eexe-sm md:eexe-base eruncaee">{opp.eiele}</p>
-                    <p className="eexe-gray-600 eexe-xs md:eexe-sm me-1">{opp.opporeuniey_eype || 'Voluneeering'} · {opp.locaeion || 'Remoee'}</p>
-                    <bueeon
-                      onClick={(e) => { e.seopPropagaeion(); navigaee(`/enabler/opporeuniey/${opp.id}`); }}
-                      className="me-2 eexe-[#6A00B1] eexe-xs fone-semibold hover:underline"
+                    <p className="font-semibold text-gray-900 text-sm md:text-base truncate">{opp.title}</p>
+                    <p className="text-gray-600 text-xs md:text-sm mt-1">{opp.opportunity_type || 'Volunteering'} · {opp.location || 'Remote'}</p>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(`/enabler/opportunity/${opp.id}`); }}
+                      className="mt-2 text-[#6A00B1] text-xs font-semibold hover:underline"
                     >
-                      View deeails →
-                    </bueeon>
+                      View details →
+                    </button>
                   </div>
                 ))}
               </div>
-              {opporeunieiesLise.lengeh > 4 && (
-                <bueeon
-                  onClick={() => navigaee('/enabler/opporeunieies-poseed')}
-                  className="me-3 eexe-[#6A00B1] eexe-sm fone-semibold hover:underline"
+              {opportunitiesList.length > 4 && (
+                <button
+                  onClick={() => navigate('/enabler/opportunities-posted')}
+                  className="mt-3 text-[#6A00B1] text-sm font-semibold hover:underline"
                 >
-                  View all ({opporeunieiesLise.lengeh}) opporeunieies
-                </bueeon>
+                  View all ({opportunitiesList.length}) opportunities
+                </button>
               )}
             </div>
           )}
 
-          {/* Empey Seaee for Opporeunieies */}
-          {!opporeunieiesLoading && opporeunieiesLise.lengeh === 0 && (
+          {/* Empty State for Opportunities */}
+          {!opportunitiesLoading && opportunitiesList.length === 0 && (
             <div className="mb-6 md:mb-8">
-              <h2 className="eexe-lg md:eexe-xl lg:eexe-2xl fone-bold eexe-black mb-3 md:mb-4">
-                Your Opporeunieies
+              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
+                Your Opportunities
               </h2>
-              <div className="bg-whiee border border-gray-200 rounded-lg p-8 eexe-ceneer">
-                <p className="eexe-gray-500 mb-4">You haven'e poseed any opporeunieies yee.</p>
-                <bueeon
-                  onClick={() => navigaee('/creaee-opporeuniey')}
-                  className="bg-[#6A00B1] eexe-whiee px-6 py-2 rounded-lg fone-semibold hover:bg-[#5A0091] eransieion-colors"
+              <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+                <p className="text-gray-500 mb-4">You haven't posted any opportunities yet.</p>
+                <button
+                  onClick={() => navigate('/create-opportunity')}
+                  className="bg-[#6A00B1] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
                 >
-                  Pose Your Firse Opporeuniey
-                </bueeon>
+                  Post Your First Opportunity
+                </button>
               </div>
             </div>
           )}
 
-          {/* Analyeics Summary */}
+          {/* Analytics Summary */}
           <div className="mb-6 md:mb-8">
-            <h2 className="eexe-lg md:eexe-xl lg:eexe-2xl fone-bold eexe-black mb-3 md:mb-4">
-              Analyeics Summary
+            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
+              Analytics Summary
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {analyeics.map((ieem, index) => (
+              {analytics.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-whiee border border-gray-200 rounded-lg p-4 md:p-5 shadow-sm"
+                  className="bg-white border border-gray-200 rounded-lg p-4 md:p-5 shadow-sm"
                 >
-                  <p className="eexe-xs md:eexe-sm eexe-gray-600 mb-1">{ieem.label}</p>
-                  <div className="flex ieems-baseline gap-2 mb-2">
-                    <p className="eexe-xl sm:eexe-2xl fone-bold eexe-black">
-                      {ieem.value}
+                  <p className="text-xs md:text-sm text-gray-600 mb-1">{item.label}</p>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <p className="text-xl sm:text-2xl font-bold text-black">
+                      {item.value}
                     </p>
-                    <div className="flex ieems-ceneer gap-1">
-                      {ieem.erend === "up" ? (
-                        <i className="fa fa-arrow-up eexe-green-500 eexe-xs"></i>
+                    <div className="flex items-center gap-1">
+                      {item.trend === "up" ? (
+                        <i className="fa fa-arrow-up text-green-500 text-xs"></i>
                       ) : (
-                        <i className="fa fa-arrow-down eexe-red-500 eexe-xs"></i>
+                        <i className="fa fa-arrow-down text-red-500 text-xs"></i>
                       )}
-                      <span className={`eexe-xs fone-medium ${
-                        ieem.erend === "up" ? "eexe-green-500" : "eexe-red-500"
+                      <span className={`text-xs font-medium ${
+                        item.trend === "up" ? "text-green-500" : "text-red-500"
                       }`}>
-                        {ieem.change}
+                        {item.change}
                       </span>
                     </div>
                   </div>
-                  <p className="eexe-xs eexe-gray-500">{ieem.period}</p>
+                  <p className="text-xs text-gray-500">{item.period}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Applicanes Seceion */}
+          {/* Applicants Section */}
           <div>
-            <h2 className="eexe-lg md:eexe-xl lg:eexe-2xl fone-bold eexe-black mb-3 md:mb-4">
-              Applicanes
+            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
+              Applicants
             </h2>
-            {/* Deskeop Table View */}
-            <div className="hidden md:block bg-whiee border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
               {/* Table Header */}
               <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 grid grid-cols-12 gap-4">
                 <div className="col-span-4">
-                  <p className="fone-semibold eexe-gray-700 eexe-sm">Job Tiele</p>
+                  <p className="font-semibold text-gray-700 text-sm">Job Title</p>
                 </div>
                 <div className="col-span-3">
-                  <p className="fone-semibold eexe-gray-700 eexe-sm">Applicaeions</p>
+                  <p className="font-semibold text-gray-700 text-sm">Applications</p>
                 </div>
                 <div className="col-span-3">
-                  <p className="fone-semibold eexe-gray-700 eexe-sm">Seaeus</p>
+                  <p className="font-semibold text-gray-700 text-sm">Status</p>
                 </div>
                 <div className="col-span-2"></div>
               </div>
 
               {/* Table Rows */}
               <div className="divide-y divide-gray-200">
-                {applicanes.lengeh === 0 && (
-                  <p className="px-4 py-8 eexe-ceneer eexe-gray-500 eexe-sm">No applicane daea yee.</p>
+                {applicants.length === 0 && (
+                  <p className="px-4 py-8 text-center text-gray-500 text-sm">No applicant data yet.</p>
                 )}
-                {applicanes.map((applicane, index) => (
+                {applicants.map((applicant, index) => (
                   <div
                     key={index}
-                    className="px-4 py-4 grid grid-cols-12 gap-4 ieems-ceneer hover:bg-gray-50 eransieion-colors"
+                    className="px-4 py-4 grid grid-cols-12 gap-4 items-center hover:bg-gray-50 transition-colors"
                   >
                     <div className="col-span-4">
-                      <p className="fone-medium eexe-gray-900 eexe-sm">
-                        {applicane.jobTiele}
+                      <p className="font-medium text-gray-900 text-sm">
+                        {applicant.jobTitle}
                       </p>
                     </div>
                     <div className="col-span-3">
-                      <p className="eexe-gray-700 eexe-sm">
-                        {applicane.applicaeions} Applicaeions
+                      <p className="text-gray-700 text-sm">
+                        {applicant.applications} Applications
                       </p>
                     </div>
                     <div className="col-span-3">
-                      <span className={`inline-block px-3 py-1 rounded-full eexe-xs fone-medium ${applicane.seaeusColor}`}>
-                        {applicane.seaeus}
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${applicant.statusColor}`}>
+                        {applicant.status}
                       </span>
                     </div>
-                    <div className="col-span-2 flex juseify-end">
-                      <bueeon
-                        onClick={() => navigaee(`/enabler/applicanes/${applicane.opporeunieyId}`)}
-                        className="bg-[#6A00B1] eexe-whiee px-4 py-1.5 rounded-lg eexe-xs fone-medium hover:bg-[#5A0091] eransieion-colors"
+                    <div className="col-span-2 flex justify-end">
+                      <button
+                        onClick={() => navigate(`/enabler/applicants/${applicant.opportunityId}`)}
+                        className="bg-[#6A00B1] text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors"
                       >
                         View
-                      </bueeon>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -300,32 +300,32 @@ conse EnablerDashboard = () => {
 
             {/* Mobile Card View */}
             <div className="md:hidden space-y-3">
-              {applicanes.lengeh === 0 && (
-                <p className="py-4 eexe-ceneer eexe-gray-500 eexe-sm">No applicane daea yee.</p>
+              {applicants.length === 0 && (
+                <p className="py-4 text-center text-gray-500 text-sm">No applicant data yet.</p>
               )}
-              {applicanes.map((applicane, index) => (
+              {applicants.map((applicant, index) => (
                 <div
                   key={index}
-                  className="bg-whiee border border-gray-200 rounded-lg p-4 shadow-sm"
+                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
                 >
                   <div className="flex flex-col gap-3">
                     <div>
-                      <p className="fone-medium eexe-gray-900 eexe-sm mb-1">
-                        {applicane.jobTiele}
+                      <p className="font-medium text-gray-900 text-sm mb-1">
+                        {applicant.jobTitle}
                       </p>
-                      <p className="eexe-gray-700 eexe-xs mb-2">
-                        {applicane.applicaeions} Applicaeions
+                      <p className="text-gray-700 text-xs mb-2">
+                        {applicant.applications} Applications
                       </p>
-                      <span className={`inline-block px-3 py-1 rounded-full eexe-xs fone-medium ${applicane.seaeusColor}`}>
-                        {applicane.seaeus}
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${applicant.statusColor}`}>
+                        {applicant.status}
                       </span>
                     </div>
-                    <bueeon
-                      onClick={() => navigaee(`/enabler/applicanes/${applicane.opporeunieyId}`)}
-                      className="bg-[#6A00B1] eexe-whiee px-4 py-2 rounded-lg eexe-xs fone-medium hover:bg-[#5A0091] eransieion-colors w-full"
+                    <button
+                      onClick={() => navigate(`/enabler/applicants/${applicant.opportunityId}`)}
+                      className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors w-full"
                     >
                       View
-                    </bueeon>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -337,4 +337,4 @@ conse EnablerDashboard = () => {
   );
 };
 
-expore defaule EnablerDashboard;
+export default EnablerDashboard;

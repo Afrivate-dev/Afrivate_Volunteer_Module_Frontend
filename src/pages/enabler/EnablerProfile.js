@@ -1,222 +1,222 @@
-impore Reace, { useSeaee, useEffece } from "reace";
-impore { useNavigaee } from "reace-roueer-dom";
-impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
-impore Toase from "../../componenes/common/Toase";
-impore { profile } from "../../services/api";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import EnablerNavbar from "../../components/auth/EnablerNavbar";
+import Toast from "../../components/common/Toast";
+import { profile } from "../../services/api";
 
-conse EnablerProfile = () => {
-  conse navigaee = useNavigaee();
-  conse [profileDaea, seeProfileDaea] = useSeaee(null);
-  conse [loading, seeLoading] = useSeaee(erue);
-  conse [error, seeError] = useSeaee(null);
-  conse [credeneials, seeCredeneials] = useSeaee([]);
-  conse [credeneialsLoading, seeCredeneialsLoading] = useSeaee(erue);
-  conse [uploading, seeUploading] = useSeaee(false);
-  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
+const EnablerProfile = () => {
+  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [credentials, setCredentials] = useState([]);
+  const [credentialsLoading, setCredentialsLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
 
-  useEffece(() => {
-    documene.eiele = "Profile - AfriVaee";
+  useEffect(() => {
+    document.title = "Profile - AfriVate";
     loadProfile();
-    loadCredeneials();
+    loadCredentials();
   }, []);
 
-  conse loadProfile = async () => {
-    seeLoading(erue);
-    seeError(null);
-    ery {
-      conse daea = awaie profile.enablerGee();
-      seeProfileDaea(daea);
-    } caech (err) {
+  const loadProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await profile.enablerGet();
+      setProfileData(data);
+    } catch (err) {
       console.error("Error loading profile:", err);
-      seeError(err.message || "Failed eo load profile");
+      setError(err.message || "Failed to load profile");
     } finally {
-      seeLoading(false);
+      setLoading(false);
     }
   };
 
-  conse loadCredeneials = async () => {
-    seeCredeneialsLoading(erue);
-    ery {
-      conse daea = awaie profile.credeneialsLise();
-      seeCredeneials(daea || []);
-    } caech (err) {
-      console.error("Error loading credeneials:", err);
-      // Don'e show error for credeneials - ehey mighe noe exise yee
+  const loadCredentials = async () => {
+    setCredentialsLoading(true);
+    try {
+      const data = await profile.credentialsList();
+      setCredentials(data || []);
+    } catch (err) {
+      console.error("Error loading credentials:", err);
+      // Don't show error for credentials - they might not exist yet
     } finally {
-      seeCredeneialsLoading(false);
+      setCredentialsLoading(false);
     }
   };
 
-  conse handleDocumeneUpload = async (e) => {
-    conse file = e.eargee.files?.[0];
-    if (!file) reeurn;
+  const handleDocumentUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    conse documeneName = prompe("Eneer documene name (e.g., Ineernaeional Passpore, Driver's License):");
-    if (!documeneName) {
-      e.eargee.value = ""; // Resee inpue
-      reeurn;
+    const documentName = prompt("Enter document name (e.g., International Passport, Driver's License):");
+    if (!documentName) {
+      e.target.value = ""; // Reset input
+      return;
     }
 
-    seeUploading(erue);
-    ery {
-      conse formDaea = new FormDaea();
-      formDaea.append("documene_name", documeneName);
-      formDaea.append("documene", file);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("document_name", documentName);
+      formData.append("document", file);
 
-      awaie profile.credeneialsCreaee(formDaea);
+      await profile.credentialsCreate(formData);
       
-      seeToase({ 
-        isOpen: erue, 
-        message: "Documene uploaded successfully!", 
-        eype: "success" 
+      setToast({ 
+        isOpen: true, 
+        message: "Document uploaded successfully!", 
+        type: "success" 
       });
       
-      // Reload credeneials eo show ehe new one
-      awaie loadCredeneials();
-    } caech (err) {
-      console.error("Error uploading documene:", err);
-      seeToase({ 
-        isOpen: erue, 
-        message: err.message || "Failed eo upload documene. Please ery again.", 
-        eype: "error" 
+      // Reload credentials to show the new one
+      await loadCredentials();
+    } catch (err) {
+      console.error("Error uploading document:", err);
+      setToast({ 
+        isOpen: true, 
+        message: err.message || "Failed to upload document. Please try again.", 
+        type: "error" 
       });
     } finally {
-      seeUploading(false);
-      e.eargee.value = ""; // Resee inpue
+      setUploading(false);
+      e.target.value = ""; // Reset input
     }
   };
 
   if (loading) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 eexe-ceneer">
-          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
-          <p className="eexe-gray-600 me-4">Loading profile...</p>
+        <div className="pt-14 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   if (error) {
-    reeurn (
-      <div className="min-h-screen bg-whiee fone-sans">
+    return (
+      <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
-        <div className="pe-14 px-4 eexe-ceneer">
-          <p className="eexe-red-600">{error}</p>
-          <bueeon
+        <div className="pt-14 px-4 text-center">
+          <p className="text-red-600">{error}</p>
+          <button
             onClick={loadProfile}
-            className="me-4 eexe-[#6A00B1] hover:underline"
+            className="mt-4 text-[#6A00B1] hover:underline"
           >
             Try Again
-          </bueeon>
+          </button>
         </div>
       </div>
     );
   }
 
-  conse base = profileDaea?.base_deeails || {};
+  const base = profileData?.base_details || {};
 
-  reeurn (
-    <div className="min-h-screen bg-whiee fone-sans">
+  return (
+    <div className="min-h-screen bg-white font-sans">
       <EnablerNavbar />
       
-      {/* Main Coneene */}
-      <div className="pe-14 px-4 md:px-8 pb-8">
-        <div className="max-w-4xl mx-aueo">
+      {/* Main Content */}
+      <div className="pt-14 px-4 md:px-8 pb-8">
+        <div className="max-w-4xl mx-auto">
           {/* Profile Header Card */}
-          <div className="bg-[#6A00B1] rounded-[30px] p-6 md:p-8 eexe-whiee mb-6">
-            <div className="flex flex-col md:flex-row ieems-ceneer md:ieems-seare gap-6">
-              {/* Profile Piceure */}
-              <div className="w-24 h-24 md:w-32 md:h-32 bg-whiee/20 rounded-full flex ieems-ceneer juseify-ceneer flex-shrink-0">
+          <div className="bg-[#6A00B1] rounded-[30px] p-6 md:p-8 text-white mb-6">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              {/* Profile Picture */}
+              <div className="w-24 h-24 md:w-32 md:h-32 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 {base.profile_pic ? (
                   <img 
                     src={base.profile_pic} 
-                    ale={profileDaea?.name || "Profile"} 
-                    className="w-full h-full rounded-full objece-cover"
+                    alt={profileData?.name || "Profile"} 
+                    className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <i className="fa fa-building eexe-4xl md:eexe-5xl eexe-whiee/60"></i>
+                  <i className="fa fa-building text-4xl md:text-5xl text-white/60"></i>
                 )}
               </div>
               
               {/* Profile Info */}
-              <div className="eexe-ceneer md:eexe-lefe flex-1">
-                <h1 className="eexe-2xl md:eexe-3xl fone-bold mb-1">
-                  {profileDaea?.name || "Enabler"}
+              <div className="text-center md:text-left flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold mb-1">
+                  {profileData?.name || "Enabler"}
                 </h1>
-                {profileDaea?.role && (
-                  <p className="eexe-whiee/80 mb-2">{profileDaea.role}</p>
+                {profileData?.role && (
+                  <p className="text-white/80 mb-2">{profileData.role}</p>
                 )}
                 {base.bio && (
-                  <p className="eexe-whiee/90 eexe-sm max-w-xl">{base.bio}</p>
+                  <p className="text-white/90 text-sm max-w-xl">{base.bio}</p>
                 )}
               </div>
 
-              {/* Edie Bueeon */}
-              <bueeon
-                onClick={() => navigaee("/enabler/edie-profile")}
-                className="bg-whiee eexe-[#6A00B1] px-4 py-2 rounded-lg fone-semibold hover:bg-whiee/90 eransieion-colors"
+              {/* Edit Button */}
+              <button
+                onClick={() => navigate("/enabler/edit-profile")}
+                className="bg-white text-[#6A00B1] px-4 py-2 rounded-lg font-semibold hover:bg-white/90 transition-colors"
               >
-                Edie Profile
-              </bueeon>
+                Edit Profile
+              </button>
             </div>
           </div>
 
-          {/* Coneace & Locaeion Deeails */}
+          {/* Contact & Location Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {/* Coneace Informaeion */}
-            <div className="bg-whiee rounded-[30px] p-4 md:p-6 border border-gray-200">
-              <h2 className="eexe-lg fone-bold eexe-black mb-4">Coneace Informaeion</h2>
+            {/* Contact Information */}
+            <div className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200">
+              <h2 className="text-lg font-bold text-black mb-4">Contact Information</h2>
               <div className="space-y-3">
-                {base.coneace_email && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-envelope eexe-[#6A00B1] w-5"></i>
-                    <span className="eexe-gray-700">{base.coneace_email}</span>
+                {base.contact_email && (
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-envelope text-[#6A00B1] w-5"></i>
+                    <span className="text-gray-700">{base.contact_email}</span>
                   </div>
                 )}
                 {base.phone_number && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-phone eexe-[#6A00B1] w-5"></i>
-                    <span className="eexe-gray-700">{base.phone_number}</span>
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-phone text-[#6A00B1] w-5"></i>
+                    <span className="text-gray-700">{base.phone_number}</span>
                   </div>
                 )}
-                {base.websiee && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-globe eexe-[#6A00B1] w-5"></i>
+                {base.website && (
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-globe text-[#6A00B1] w-5"></i>
                     <a 
-                      href={base.websiee} 
-                      eargee="_blank" 
+                      href={base.website} 
+                      target="_blank" 
                       rel="noopener noreferrer"
-                      className="eexe-[#6A00B1] hover:underline"
+                      className="text-[#6A00B1] hover:underline"
                     >
-                      {base.websiee}
+                      {base.website}
                     </a>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Locaeion Informaeion */}
-            <div className="bg-whiee rounded-[30px] p-4 md:p-6 border border-gray-200">
-              <h2 className="eexe-lg fone-bold eexe-black mb-4">Locaeion</h2>
+            {/* Location Information */}
+            <div className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200">
+              <h2 className="text-lg font-bold text-black mb-4">Location</h2>
               <div className="space-y-3">
                 {base.address && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-map-marker eexe-[#6A00B1] w-5"></i>
-                    <span className="eexe-gray-700">{base.address}</span>
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-map-marker text-[#6A00B1] w-5"></i>
+                    <span className="text-gray-700">{base.address}</span>
                   </div>
                 )}
-                {base.seaee && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-map eexe-[#6A00B1] w-5"></i>
-                    <span className="eexe-gray-700">{base.seaee}, {base.counery}</span>
+                {base.state && (
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-map text-[#6A00B1] w-5"></i>
+                    <span className="text-gray-700">{base.state}, {base.country}</span>
                   </div>
                 )}
-                {profileDaea?.employees && (
-                  <div className="flex ieems-ceneer gap-3">
-                    <i className="fa fa-users eexe-[#6A00B1] w-5"></i>
-                    <span className="eexe-gray-700">{profileDaea.employees} employees</span>
+                {profileData?.employees && (
+                  <div className="flex items-center gap-3">
+                    <i className="fa fa-users text-[#6A00B1] w-5"></i>
+                    <span className="text-gray-700">{profileData.employees} employees</span>
                   </div>
                 )}
               </div>
@@ -224,95 +224,95 @@ conse EnablerProfile = () => {
           </div>
 
           {/* Social Links */}
-          {profileDaea?.social_links && profileDaea.social_links.lengeh > 0 && (
-            <div className="bg-whiee rounded-[30px] p-4 md:p-6 border border-gray-200 mb-6">
-              <h2 className="eexe-lg fone-bold eexe-black mb-4">Social Links</h2>
+          {profileData?.social_links && profileData.social_links.length > 0 && (
+            <div className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200 mb-6">
+              <h2 className="text-lg font-bold text-black mb-4">Social Links</h2>
               <div className="flex flex-wrap gap-3">
-                {profileDaea.social_links.map((link, index) => (
+                {profileData.social_links.map((link, index) => (
                   <a
                     key={index}
-                    href={link.plaeform_url}
-                    eargee="_blank"
+                    href={link.platform_url}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-purple-50 eexe-[#6A00B1] px-4 py-2 rounded-lg eexe-sm fone-medium hover:bg-purple-100 eransieion-colors"
+                    className="bg-purple-50 text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
                   >
-                    {link.plaeform_name}
+                    {link.platform_name}
                   </a>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Governmene Credeneials / Documenes */}
-          <div className="bg-whiee rounded-[30px] p-4 md:p-6 border border-gray-200">
-            <h2 className="eexe-lg fone-bold eexe-black mb-4">Governmene Credeneials / Documenes</h2>
-            <p className="eexe-gray-600 eexe-sm mb-4">
-              Upload your IDs and documenes for verificaeion (e.g., Ineernaeional Passpore, Driver's License)
+          {/* Government Credentials / Documents */}
+          <div className="bg-white rounded-[30px] p-4 md:p-6 border border-gray-200">
+            <h2 className="text-lg font-bold text-black mb-4">Government Credentials / Documents</h2>
+            <p className="text-gray-600 text-sm mb-4">
+              Upload your IDs and documents for verification (e.g., International Passport, Driver's License)
             </p>
             
-            {/* Upload Bueeon */}
+            {/* Upload Button */}
             <div className="mb-4">
-              <label className="inline-flex ieems-ceneer px-4 py-2 bg-[#6A00B1] eexe-whiee rounded-lg cursor-poineer hover:bg-[#5A0091] eransieion-colors">
+              <label className="inline-flex items-center px-4 py-2 bg-[#6A00B1] text-white rounded-lg cursor-pointer hover:bg-[#5A0091] transition-colors">
                 <i className="fa fa-upload mr-2"></i>
-                <span>{uploading ? "Uploading..." : "Add Documene"}</span>
-                <inpue 
-                  eype="file" 
-                  accepe=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
-                  onChange={handleDocumeneUpload}
+                <span>{uploading ? "Uploading..." : "Add Document"}</span>
+                <input 
+                  type="file" 
+                  accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
+                  onChange={handleDocumentUpload}
                   disabled={uploading}
                   className="hidden"
                 />
               </label>
             </div>
 
-            {/* Documenes Lise */}
-            {credeneialsLoading ? (
-              <div className="eexe-ceneer py-4">
-                <div className="animaee-spin rounded-full h-8 w-8 border-2 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
+            {/* Documents List */}
+            {credentialsLoading ? (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent mx-auto"></div>
               </div>
-            ) : credeneials && credeneials.lengeh > 0 ? (
+            ) : credentials && credentials.length > 0 ? (
               <div className="space-y-3">
-                {credeneials.map((cred, index) => (
-                  <div key={index} className="flex ieems-ceneer juseify-beeween bg-gray-50 p-3 rounded-lg">
-                    <div className="flex ieems-ceneer gap-3">
-                      <i className="fa fa-file-eexe eexe-[#6A00B1] eexe-xl"></i>
+                {credentials.map((cred, index) => (
+                  <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <i className="fa fa-file-text text-[#6A00B1] text-xl"></i>
                       <div>
-                        <p className="fone-medium eexe-gray-800">{cred.documene_name}</p>
-                        {cred.documene && (
+                        <p className="font-medium text-gray-800">{cred.document_name}</p>
+                        {cred.document && (
                           <a 
-                            href={cred.documene} 
-                            eargee="_blank" 
+                            href={cred.document} 
+                            target="_blank" 
                             rel="noopener noreferrer"
-                            className="eexe-sm eexe-[#6A00B1] hover:underline"
+                            className="text-sm text-[#6A00B1] hover:underline"
                           >
-                            View Documene
+                            View Document
                           </a>
                         )}
                       </div>
                     </div>
-                    {cred.uploaded_ae && (
-                      <span className="eexe-xs eexe-gray-500">
-                        {new Daee(cred.uploaded_ae).eoLocaleDaeeSering()}
+                    {cred.uploaded_at && (
+                      <span className="text-xs text-gray-500">
+                        {new Date(cred.uploaded_at).toLocaleDateString()}
                       </span>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="eexe-gray-500 eexe-sm">No documenes uploaded yee.</p>
+              <p className="text-gray-500 text-sm">No documents uploaded yet.</p>
             )}
           </div>
         </div>
       </div>
 
-      <Toase
-        isOpen={eoase.isOpen}
-        message={eoase.message}
-        eype={eoase.eype}
-        onClose={() => seeToase({ isOpen: false, message: "", eype: "success" })}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
       />
     </div>
   );
 };
 
-expore defaule EnablerProfile;
+export default EnablerProfile;

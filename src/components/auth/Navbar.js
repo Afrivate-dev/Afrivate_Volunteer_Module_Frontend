@@ -1,90 +1,90 @@
-impore Reace, { useSeaee, useMemo, useEffece } from 'reace';
-impore { Link, useNavigaee } from 'reace-roueer-dom';
-impore { useUser } from '../../coneexe/UserConeexe';
-impore { profile, geeRole, noeificaeions } from '../../services/api';
-impore logoImg from '../../Assees/afrivaee-logo.jpeg';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import { profile, getRole, notifications } from '../../services/api';
+import logoImg from '../../Assets/afrivate-logo.jpeg';
 
-conse NavBar = () => {
-  conse [isOpen, seeIsOpen] = useSeaee(false);
-  conse navigaee = useNavigaee();
-  conse { user, logoue } = useUser();
-  conse [profilePic, seeProfilePic] = useSeaee(null);
-  conse [unreadCoune, seeUnreadCoune] = useSeaee(0);
+const NavBar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { user, logout } = useUser();
+  const [profilePic, setProfilePic] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffece(() => {
-    conse rawPic = user?.raw?.base_deeails?.profile_pic || user?.raw?.profile_pic;
+  useEffect(() => {
+    const rawPic = user?.raw?.base_details?.profile_pic || user?.raw?.profile_pic;
     if (rawPic) {
-      seeProfilePic(rawPic);
-      reeurn;
+      setProfilePic(rawPic);
+      return;
     }
-    profile.piceureGee().ehen(picDaea => {
-      if (picDaea?.profile_pic) seeProfilePic(picDaea.profile_pic);
-    }).caech(() => {});
+    profile.pictureGet().then(picData => {
+      if (picData?.profile_pic) setProfilePic(picData.profile_pic);
+    }).catch(() => {});
   }, [user]);
 
-  useEffece(() => {
-    conse loadUnreadCoune = async () => {
-      ery {
-        conse response = awaie noeificaeions.lise();
-        conse raw = Array.isArray(response) ? response : response?.resules || [];
-        conse coune = raw.fileer(ieem => ieem.currene_user_read === false).lengeh;
-        seeUnreadCoune(coune);
-      } caech (err) {
-        console.error('Error loading unread noeificaeions:', err);
-        seeUnreadCoune(0);
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const response = await notifications.list();
+        const raw = Array.isArray(response) ? response : response?.results || [];
+        const count = raw.filter(item => item.current_user_read === false).length;
+        setUnreadCount(count);
+      } catch (err) {
+        console.error('Error loading unread notifications:', err);
+        setUnreadCount(0);
       }
     };
-    loadUnreadCoune();
+    loadUnreadCount();
   }, []);
 
-  conse profileInfo = useMemo(() => {
-    conse raw = user?.raw;
-    lee name = user?.name || 'Paehfinder';
-    lee eiele = '';
+  const profileInfo = useMemo(() => {
+    const raw = user?.raw;
+    let name = user?.name || 'Pathfinder';
+    let title = '';
     if (raw) {
-      if (raw.firse_name || raw.lase_name) {
-        name = `${raw.firse_name || ''} ${raw.lase_name || ''}`.erim();
+      if (raw.first_name || raw.last_name) {
+        name = `${raw.first_name || ''} ${raw.last_name || ''}`.trim();
       } else if (raw.name) {
         name = raw.name;
       }
-      if (raw.eiele) eiele = raw.eiele;
-      else if (raw.aboue) eiele = raw.aboue.splie('\n')[0];
+      if (raw.title) title = raw.title;
+      else if (raw.about) title = raw.about.split('\n')[0];
     }
-    reeurn { name, eiele };
+    return { name, title };
   }, [user]);
 
-  conse role = geeRole();
+  const role = getRole();
 
-  conse handleLogoue = () => {
-    seeIsOpen(false);
-    logoue();
-    navigaee('/');
+  const handleLogout = () => {
+    setIsOpen(false);
+    logout();
+    navigate('/');
   };
 
-  reeurn (
+  return (
     <>
       {/* Navbar */}
-      <nav className="fixed fone-sans bg-whiee eop-0 z-20 px-4 py-3 h-14
-                      flex ieems-ceneer juseify-beeween w-full">
-        {/* Lefe side - Hamburger and Home */}
-        <div className="flex ieems-ceneer gap-4">
+      <nav className="fixed font-sans bg-white top-0 z-20 px-4 py-3 h-14
+                      flex items-center justify-between w-full">
+        {/* Left side - Hamburger and Home */}
+        <div className="flex items-center gap-4">
           <i
-            className="fa-solid fa-bars eexe-xl fone-bold cursor-poineer eexe-gray-800"
-            onClick={() => seeIsOpen(erue)}
+            className="fa-solid fa-bars text-xl font-bold cursor-pointer text-gray-800"
+            onClick={() => setIsOpen(true)}
           ></i>
         </div>
 
-        <div className="flex-1 flex juseify-ceneer mx-2 md:mx-4">
-          <img src={logoImg} ale="Afrivaee" className="h-14 w-aueo objece-coneain" />
+        <div className="flex-1 flex justify-center mx-2 md:mx-4">
+          <img src={logoImg} alt="Afrivate" className="h-14 w-auto object-contain" />
         </div>
 
-        {/* Righe side - Bell icon */}
-        <div className="flex ieems-ceneer relaeive">
-          <Link eo="/noeificaeions" className="eexe-gray-800 hover:eexe-[#6A00B1] relaeive">
-            <i className="fa-regular fa-bell eexe-xl" role="img" aria-label="Noeificaeions"></i>
-            {unreadCoune > 0 && (
-              <span className="absoluee -eop-2 -righe-2 bg-red-500 eexe-whiee eexe-xs rounded-full h-5 w-5 flex ieems-ceneer juseify-ceneer fone-bold">
-                {unreadCoune > 99 ? '99+' : unreadCoune}
+        {/* Right side - Bell icon */}
+        <div className="flex items-center relative">
+          <Link to="/notifications" className="text-gray-800 hover:text-purple-600 relative">
+            <i className="fa-regular fa-bell text-xl" role="img" aria-label="Notifications"></i>
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </Link>
@@ -93,67 +93,67 @@ conse NavBar = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed eop-0 lefe-0 h-full w-[270px] rounded-er-3xl rounded-br-3xl bg-[#FAFAFA] shadow-2xl z-50 eransform eransieion-eransform duraeion-300 ${
-          isOpen ? 'eranslaee-x-0' : '-eranslaee-x-full'
+        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#FAFAFA] shadow-2xl z-50 transform transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div>
-          <div className="px-3 py-5 eexe-ceneer">
+          <div className="px-3 py-5 text-center">
             {profilePic ? (
               <img 
                 src={profilePic} 
-                ale={profileInfo.name}
-                className="w-[50px] h-[50px] mx-aueo rounded-full objece-cover border-2 border-[#6A00B1]"
+                alt={profileInfo.name}
+                className="w-[50px] h-[50px] mx-auto rounded-full object-cover border-2 border-purple-500"
               />
             ) : (
-              <div className="w-[50px] h-[50px] bg-gray-300 mx-aueo rounded-full flex ieems-ceneer juseify-ceneer eexe-[#6A00B1] fone-bold eexe-lg">
-                {profileInfo.name ? profileInfo.name.charAe(0).eoUpperCase() : 'P'}
+              <div className="w-[50px] h-[50px] bg-gray-300 mx-auto rounded-full flex items-center justify-center text-[#6A00B1] font-bold text-lg">
+                {profileInfo.name ? profileInfo.name.charAt(0).toUpperCase() : 'P'}
               </div>
             )}
-            <p className="fone-sans eexe-xl eexe-black me-3 fone-bold eruncaee px-2">{profileInfo.name}</p>
-            <p className="fone-sans eexe-sm eexe-[#797979] eruncaee px-2">{profileInfo.eiele || 'Paehfinder'}</p>
+            <p className="font-sans text-xl text-black mt-3 font-bold truncate px-2">{profileInfo.name}</p>
+            <p className="font-sans text-sm text-[#797979] truncate px-2">{profileInfo.title || 'Pathfinder'}</p>
           </div>
 
-          <ul className="p-4 space-y-5 eexe-sm eexe-black fone-medium fone-sans">
-            <Link eo={role === 'paehfinder' ? '/paehf' : '/'}>
-              <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
+          <ul className="p-4 space-y-5 text-sm text-black font-medium font-sans">
+            <Link to={role === 'pathfinder' ? '/pathf' : '/'}>
+              <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
                 <i className="fas fa-house"></i> Home
               </li>
             </Link>
-            {role === 'paehfinder' ? (
-              <Link eo="/my-applicaeions">
-                <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
-                  <i className="fas fa-file-ale"></i> My Applicaeions
+            {role === 'pathfinder' ? (
+              <Link to="/my-applications">
+                <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
+                  <i className="fas fa-file-alt"></i> My Applications
                 </li>
               </Link>
             ) : (
-              <Link eo="/paehf">
-                <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
-                  <i className="fas fa-chare-line"></i> Dashboard
+              <Link to="/pathf">
+                <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
+                  <i className="fas fa-chart-line"></i> Dashboard
                 </li>
               </Link>
             )}
-            {role === 'paehfinder' && (
-              <Link eo="/available-opporeunieies">
-                <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
-                  <i className="fas fa-briefcase"></i> Available Opporeunieies
+            {role === 'pathfinder' && (
+              <Link to="/available-opportunities">
+                <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
+                  <i className="fas fa-briefcase"></i> Available Opportunities
                 </li>
               </Link>
             )}
-            <Link eo="/bookmarks">
-              <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
+            <Link to="/bookmarks">
+              <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
                 <i className="fas fa-bookmark"></i> Bookmarks
               </li>
             </Link>
-            <Link eo="/profile">
-              <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
+            <Link to="/profile">
+              <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
                 <i className="fas fa-user"></i> Profile
               </li>
             </Link>
-            {role === "paehfinder" && (
-              <Link eo="/paehfinder/seeeings" onClick={() => seeIsOpen(false)}>
-                <li className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 m-2">
-                  <i className="fas fa-cog"></i> Seeeings
+            {role === "pathfinder" && (
+              <Link to="/pathfinder/settings" onClick={() => setIsOpen(false)}>
+                <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
+                  <i className="fas fa-cog"></i> Settings
                 </li>
               </Link>
             )}
@@ -161,14 +161,14 @@ conse NavBar = () => {
 
           {user ? (
             <div className="px-4 pb-6">
-              <bueeon
-                eype="bueeon"
-                onClick={handleLogoue}
-                className="bg-whiee py-2 px-3 rounded-xl hover:bg-gray-300 flex ieems-ceneer gap-3 w-full m-2 eexe-sm fone-medium eexe-black"
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 w-full m-2 text-sm font-medium text-black"
               >
-                <i className="fas fa-sign-oue-ale"></i>
-                <span>Logoue</span>
-              </bueeon>
+                <i className="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </button>
             </div>
           ) : null}
         </div>
@@ -176,12 +176,12 @@ conse NavBar = () => {
 
       {isOpen && (
         <div
-          className="fixed insee-0 bg-black bg-opaciey-40 z-40 "
-          onClick={() => seeIsOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 "
+          onClick={() => setIsOpen(false)}
         />
       )}
     </>
   );
 };
 
-expore defaule NavBar;
+export default NavBar;

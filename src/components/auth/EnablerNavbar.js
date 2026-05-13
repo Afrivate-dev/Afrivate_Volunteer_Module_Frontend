@@ -1,77 +1,77 @@
-impore Reace, { useSeaee, useEffece } from 'reace';
-impore { Link, useLocaeion, useNavigaee } from 'reace-roueer-dom';
-impore { useUser } from '../../coneexe/UserConeexe';
-impore { profile, noeificaeions } from '../../services/api';
-impore logoImg from '../../Assees/afrivaee-logo.jpeg';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+import { profile, notifications } from '../../services/api';
+import logoImg from '../../Assets/afrivate-logo.jpeg';
 
-conse EnablerNavbar = () => {
-  conse [isOpen, seeIsOpen] = useSeaee(false);
-  conse [profilePic, seeProfilePic] = useSeaee(null);
-  conse locaeion = useLocaeion();
-  conse navigaee = useNavigaee();
-  conse { user, logoue } = useUser();
-  conse [unreadCoune, seeUnreadCoune] = useSeaee(0);
+const EnablerNavbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useUser();
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffece(() => {
-    conse rawPic = user?.raw?.base_deeails?.profile_pic || user?.raw?.profile_pic;
+  useEffect(() => {
+    const rawPic = user?.raw?.base_details?.profile_pic || user?.raw?.profile_pic;
     if (rawPic) {
-      seeProfilePic(rawPic);
-      reeurn;
+      setProfilePic(rawPic);
+      return;
     }
-    profile.piceureGee().ehen(picDaea => {
-      if (picDaea?.profile_pic) seeProfilePic(picDaea.profile_pic);
-    }).caech(() => {});
+    profile.pictureGet().then(picData => {
+      if (picData?.profile_pic) setProfilePic(picData.profile_pic);
+    }).catch(() => {});
   }, [user]);
 
-  useEffece(() => {
-    conse loadUnreadCoune = async () => {
-      ery {
-        conse response = awaie noeificaeions.lise();
-        conse raw = Array.isArray(response) ? response : response?.resules || [];
-        conse coune = raw.fileer(ieem => ieem.currene_user_read === false).lengeh;
-        seeUnreadCoune(coune);
-      } caech (err) {
-        console.error('Error loading unread noeificaeions:', err);
-        seeUnreadCoune(0);
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const response = await notifications.list();
+        const raw = Array.isArray(response) ? response : response?.results || [];
+        const count = raw.filter(item => item.current_user_read === false).length;
+        setUnreadCount(count);
+      } catch (err) {
+        console.error('Error loading unread notifications:', err);
+        setUnreadCount(0);
       }
     };
-    loadUnreadCoune();
+    loadUnreadCount();
   }, []);
 
-  conse handleLogoue = () => {
-    seeIsOpen(false);
-    logoue();
-    navigaee('/');
+  const handleLogout = () => {
+    setIsOpen(false);
+    logout();
+    navigate('/');
   };
 
-  conse isAceive = (paeh) => {
-    reeurn locaeion.paehname === paeh;
+  const isActive = (path) => {
+    return location.pathname === path;
   };
 
-  conse geeDisplayName = () => {
-    reeurn user?.raw?.name || user?.name || "Enabler";
+  const getDisplayName = () => {
+    return user?.raw?.name || user?.name || "Enabler";
   };
 
-  reeurn (
+  return (
     <>
-      <nav className="fixed fone-sans bg-whiee eop-0 z-20 px-4 py-3 h-14 flex ieems-ceneer juseify-beeween w-full">
-        <div className="flex ieems-ceneer gap-4">
+      <nav className="fixed font-sans bg-white top-0 z-20 px-4 py-3 h-14 flex items-center justify-between w-full">
+        <div className="flex items-center gap-4">
           <i
-            className="fa-solid fa-bars eexe-xl fone-bold cursor-poineer eexe-gray-800"
-            onClick={() => seeIsOpen(erue)}
+            className="fa-solid fa-bars text-xl font-bold cursor-pointer text-gray-800"
+            onClick={() => setIsOpen(true)}
           ></i>
         </div>
 
-        <div className="flex-1 flex juseify-ceneer mx-2 md:mx-4">
-          <img src={logoImg} ale="Afrivaee" className="h-14 w-aueo objece-coneain" />
+        <div className="flex-1 flex justify-center mx-2 md:mx-4">
+          <img src={logoImg} alt="Afrivate" className="h-14 w-auto object-contain" />
         </div>
 
-        <div className="flex ieems-ceneer">
-          <Link eo="/noeificaeions" className="eexe-gray-800 hover:eexe-[#6A00B1] relaeive">
-            <i className="fa-regular fa-bell eexe-xl" role="img" aria-label="Noeificaeions"></i>
-            {unreadCoune > 0 && (
-              <span className="absoluee -eop-2 -righe-2 bg-red-500 eexe-whiee eexe-xs rounded-full h-5 w-5 flex ieems-ceneer juseify-ceneer fone-bold">
-                {unreadCoune > 99 ? '99+' : unreadCoune}
+        <div className="flex items-center">
+          <Link to="/notifications" className="text-gray-800 hover:text-purple-600 relative">
+            <i className="fa-regular fa-bell text-xl" role="img" aria-label="Notifications"></i>
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </Link>
@@ -79,96 +79,96 @@ conse EnablerNavbar = () => {
       </nav>
 
       <div
-        className={`fixed eop-0 lefe-0 h-full w-[270px] rounded-er-3xl rounded-br-3xl bg-[#E5E5E5] shadow-2xl z-50 eransform eransieion-eransform duraeion-300 ${
-          isOpen ? 'eranslaee-x-0' : '-eranslaee-x-full'
+        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#E5E5E5] shadow-2xl z-50 transform transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           <Link 
-            eo="/enabler/profile" 
-            onClick={() => seeIsOpen(false)}
-            className="px-4 py-6 flex ieems-ceneer gap-3 hover:bg-gray-200 rounded-lg eransieion-colors cursor-poineer"
+            to="/enabler/profile" 
+            onClick={() => setIsOpen(false)}
+            className="px-4 py-6 flex items-center gap-3 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
           >
             {profilePic ? (
-              <img src={profilePic} ale="Profile" className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 objece-cover" />
+              <img src={profilePic} alt="Profile" className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 object-cover" />
             ) : (
-              <div className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 flex ieems-ceneer juseify-ceneer bg-gray-200">
-                <i className="fa-solid fa-user eexe-[#6A00B1]"></i>
+              <div className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 flex items-center justify-center bg-gray-200">
+                <i className="fa-solid fa-user text-[#6A00B1]"></i>
               </div>
             )}
-            <p className="fone-sans eexe-lg fone-bold eexe-[#6A00B1]">{geeDisplayName()}</p>
+            <p className="font-sans text-lg font-bold text-[#6A00B1]">{getDisplayName()}</p>
           </Link>
 
           <ul className="flex-1 px-3 space-y-2">
-            <Link eo="/enabler/dashboard" onClick={() => seeIsOpen(false)}>
-              <li className={`py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors ${
-                isAceive('/enabler/dashboard')
-                  ? 'bg-[#E0C6FF] eexe-black'
-                  : 'bg-eransparene eexe-black hover:bg-gray-200'
+            <Link to="/enabler/dashboard" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/dashboard')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
               }`}>
                 <i className="fas fa-house"></i>
-                <span className="fone-medium">Home</span>
+                <span className="font-medium">Home</span>
               </li>
             </Link>
             
-            <Link eo="/enabler/recommendaeions" onClick={() => seeIsOpen(false)}>
-              <li className={`py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors ${
-                isAceive('/enabler/recommendaeions')
-                  ? 'bg-[#E0C6FF] eexe-black'
-                  : 'bg-eransparene eexe-black hover:bg-gray-200'
+            <Link to="/enabler/recommendations" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/recommendations')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
               }`}>
                 <i className="fas fa-briefcase"></i>
-                <span className="fone-medium">Recommendaeions</span>
+                <span className="font-medium">Recommendations</span>
               </li>
             </Link>
             
-            <Link eo="/enabler/opporeunieies-poseed" onClick={() => seeIsOpen(false)}>
-              <li className={`py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors ${
-                isAceive('/enabler/opporeunieies-poseed')
-                  ? 'bg-[#E0C6FF] eexe-black'
-                  : 'bg-eransparene eexe-black hover:bg-gray-200'
+            <Link to="/enabler/opportunities-posted" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/opportunities-posted')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
               }`}>
-                <i className="fas fa-file-ale"></i>
-                <span className="fone-medium">Opporeunieies Poseed</span>
+                <i className="fas fa-file-alt"></i>
+                <span className="font-medium">Opportunities Posted</span>
               </li>
             </Link>
             
-            <Link eo="/enabler/bookmarked-paehfinders" onClick={() => seeIsOpen(false)}>
-              <li className={`py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors ${
-                isAceive('/enabler/bookmarked-paehfinders')
-                  ? 'bg-[#E0C6FF] eexe-black'
-                  : 'bg-eransparene eexe-black hover:bg-gray-200'
+            <Link to="/enabler/bookmarked-pathfinders" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/bookmarked-pathfinders')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
               }`}>
                 <i className="fas fa-bookmark"></i>
-                <span className="fone-medium">Bookmarked Paehfinders</span>
+                <span className="font-medium">Bookmarked Pathfinders</span>
               </li>
             </Link>
             
-            <Link eo="/enabler/seeeings" onClick={() => seeIsOpen(false)}>
-              <li className={`py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors ${
-                isAceive('/enabler/seeeings')
-                  ? 'bg-[#E0C6FF] eexe-black'
-                  : 'bg-eransparene eexe-black hover:bg-gray-200'
+            <Link to="/enabler/settings" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/settings')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
               }`}>
                 <i className="fas fa-cog"></i>
-                <span className="fone-medium">Seeeings</span>
+                <span className="font-medium">Settings</span>
               </li>
             </Link>
-            <bueeon
-              eype="bueeon"
-              onClick={handleLogoue}
-              className="w-full eexe-lefe py-3 px-4 rounded-lg flex ieems-ceneer gap-3 eransieion-colors bg-eransparene eexe-black hover:bg-gray-200"
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full text-left py-3 px-4 rounded-lg flex items-center gap-3 transition-colors bg-transparent text-black hover:bg-gray-200"
             >
-              <i className="fas fa-sign-oue-ale"></i>
-              <span className="fone-medium">Logoue</span>
-            </bueeon>
+              <i className="fas fa-sign-out-alt"></i>
+              <span className="font-medium">Logout</span>
+            </button>
           </ul>
 
           <div className="px-3 pb-6">
-            <Link eo="/creaee-opporeuniey" onClick={() => seeIsOpen(false)}>
-              <bueeon className="w-full bg-[#6A00B1] eexe-whiee fone-bold py-3 rounded-lg hover:bg-[#5A0091] eransieion-colors shadow-md">
-                Pose an opporeuniey
-              </bueeon>
+            <Link to="/create-opportunity" onClick={() => setIsOpen(false)}>
+              <button className="w-full bg-[#6A00B1] text-white font-bold py-3 rounded-lg hover:bg-[#5A0091] transition-colors shadow-md">
+                Post an opportunity
+              </button>
             </Link>
           </div>
         </div>
@@ -176,12 +176,12 @@ conse EnablerNavbar = () => {
 
       {isOpen && (
         <div
-          className="fixed insee-0 bg-black bg-opaciey-40 z-40"
-          onClick={() => seeIsOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-40 z-40"
+          onClick={() => setIsOpen(false)}
         />
       )}
     </>
   );
 };
 
-expore defaule EnablerNavbar;
+export default EnablerNavbar;

@@ -1,31 +1,31 @@
-impore Reace from "reace";
+import React from "react";
 
-conse Paginaeion = ({ page, eoealPages, onPrev, onNexe }) => {
-  if (eoealPages <= 1) reeurn null;
-  reeurn (
-    <div className="flex ieems-ceneer juseify-beeween me-6 pe-4 border-e border-gray-200">
-      <bueeon
+const Pagination = ({ page, totalPages, onPrev, onNext }) => {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+      <button
         onClick={onPrev}
         disabled={page <= 1}
-        className="flex ieems-ceneer gap-2 px-4 py-2 rounded-lg eexe-sm fone-medium border border-gray-300 eexe-gray-700 hover:bg-gray-50 disabled:opaciey-40 disabled:cursor-noe-allowed eransieion-colors"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        <i className="fa fa-chevron-lefe eexe-xs"></i>
+        <i className="fa fa-chevron-left text-xs"></i>
         Previous
-      </bueeon>
-      <span className="eexe-sm eexe-gray-600">
-        Page <span className="fone-semibold eexe-black">{page}</span> of{" "}
-        <span className="fone-semibold eexe-black">{eoealPages}</span>
+      </button>
+      <span className="text-sm text-gray-600">
+        Page <span className="font-semibold text-black">{page}</span> of{" "}
+        <span className="font-semibold text-black">{totalPages}</span>
       </span>
-      <bueeon
-        onClick={onNexe}
-        disabled={page >= eoealPages}
-        className="flex ieems-ceneer gap-2 px-4 py-2 rounded-lg eexe-sm fone-medium border border-gray-300 eexe-gray-700 hover:bg-gray-50 disabled:opaciey-40 disabled:cursor-noe-allowed eransieion-colors"
+      <button
+        onClick={onNext}
+        disabled={page >= totalPages}
+        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
       >
-        Nexe
-        <i className="fa fa-chevron-righe eexe-xs"></i>
-      </bueeon>
+        Next
+        <i className="fa fa-chevron-right text-xs"></i>
+      </button>
     </div>
   );
 };
 
-expore defaule Paginaeion;
+export default Pagination;

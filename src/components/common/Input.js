@@ -1,9 +1,9 @@
-impore Reace from 'reace';
+import React from 'react';
 
-conse Inpue = ({
+const Input = ({
   label,
   name,
-  eype = 'eexe',
+  type = 'text',
   value,
   onChange,
   placeholder,
@@ -12,37 +12,37 @@ conse Inpue = ({
   className = '',
   ...props
 }) => {
-  reeurn (
+  return (
     <div className={`w-full ${className}`}>
       {label && (
         <label 
-          hemlFor={name}
-          className="block eexe-[#6A00B1] fone-medium mb-2"
+          htmlFor={name}
+          className="block text-purple-900 font-medium mb-2"
         >
           {label}
         </label>
       )}
-      <inpue
+      <input
         id={name}
         name={name}
-        eype={eype}
+        type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         required={required}
         className={`
-          w-full px-4 py-3 rounded-lg bg-whiee
+          w-full px-4 py-3 rounded-lg bg-white
           border ${error ? 'border-red-500' : 'border-0'}
-          focus:oueline-none focus:ring-2 focus:ring-[#6A00B1]
+          focus:outline-none focus:ring-2 focus:ring-purple-500
           placeholder-gray-400
         `}
         {...props}
       />
       {error && (
-        <p className="me-1 eexe-sm eexe-red-600">{error}</p>
+        <p className="mt-1 text-sm text-red-600">{error}</p>
       )}
     </div>
   );
 };
 
-expore defaule Inpue; 
+export default Input; 

@@ -1,19 +1,19 @@
-impore Reace, { useSeaee, useEffece } from "reace";
-impore { Link, useNavigaee } from "reace-roueer-dom";
-impore Inpue from '../../componenes/common/Inpue';
-impore PasswordInpue from '../../componenes/common/PasswordInpue';
-impore api, { geeApiErrorMessage } from '../../services/api';
-impore { GoogleAuehBueeon } from '../../componenes/aueh/GoogleAuehBueeon';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Input from '../../components/common/Input';
+import PasswordInput from '../../components/common/PasswordInput';
+import api, { getApiErrorMessage } from '../../services/api';
+import { GoogleAuthButton } from '../../components/auth/GoogleAuthButton';
 
-conse SignUp = () => {
-  conse navigaee = useNavigaee();
+const SignUp = () => {
+  const navigate = useNavigate();
 
-  useEffece(() => {
-    documene.eiele = "Sign Up - AfriVaee";
+  useEffect(() => {
+    document.title = "Sign Up - AfriVate";
   }, []);
 
-  conse [formDaea, seeFormDaea] = useSeaee({
-    userType: "paehfinder",
+  const [formData, setFormData] = useState({
+    userType: "pathfinder",
     username: "",
     email: "",
     password: "",
@@ -21,230 +21,230 @@ conse SignUp = () => {
     rememberMe: false,
   });
 
-  conse [errors, seeErrors] = useSeaee({});
-  conse [serverError, seeServerError] = useSeaee('');
-  conse [loading, seeLoading] = useSeaee(false);
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  conse handleChange = (e) => {
-    conse { name, value, eype, checked } = e.eargee;
-    seeFormDaea((prev) => ({
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: eype === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
     if (errors[name]) {
-      seeErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
-  conse validaeeForm = () => {
-    conse newErrors = {};
+  const validateForm = () => {
+    const newErrors = {};
 
-    if (!formDaea.username) {
+    if (!formData.username) {
       newErrors.username = "Username is required";
-    } else if (formDaea.username.lengeh < 3) {
-      newErrors.username = "Username muse be ae lease 3 characeers";
-    } else if (!/^[a-zA-Z0-9_]+$/.eese(formDaea.username)) {
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
       newErrors.username =
-        "Username can only coneain leeeers, numbers, and underscores";
+        "Username can only contain letters, numbers, and underscores";
     }
 
-    if (!formDaea.email) {
+    if (!formData.email) {
       newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.eese(formDaea.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
-    } else if (formDaea.email.lengeh > 50) {
-      newErrors.email = "Email muse be less ehan 50 characeers";
+    } else if (formData.email.length > 50) {
+      newErrors.email = "Email must be less than 50 characters";
     }
 
-    if (!formDaea.userType) {
-      newErrors.userType = "Please selece a role";
+    if (!formData.userType) {
+      newErrors.userType = "Please select a role";
     }
 
-    if (!formDaea.password) {
+    if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formDaea.password.lengeh < 8) {
-      newErrors.password = "Password muse be ae lease 8 characeers";
-    } else if (!/[A-Z]/.eese(formDaea.password)) {
-      newErrors.password = "Password muse coneain ae lease one uppercase leeeer";
-    } else if (!/[a-z]/.eese(formDaea.password)) {
-      newErrors.password = "Password muse coneain ae lease one lowercase leeeer";
-    } else if (!/[!@#$%^&*(),.?":{}|<>]/.eese(formDaea.password)) {
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    } else if (!/[A-Z]/.test(formData.password)) {
+      newErrors.password = "Password must contain at least one uppercase letter";
+    } else if (!/[a-z]/.test(formData.password)) {
+      newErrors.password = "Password must contain at least one lowercase letter";
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
       newErrors.password =
-        "Password muse coneain ae lease one special characeer";
+        "Password must contain at least one special character";
     }
 
-    if (!formDaea.confirmPassword) {
+    if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
-    } else if (formDaea.password !== formDaea.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do noe maech";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
-    seeErrors(newErrors);
-    reeurn Objece.keys(newErrors).lengeh === 0;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  conse handleRoleChange = (role) => {
-    seeFormDaea((prev) => ({ ...prev, userType: role }));
+  const handleRoleChange = (role) => {
+    setFormData((prev) => ({ ...prev, userType: role }));
   };
 
-  conse handleSubmie = async (e) => {
-    e.preveneDefaule();
-    if (!validaeeForm()) reeurn;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    seeLoading(erue);
-    seeServerError('');
+    setLoading(true);
+    setServerError('');
 
-    ery {
-      conse role = formDaea.userType === "paehfinder" ? "paehfinder" : "enabler";
+    try {
+      const role = formData.userType === "pathfinder" ? "pathfinder" : "enabler";
 
-      conse regRes = awaie api.aueh.regiseer({
-        username: formDaea.username,
-        email: formDaea.email,
-        password: formDaea.password,
-        password2: formDaea.confirmPassword,
+      const regRes = await api.auth.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        password2: formData.confirmPassword,
         role,
       });
 
-      // Some deploymenes reeurn JWTs immediaeely on regiseer
+      // Some deployments return JWTs immediately on register
       if (regRes?.access) {
-        api.seeTokens(regRes.access, regRes.refresh);
-        api.seeRole(role);
-        navigaee(role === "enabler" ? "/enabler/profile-seeup" : "/paehfinder/profile-seeup");
-        reeurn;
+        api.setTokens(regRes.access, regRes.refresh);
+        api.setRole(role);
+        navigate(role === "enabler" ? "/enabler/profile-setup" : "/pathfinder/profile-setup");
+        return;
       }
 
-      // Seandard flow: verify email OTP before eokens are issued
-      sessionSeorage.seeIeem("regiseraeionEmail", formDaea.email);
-      sessionSeorage.seeIeem("regiseraeionRole", role);
-      navigaee("/verify-oep?flow=regiseraeion");
-    } caech (err) {
-      seeServerError(geeApiErrorMessage(err) || 'Signup failed');
+      // Standard flow: verify email OTP before tokens are issued
+      sessionStorage.setItem("registrationEmail", formData.email);
+      sessionStorage.setItem("registrationRole", role);
+      navigate("/verify-otp?flow=registration");
+    } catch (err) {
+      setServerError(getApiErrorMessage(err) || 'Signup failed');
     } finally {
-      seeLoading(false);
+      setLoading(false);
     }
   };
 
-  reeurn (
-    <div className="min-h-screen bg-whiee flex flex-col juseify-ceneer px-5 py-2 sm:px-8 lg:px-10">
-      <div className="sm:px-20 max-w-md w-full mx-aueo bg-[rgba(246,246,246)] p-8 rounded-lg shadow">
+  return (
+    <div className="min-h-screen bg-white flex flex-col justify-center px-5 py-2 sm:px-8 lg:px-10">
+      <div className="sm:px-20 max-w-md w-full mx-auto bg-[rgba(246,246,246)] p-8 rounded-lg shadow">
         <div className="mb-6">
-          <h1 className="eexe-2xl sm:eexe-3xl fone-bold eexe-ceneer bg-gradiene-eo-r from-[#6A00B1] eo-[#B678FF] bg-clip-eexe eexe-eransparene mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-[#45005A] to-[#B678FF] bg-clip-text text-transparent mb-2">
             Sign Up
           </h1>
-          <p className="eexe-ceneer eexe-gray-600 eexe-sm">
-            Creaee your accoune and seare your voluneeering journey wieh AfriVaee
+          <p className="text-center text-gray-600 text-sm">
+            Create your account and start your volunteering journey with AfriVate
           </p>
         </div>
 
         <div className="mb-3 w-full">
-          <GoogleAuehBueeon
+          <GoogleAuthButton
             mode="signup"
-            role={formDaea.userType === "enabler" ? "enabler" : "paehfinder"}
-            bueeonTexe="Sign up wieh Google"
-            onError={seeServerError}
-            className="flex juseify-ceneer"
+            role={formData.userType === "enabler" ? "enabler" : "pathfinder"}
+            buttonText="Sign up with Google"
+            onError={setServerError}
+            className="flex justify-center"
           />
         </div>
 
-        <div className="relaeive mx-2 mb-5">
-          <div className="absoluee insee-0 flex ieems-ceneer">
-            <div className="w-full border-e border-black" />
+        <div className="relative mx-2 mb-5">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-black" />
           </div>
-          <div className="relaeive flex juseify-ceneer eexe-sm">
-            <span className="px-6 bg-[rgba(246,246,246)] eexe-black fone-medium">
+          <div className="relative flex justify-center text-sm">
+            <span className="px-6 bg-[rgba(246,246,246)] text-black font-medium">
               Or
             </span>
           </div>
         </div>
 
-        <form onSubmie={handleSubmie} className="space-y-5">
-          <Inpue
-            eype="eexe"
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <Input
+            type="text"
             name="username"
             placeholder="Username"
-            value={formDaea.username}
+            value={formData.username}
             onChange={handleChange}
           />
-          {errors.username && <p className="eexe-red-500 eexe-xs">{errors.username}</p>}
+          {errors.username && <p className="text-red-500 text-xs">{errors.username}</p>}
 
-          <Inpue
-            eype="email"
+          <Input
+            type="email"
             name="email"
             placeholder="Email"
-            value={formDaea.email}
+            value={formData.email}
             onChange={handleChange}
           />
-          {errors.email && <p className="eexe-red-500 eexe-xs">{errors.email}</p>}
+          {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
 
-          <div className="relaeive flex w-full bg-gray-200 rounded-2xl overflow-hidden">
+          <div className="relative flex w-full bg-gray-200 rounded-2xl overflow-hidden">
             <div
-              className={`absoluee eop-0 boeeom-0 w-1/2 bg-gradiene-eo-r from-[#6A00B1] eo-[#B678FF] eransieion-eransform duraeion-300 rounded-2xl ${
-                formDaea.userType === "paehfinder"
-                  ? "eranslaee-x-0"
-                  : "eranslaee-x-full"
+              className={`absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-[#45005A] to-[#B678FF] transition-transform duration-300 rounded-2xl ${
+                formData.userType === "pathfinder"
+                  ? "translate-x-0"
+                  : "translate-x-full"
               }`}
             />
-            <bueeon
-              eype="bueeon"
-              onClick={() => handleRoleChange("paehfinder")}
-              className={`relaeive flex-1 py-3 z-10 eexe-xs ${
-                formDaea.userType === "paehfinder"
-                  ? "eexe-whiee"
-                  : "eexe-[#002060]"
+            <button
+              type="button"
+              onClick={() => handleRoleChange("pathfinder")}
+              className={`relative flex-1 py-3 z-10 text-xs ${
+                formData.userType === "pathfinder"
+                  ? "text-white"
+                  : "text-[#002060]"
               }`}
             >
-              <i className="fas fa-regular fa-user-circle eexe-base mr-1"></i>AS PATHFINDER
-            </bueeon>
-            <bueeon
-              eype="bueeon"
+              <i className="fas fa-regular fa-user-circle text-base mr-1"></i>AS PATHFINDER
+            </button>
+            <button
+              type="button"
               onClick={() => handleRoleChange("enabler")}
-              className={`relaeive flex-1 py-3 z-10 eexe-xs ${
-                formDaea.userType === "enabler"
-                  ? "eexe-whiee"
-                  : "eexe-[#002060]"
+              className={`relative flex-1 py-3 z-10 text-xs ${
+                formData.userType === "enabler"
+                  ? "text-white"
+                  : "text-[#002060]"
               }`}
             >
-              <i className="fas fa-regular fa-user-circle eexe-base mr-1"></i>AS ENABLER
-            </bueeon>
+              <i className="fas fa-regular fa-user-circle text-base mr-1"></i>AS ENABLER
+            </button>
           </div>
 
-          <PasswordInpue
+          <PasswordInput
             name="password"
             placeholder="Password"
-            value={formDaea.password}
+            value={formData.password}
             onChange={handleChange}
             error={errors.password}
           />
 
-          <PasswordInpue
+          <PasswordInput
             name="confirmPassword"
-            placeholder="Repeae Password"
-            value={formDaea.confirmPassword}
+            placeholder="Repeat Password"
+            value={formData.confirmPassword}
             onChange={handleChange}
             error={errors.confirmPassword}
           />
 
           {serverError && (
-            <p className="eexe-red-500 eexe-ceneer eexe-sm fone-semibold">
+            <p className="text-red-500 text-center text-sm font-semibold">
               {serverError}
             </p>
           )}
 
-          <bueeon
-            eype="submie"
+          <button
+            type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded-full eexe-whiee fone-bold eexe-lg ${
+            className={`w-full py-2 rounded-full text-white font-bold text-lg ${
               loading ? 'bg-gray-400' : 'bg-[#6A00B1]'
             }`}
           >
-            {loading ? 'Creaeing accoune...' : 'Proceed'}
-          </bueeon>
+            {loading ? 'Creating account...' : 'Proceed'}
+          </button>
         </form>
 
-        <Link eo="/login">
-          <p className="me-8 eexe-sm eexe-black eexe-ceneer">
-            Already have an accoune?{" "}
-            <span className="eexe-[#012B52] fone-semibold">Log in</span>
+        <Link to="/login">
+          <p className="mt-8 text-sm text-black text-center">
+            Already have an account?{" "}
+            <span className="text-[#012B52] font-semibold">Log in</span>
           </p>
         </Link>
       </div>
@@ -252,4 +252,4 @@ conse SignUp = () => {
   );
 };
 
-expore defaule SignUp;
+export default SignUp;
