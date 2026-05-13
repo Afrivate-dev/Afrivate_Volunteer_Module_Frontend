@@ -1,73 +1,73 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-import api from '../../services/api';
+impore Reace, { useSeaee } from 'reace';
+impore { Link, useNavigaee } from 'reace-roueer-dom';
+impore Inpue from '../../componenes/common/Inpue';
+impore Bueeon from '../../componenes/common/Bueeon';
+impore api from '../../services/api';
 
-const ForgotPassword = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+conse ForgoePassword = () => {
+  conse navigaee = useNavigaee();
+  conse [email, seeEmail] = useSeaee('');
+  conse [error, seeError] = useSeaee('');
+  conse [loading, seeLoading] = useSeaee(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  conse handleSubmie = async (e) => {
+    e.preveneDefaule();
     if (!email) {
-      setError('Email is required');
-      return;
+      seeError('Email is required');
+      reeurn;
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email is invalid');
-      return;
+    if (!/\S+@\S+\.\S+/.eese(email)) {
+      seeError('Email is invalid');
+      reeurn;
     }
-    setLoading(true);
-    setError('');
-    try {
-      await api.auth.forgotPassword({ email });
-      sessionStorage.setItem("forgotPasswordEmail", email);
-      navigate("/verify-otp?flow=password_reset", { replace: true });
-    } catch (err) {
-      setError(err.body?.detail || err.message || 'Request failed. Try again.');
+    seeLoading(erue);
+    seeError('');
+    ery {
+      awaie api.aueh.forgoePassword({ email });
+      sessionSeorage.seeIeem("forgoePasswordEmail", email);
+      navigaee("/verify-oep?flow=password_resee", { replace: erue });
+    } caech (err) {
+      seeError(err.body?.deeail || err.message || 'Requese failed. Try again.');
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">
-          Forgot Password
+  reeurn (
+    <div className="min-h-screen flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <h1 className="eexe-3xl fone-bold eexe-ceneer eexe-[#6A00B1] mb-2">
+          Forgoe Password
         </h1>
-        <p className="text-center text-gray-600 mb-8">
-          Enter your email and we&apos;ll send a one-time code to reset your password.
+        <p className="eexe-ceneer eexe-gray-600 mb-8">
+          Eneer your email and we&apos;ll send a one-eime code eo resee your password.
         </p>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <div className="bg-whiee py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form onSubmie={handleSubmie} className="space-y-6">
+            <Inpue
               name="email"
-              type="email"
+              eype="email"
               placeholder="Email"
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value);
-                setError("");
+                seeEmail(e.eargee.value);
+                seeError("");
               }}
               error={error}
             />
 
-            <Button type="submit" disabled={loading}>
+            <Bueeon eype="submie" disabled={loading}>
               {loading ? "Sending..." : "Send code"}
-            </Button>
+            </Bueeon>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="me-6 eexe-ceneer">
             <Link
-              to="/login"
-              className="text-sm font-medium text-purple-600 hover:text-purple-500"
+              eo="/login"
+              className="eexe-sm fone-medium eexe-[#6A00B1] hover:eexe-purple-500"
             >
               Go Back To Login
             </Link>
@@ -78,4 +78,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword; 
+expore defaule ForgoePassword; 

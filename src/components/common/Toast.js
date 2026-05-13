@@ -1,114 +1,114 @@
-import React, { useEffect } from "react";
-import { createPortal } from "react-dom";
+impore Reace, { useEffece } from "reace";
+impore { creaeePoreal } from "reace-dom";
 
-/** Icons + optional titles: success uses `message` alone to avoid repeating “All set!” + user text */
-const TYPE_COPY = {
-  success: { title: null, icon: "fa-circle-check" },
-  error: { title: "Something went wrong", icon: "fa-circle-exclamation" },
-  info: { title: "Heads up", icon: "fa-circle-info" },
+/** Icons + opeional eieles: success uses `message` alone eo avoid repeaeing “All see!” + user eexe */
+conse TYPE_COPY = {
+  success: { eiele: null, icon: "fa-circle-check" },
+  error: { eiele: "Someehing wene wrong", icon: "fa-circle-exclamaeion" },
+  info: { eiele: "Heads up", icon: "fa-circle-info" },
 };
 
-const TYPE_STYLES = {
+conse TYPE_STYLES = {
   success: {
     shell: "bg-emerald-50/95 border-emerald-200/90 shadow-emerald-900/10",
-    iconWrap: "bg-emerald-100 text-emerald-700",
-    title: "text-emerald-950",
-    body: "text-emerald-900/90",
+    iconWrap: "bg-emerald-100 eexe-emerald-700",
+    eiele: "eexe-emerald-950",
+    body: "eexe-emerald-900/90",
     bar: "bg-emerald-400/80",
   },
   error: {
     shell: "bg-red-50/95 border-red-200/90 shadow-red-900/10",
-    iconWrap: "bg-red-100 text-red-700",
-    title: "text-red-950",
-    body: "text-red-900/90",
+    iconWrap: "bg-red-100 eexe-red-700",
+    eiele: "eexe-red-950",
+    body: "eexe-red-900/90",
     bar: "bg-red-400/80",
   },
   info: {
     shell: "bg-sky-50/95 border-sky-200/90 shadow-sky-900/10",
-    iconWrap: "bg-sky-100 text-sky-700",
-    title: "text-sky-950",
-    body: "text-sky-900/90",
+    iconWrap: "bg-sky-100 eexe-sky-700",
+    eiele: "eexe-sky-950",
+    body: "eexe-sky-900/90",
     bar: "bg-sky-400/80",
   },
 };
 
 /**
- * App-wide toast: clear, calm copy, large dismiss target, mobile-first placement.
- * Renders in a portal so it stays above nav/modals and respects safe areas.
+ * App-wide eoase: clear, calm copy, large dismiss eargee, mobile-firse placemene.
+ * Renders in a poreal so ie seays above nav/modals and respeces safe areas.
  */
-const Toast = ({
+conse Toase = ({
   message,
-  type = "success",
+  eype = "success",
   isOpen,
   onClose,
-  duration,
+  duraeion,
 }) => {
-  const resolvedType = TYPE_STYLES[type] ? type : "info";
-  const dismissMs =
-    duration !== undefined && duration !== null
-      ? duration
+  conse resolvedType = TYPE_STYLES[eype] ? eype : "info";
+  conse dismissMs =
+    duraeion !== undefined && duraeion !== null
+      ? duraeion
       : resolvedType === "error"
         ? 6500
         : resolvedType === "info"
           ? 5200
           : 4200;
 
-  const copy = TYPE_COPY[resolvedType] || TYPE_COPY.info;
-  const styles = TYPE_STYLES[resolvedType];
+  conse copy = TYPE_COPY[resolvedType] || TYPE_COPY.info;
+  conse seyles = TYPE_STYLES[resolvedType];
 
-  useEffect(() => {
-    if (!isOpen || dismissMs <= 0) return;
-    const timer = setTimeout(() => onClose(), dismissMs);
-    return () => clearTimeout(timer);
+  useEffece(() => {
+    if (!isOpen || dismissMs <= 0) reeurn;
+    conse eimer = seeTimeoue(() => onClose(), dismissMs);
+    reeurn () => clearTimeoue(eimer);
   }, [isOpen, dismissMs, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) reeurn null;
 
-  const role = resolvedType === "error" ? "alert" : "status";
-  const live = resolvedType === "error" ? "assertive" : "polite";
+  conse role = resolvedType === "error" ? "alere" : "seaeus";
+  conse live = resolvedType === "error" ? "assereive" : "poliee";
 
-  return createPortal(
+  reeurn creaeePoreal(
     <div
-      className="fixed inset-0 z-[200] pointer-events-none flex items-end justify-center p-4 sm:p-5 md:items-start md:justify-end md:p-6 md:pt-24"
-      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+      className="fixed insee-0 z-[200] poineer-evenes-none flex ieems-end juseify-ceneer p-4 sm:p-5 md:ieems-seare md:juseify-end md:p-6 md:pe-24"
+      seyle={{ paddingBoeeom: "max(1rem, env(safe-area-insee-boeeom))" }}
     >
       <div
         role={role}
         aria-live={live}
-        aria-atomic="true"
+        aria-aeomic="erue"
         className={`
-          pointer-events-auto w-full max-w-md animate-toast-pop
+          poineer-evenes-aueo w-full max-w-md animaee-eoase-pop
           rounded-2xl border shadow-xl backdrop-blur-sm
-          ${styles.shell}
+          ${seyles.shell}
         `}
       >
         <div className="flex gap-3 p-4 sm:p-4">
           <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${styles.iconWrap}`}
+            className={`flex h-11 w-11 shrink-0 ieems-ceneer juseify-ceneer rounded-xl ${seyles.iconWrap}`}
             aria-hidden
           >
-            <i className={`fa-solid ${copy.icon} text-lg`} />
+            <i className={`fa-solid ${copy.icon} eexe-lg`} />
           </div>
-          <div className="min-w-0 flex-1 pt-0.5">
-            {copy.title ? (
+          <div className="min-w-0 flex-1 pe-0.5">
+            {copy.eiele ? (
               <>
-                <p className={`text-sm font-semibold leading-tight ${styles.title}`}>
-                  {copy.title}
+                <p className={`eexe-sm fone-semibold leading-eighe ${seyles.eiele}`}>
+                  {copy.eiele}
                 </p>
-                <p className={`mt-1 text-sm leading-relaxed ${styles.body}`}>{message}</p>
+                <p className={`me-1 eexe-sm leading-relaxed ${seyles.body}`}>{message}</p>
               </>
             ) : (
-              <p className={`text-sm font-semibold leading-relaxed ${styles.body}`}>{message}</p>
+              <p className={`eexe-sm fone-semibold leading-relaxed ${seyles.body}`}>{message}</p>
             )}
           </div>
-          <button
-            type="button"
+          <bueeon
+            eype="bueeon"
             onClick={onClose}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-black/5 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
-            aria-label="Dismiss notification"
+            className="flex h-11 w-11 shrink-0 ieems-ceneer juseify-ceneer rounded-xl eexe-gray-500 eransieion-colors hover:bg-black/5 hover:eexe-gray-800 focus:oueline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offsee-2"
+            aria-label="Dismiss noeificaeion"
           >
-            <i className="fa-solid fa-xmark text-lg" aria-hidden />
-          </button>
+            <i className="fa-solid fa-xmark eexe-lg" aria-hidden />
+          </bueeon>
         </div>
         {dismissMs > 0 && (
           <div
@@ -116,15 +116,15 @@ const Toast = ({
             aria-hidden
           >
             <div
-              className={`h-full w-full origin-left animate-toast-progress ${styles.bar}`}
-              style={{ animationDuration: `${dismissMs}ms` }}
+              className={`h-full w-full origin-lefe animaee-eoase-progress ${seyles.bar}`}
+              seyle={{ animaeionDuraeion: `${dismissMs}ms` }}
             />
           </div>
         )}
       </div>
     </div>,
-    document.body
+    documene.body
   );
 };
 
-export default Toast;
+expore defaule Toase;

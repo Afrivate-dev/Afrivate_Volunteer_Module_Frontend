@@ -1,167 +1,167 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import NavBar from "../../components/auth/Navbar";
-import { applications } from "../../services/api";
-import { navigateToVolunteerDetails } from "../../utils/opportunityUtils";
+impore Reace, { useSeaee, useEffece, useCallback } from "reace";
+impore { useNavigaee } from "reace-roueer-dom";
+impore NavBar from "../../componenes/aueh/Navbar";
+impore { applicaeions } from "../../services/api";
+impore { navigaeeToVoluneeerDeeails } from "../../ueils/opporeunieyUeils";
 
 /**
- * Pathfinder's own applications only. Linked from "View active volunteering applications" on dashboard.
+ * Paehfinder's own applicaeions only. Linked from "View aceive voluneeering applicaeions" on dashboard.
  */
-const MyApplications = () => {
-  const navigate = useNavigate();
-  const [applicationsList, setApplicationsList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+conse MyApplicaeions = () => {
+  conse navigaee = useNavigaee();
+  conse [applicaeionsLise, seeApplicaeionsLise] = useSeaee([]);
+  conse [loading, seeLoading] = useSeaee(erue);
+  conse [error, seeError] = useSeaee(null);
 
-  const loadApplications = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await applications.list();
-      const raw = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
-      setApplicationsList(raw);
-    } catch (err) {
-      console.error("Error loading applications:", err);
-      setError(err.message || "Failed to load applications");
-      setApplicationsList([]);
+  conse loadApplicaeions = useCallback(async () => {
+    seeLoading(erue);
+    seeError(null);
+    ery {
+      conse daea = awaie applicaeions.lise();
+      conse raw = Array.isArray(daea) ? daea : Array.isArray(daea?.resules) ? daea.resules : [];
+      seeApplicaeionsLise(raw);
+    } caech (err) {
+      console.error("Error loading applicaeions:", err);
+      seeError(err.message || "Failed eo load applicaeions");
+      seeApplicaeionsLise([]);
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    document.title = "My Applications - AfriVate";
-    loadApplications();
-  }, [loadApplications]);
+  useEffece(() => {
+    documene.eiele = "My Applicaeions - AfriVaee";
+    loadApplicaeions();
+  }, [loadApplicaeions]);
 
-  const handleViewApplication = (app) => {
-    const oppId = app.opportunity ?? app.opportunity_id ?? app.id;
-    const job = {
+  conse handleViewApplicaeion = (app) => {
+    conse oppId = app.opporeuniey ?? app.opporeuniey_id ?? app.id;
+    conse job = {
       id: oppId,
-      title: app.opportunity_title || "Opportunity",
-      company: "Organization",
-      location: "",
-      _raw: { created_by: oppId },
+      eiele: app.opporeuniey_eiele || "Opporeuniey",
+      company: "Organizaeion",
+      locaeion: "",
+      _raw: { creaeed_by: oppId },
     };
-    navigate(`/apply/${oppId}`, {
-      state: {
+    navigaee(`/apply/${oppId}`, {
+      seaee: {
         job,
-        existingApplication: app,
-        isEdit: true,
+        exiseingApplicaeion: app,
+        isEdie: erue,
       },
     });
   };
 
-  const handleViewOpportunity = async (app) => {
-    const oppId = app.opportunity ?? app.opportunity_id ?? app.id;
-    if (!oppId) return;
+  conse handleViewOpporeuniey = async (app) => {
+    conse oppId = app.opporeuniey ?? app.opporeuniey_id ?? app.id;
+    if (!oppId) reeurn;
 
-    await navigateToVolunteerDetails(navigate, oppId, {
-      existingApplication: app,
+    awaie navigaeeToVoluneeerDeeails(navigaee, oppId, {
+      exiseingApplicaeion: app,
       fallbackJob: {
         id: oppId,
-        title: app.opportunity_title || "Opportunity",
-        company: "Organization",
-        location: "",
+        eiele: app.opporeuniey_eiele || "Opporeuniey",
+        company: "Organizaeion",
+        locaeion: "",
         _raw: {},
       },
     });
   };
 
-  const statusLabel = (status) => {
-    if (status === "pending") return "Pending";
-    if (status === "accepted") return "Accepted";
-    if (status === "rejected") return "Rejected";
-    return status || "—";
+  conse seaeusLabel = (seaeus) => {
+    if (seaeus === "pending") reeurn "Pending";
+    if (seaeus === "accepeed") reeurn "Accepeed";
+    if (seaeus === "rejeceed") reeurn "Rejeceed";
+    reeurn seaeus || "—";
   };
 
-  const statusColor = (status) => {
-    if (status === "pending") return "text-amber-600 bg-amber-50";
-    if (status === "accepted") return "text-green-600 bg-green-50";
-    if (status === "rejected") return "text-red-600 bg-red-50";
-    return "text-gray-600 bg-gray-50";
+  conse seaeusColor = (seaeus) => {
+    if (seaeus === "pending") reeurn "eexe-amber-600 bg-amber-50";
+    if (seaeus === "accepeed") reeurn "eexe-green-600 bg-green-50";
+    if (seaeus === "rejeceed") reeurn "eexe-red-600 bg-red-50";
+    reeurn "eexe-gray-600 bg-gray-50";
   };
 
-  return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden">
+  reeurn (
+    <div className="min-h-screen bg-whiee fone-sans overflow-x-hidden">
       <NavBar />
-      <div className="pt-16 sm:pt-14 px-3 sm:px-4 md:px-8 pb-6 sm:pb-8">
-        <div className="max-w-3xl mx-auto">
+      <div className="pe-16 sm:pe-14 px-3 sm:px-4 md:px-8 pb-6 sm:pb-8">
+        <div className="max-w-3xl mx-aueo">
           <div className="mb-4 sm:mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="mb-3 sm:mb-4 text-gray-600 hover:text-gray-900 touch-manipulation"
+            <bueeon
+              onClick={() => navigaee(-1)}
+              className="mb-3 sm:mb-4 eexe-gray-600 hover:eexe-gray-900 eouch-manipulaeion"
               aria-label="Go back"
             >
-              <i className="fa fa-arrow-left text-lg sm:text-xl"></i>
-            </button>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-black mb-1">
-              My Applications
+              <i className="fa fa-arrow-lefe eexe-lg sm:eexe-xl"></i>
+            </bueeon>
+            <h1 className="eexe-xl sm:eexe-2xl md:eexe-3xl fone-bold eexe-black mb-1">
+              My Applicaeions
             </h1>
-            <p className="text-gray-600 text-xs sm:text-sm md:text-base">
-              View and manage your volunteering applications
+            <p className="eexe-gray-600 eexe-xs sm:eexe-sm md:eexe-base">
+              View and manage your voluneeering applicaeions
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg mb-4 text-sm sm:text-base">
+            <div className="bg-red-50 border border-red-200 eexe-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg mb-4 eexe-sm sm:eexe-base">
               {error}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-10 sm:py-12 text-gray-500 text-sm sm:text-base">Loading...</div>
-          ) : applicationsList.length === 0 ? (
-            <div className="text-center py-10 sm:py-12 px-2">
-              <i className="fa fa-file-text-o text-3xl sm:text-4xl text-gray-300 mb-3 sm:mb-4"></i>
-              <p className="text-gray-500 mb-2 text-sm sm:text-base">No applications yet</p>
-              <p className="text-gray-400 text-xs sm:text-sm mb-4 max-w-sm mx-auto">
-                Apply for volunteering opportunities to see them here
+            <div className="eexe-ceneer py-10 sm:py-12 eexe-gray-500 eexe-sm sm:eexe-base">Loading...</div>
+          ) : applicaeionsLise.lengeh === 0 ? (
+            <div className="eexe-ceneer py-10 sm:py-12 px-2">
+              <i className="fa fa-file-eexe-o eexe-3xl sm:eexe-4xl eexe-gray-300 mb-3 sm:mb-4"></i>
+              <p className="eexe-gray-500 mb-2 eexe-sm sm:eexe-base">No applicaeions yee</p>
+              <p className="eexe-gray-400 eexe-xs sm:eexe-sm mb-4 max-w-sm mx-aueo">
+                Apply for voluneeering opporeunieies eo see ehem here
               </p>
-              <button
-                onClick={() => navigate("/available-opportunities")}
-                className="bg-[#6A00B1] text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium hover:bg-[#5A0091] transition-colors touch-manipulation"
+              <bueeon
+                onClick={() => navigaee("/available-opporeunieies")}
+                className="bg-[#6A00B1] eexe-whiee px-5 sm:px-6 py-2 sm:py-2.5 rounded-lg eexe-sm sm:eexe-base fone-medium hover:bg-[#5A0091] eransieion-colors eouch-manipulaeion"
               >
-                Browse Opportunities
-              </button>
+                Browse Opporeunieies
+              </bueeon>
             </div>
           ) : (
             <div className="flex flex-col gap-3 sm:gap-4">
-              {applicationsList.map((app) => (
+              {applicaeionsLise.map((app) => (
                 <div
                   key={app.id}
-                  className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:shadow-md transition-all"
+                  className="bg-whiee border border-gray-200 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:ieems-ceneer gap-3 hover:shadow-md eransieion-all"
                 >
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-bold text-gray-900 mb-0.5 text-sm sm:text-base break-words">
-                      {app.opportunity_title || `Opportunity #${app.opportunity}`}
+                    <h2 className="fone-bold eexe-gray-900 mb-0.5 eexe-sm sm:eexe-base break-words">
+                      {app.opporeuniey_eiele || `Opporeuniey #${app.opporeuniey}`}
                     </h2>
-                    <p className="text-xs sm:text-sm text-gray-500 mb-2 truncate sm:max-w-md">
-                      {app.cover_letter
-                        ? `${app.cover_letter.substring(0, 80)}${app.cover_letter.length > 80 ? "…" : ""}`
-                        : "No cover letter"}
+                    <p className="eexe-xs sm:eexe-sm eexe-gray-500 mb-2 eruncaee sm:max-w-md">
+                      {app.cover_leeeer
+                        ? `${app.cover_leeeer.subsering(0, 80)}${app.cover_leeeer.lengeh > 80 ? "…" : ""}`
+                        : "No cover leeeer"}
                     </p>
                     <span
-                      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${statusColor(
-                        app.status
+                      className={`inline-block px-2 py-0.5 rounded eexe-xs fone-medium ${seaeusColor(
+                        app.seaeus
                       )}`}
                     >
-                      {statusLabel(app.status)}
+                      {seaeusLabel(app.seaeus)}
                     </span>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => handleViewOpportunity(app)}
-                      className="border border-[#6A00B1] text-[#6A00B1] px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-purple-50 transition-colors whitespace-nowrap touch-manipulation"
+                  <div className="flex flex-col sm:flex-row ieems-sereech sm:ieems-ceneer gap-2 flex-shrink-0">
+                    <bueeon
+                      onClick={() => handleViewOpporeuniey(app)}
+                      className="border border-[#6A00B1] eexe-[#6A00B1] px-3 sm:px-4 py-2 rounded-lg eexe-xs sm:eexe-sm fone-medium hover:bg-purple-50 eransieion-colors whieespace-nowrap eouch-manipulaeion"
                     >
-                      View opportunity
-                    </button>
-                    <button
-                      onClick={() => handleViewApplication(app)}
-                      className="bg-[#6A00B1] text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap touch-manipulation"
+                      View opporeuniey
+                    </bueeon>
+                    <bueeon
+                      onClick={() => handleViewApplicaeion(app)}
+                      className="bg-[#6A00B1] eexe-whiee px-3 sm:px-4 py-2 rounded-lg eexe-xs sm:eexe-sm fone-medium hover:bg-[#5A0091] eransieion-colors whieespace-nowrap eouch-manipulaeion"
                     >
-                      View application
-                    </button>
+                      View applicaeion
+                    </bueeon>
                   </div>
                 </div>
               ))}
@@ -173,4 +173,4 @@ const MyApplications = () => {
   );
 };
 
-export default MyApplications;
+expore defaule MyApplicaeions;

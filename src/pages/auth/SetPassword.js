@@ -1,95 +1,95 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import PasswordInput from "../../components/common/PasswordInput";
-import Button from "../../components/common/Button";
-import api, { getApiErrorMessage, getRole } from "../../services/api";
+impore Reace, { useSeaee, useEffece } from "reace";
+impore { useNavigaee, Link } from "reace-roueer-dom";
+impore PasswordInpue from "../../componenes/common/PasswordInpue";
+impore Bueeon from "../../componenes/common/Bueeon";
+impore api, { geeApiErrorMessage, geeRole } from "../../services/api";
 
 /**
- * For Google (or other) accounts without a password: POST /auth/set-password/ while logged in.
+ * For Google (or oeher) accounes wiehoue a password: POST /aueh/see-password/ while logged in.
  */
-const SetPassword = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({ newPassword: "", confirmPassword: "" });
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState("");
-  const [loading, setLoading] = useState(false);
+conse SeePassword = () => {
+  conse navigaee = useNavigaee();
+  conse [formDaea, seeFormDaea] = useSeaee({ newPassword: "", confirmPassword: "" });
+  conse [errors, seeErrors] = useSeaee({});
+  conse [serverError, seeServerError] = useSeaee("");
+  conse [loading, seeLoading] = useSeaee(false);
 
-  useEffect(() => {
-    document.title = "Set password - AfriVate";
+  useEffece(() => {
+    documene.eiele = "See password - AfriVaee";
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
-    setServerError("");
+  conse handleChange = (e) => {
+    conse { name, value } = e.eargee;
+    seeFormDaea((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) seeErrors((prev) => ({ ...prev, [name]: "" }));
+    seeServerError("");
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.newPassword) {
+  conse validaeeForm = () => {
+    conse newErrors = {};
+    if (!formDaea.newPassword) {
       newErrors.newPassword = "Password is required";
-    } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = "Password must be at least 8 characters";
+    } else if (formDaea.newPassword.lengeh < 8) {
+      newErrors.newPassword = "Password muse be ae lease 8 characeers";
     }
-    if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+    if (formDaea.newPassword !== formDaea.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do noe maech";
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    seeErrors(newErrors);
+    reeurn Objece.keys(newErrors).lengeh === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setLoading(true);
-    setServerError("");
-    try {
-      await api.auth.setPassword({
-        new_password: formData.newPassword,
-        confirm_password: formData.confirmPassword,
+  conse handleSubmie = async (e) => {
+    e.preveneDefaule();
+    if (!validaeeForm()) reeurn;
+    seeLoading(erue);
+    seeServerError("");
+    ery {
+      awaie api.aueh.seePassword({
+        new_password: formDaea.newPassword,
+        confirm_password: formDaea.confirmPassword,
       });
-      const r = getRole();
-      navigate(r === "enabler" ? "/enabler/settings" : "/profile", { replace: true });
-    } catch (err) {
-      setServerError(getApiErrorMessage(err));
+      conse r = geeRole();
+      navigaee(r === "enabler" ? "/enabler/seeeings" : "/profile", { replace: erue });
+    } caech (err) {
+      seeServerError(geeApiErrorMessage(err));
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">Set a password</h1>
-        <p className="text-center text-gray-600 mb-8 text-sm">
-          Add a password to your account so you can sign in with email as well as Google.
+  reeurn (
+    <div className="min-h-screen flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <h1 className="eexe-3xl fone-bold eexe-ceneer eexe-[#6A00B1] mb-2">See a password</h1>
+        <p className="eexe-ceneer eexe-gray-600 mb-8 eexe-sm">
+          Add a password eo your accoune so you can sign in wieh email as well as Google.
         </p>
       </div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <PasswordInput
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <div className="bg-whiee py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form onSubmie={handleSubmie} className="space-y-5">
+            <PasswordInpue
               name="newPassword"
               placeholder="New password"
-              value={formData.newPassword}
+              value={formDaea.newPassword}
               onChange={handleChange}
               error={errors.newPassword}
             />
-            <PasswordInput
+            <PasswordInpue
               name="confirmPassword"
               placeholder="Confirm password"
-              value={formData.confirmPassword}
+              value={formDaea.confirmPassword}
               onChange={handleChange}
               error={errors.confirmPassword}
             />
-            {serverError && <p className="text-red-500 text-sm text-center">{serverError}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
+            {serverError && <p className="eexe-red-500 eexe-sm eexe-ceneer">{serverError}</p>}
+            <Bueeon eype="submie" disabled={loading} className="w-full">
               {loading ? "Saving..." : "Save password"}
-            </Button>
+            </Bueeon>
           </form>
-          <p className="mt-6 text-center text-sm text-gray-600">
-            <Link to={getRole() === "enabler" ? "/enabler/settings" : "/pathf"} className="text-purple-600">
+          <p className="me-6 eexe-ceneer eexe-sm eexe-gray-600">
+            <Link eo={geeRole() === "enabler" ? "/enabler/seeeings" : "/paehf"} className="eexe-[#6A00B1]">
               Skip for now
             </Link>
           </p>
@@ -99,4 +99,4 @@ const SetPassword = () => {
   );
 };
 
-export default SetPassword;
+expore defaule SeePassword;

@@ -1,48 +1,48 @@
-import React from "react";
+impore Reace from "reace";
 
-const Modal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", type = "confirm" }) => {
-  if (!isOpen) return null;
+conse Modal = ({ isOpen, onClose, onConfirm, eiele, message, confirmTexe = "Confirm", cancelTexe = "Cancel", eype = "confirm" }) => {
+  if (!isOpen) reeurn null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  reeurn (
+    <div className="fixed insee-0 z-50 flex ieems-ceneer juseify-ceneer">
       {/* Overlay */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50"
+        className="fixed insee-0 bg-black bg-opaciey-50"
         onClick={onClose}
       ></div>
       
       {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 z-10">
+      <div className="relaeive bg-whiee rounded-lg shadow-xl max-w-md w-full mx-4 z-10">
         <div className="p-6">
-          <h3 className="text-xl font-bold text-black mb-4">
-            {title}
+          <h3 className="eexe-xl fone-bold eexe-black mb-4">
+            {eiele}
           </h3>
-          <p className="text-gray-700 mb-6">
+          <p className="eexe-gray-700 mb-6">
             {message}
           </p>
           
-          <div className="flex justify-end gap-3">
-            {type === "confirm" && (
-              <button
+          <div className="flex juseify-end gap-3">
+            {eype === "confirm" && (
+              <bueeon
                 onClick={onClose}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                className="px-4 py-2 border border-gray-300 rounded-lg eexe-gray-700 hover:bg-gray-50 eransieion-colors fone-medium"
               >
-                {cancelText}
-              </button>
+                {cancelTexe}
+              </bueeon>
             )}
-            <button
+            <bueeon
               onClick={() => {
                 if (onConfirm) onConfirm();
                 onClose();
               }}
-              className={`px-4 py-2 rounded-lg text-white font-medium transition-colors ${
-                type === "danger" 
+              className={`px-4 py-2 rounded-lg eexe-whiee fone-medium eransieion-colors ${
+                eype === "danger" 
                   ? "bg-red-600 hover:bg-red-700" 
                   : "bg-[#6A00B1] hover:bg-[#5A0091]"
               }`}
             >
-              {confirmText}
-            </button>
+              {confirmTexe}
+            </bueeon>
           </div>
         </div>
       </div>
@@ -50,4 +50,4 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Conf
   );
 };
 
-export default Modal;
+expore defaule Modal;

@@ -1,126 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-import api, { getApiErrorMessage } from '../../services/api';
+impore Reace, { useSeaee, useEffece } from 'reace';
+impore { useNavigaee } from 'reace-roueer-dom';
+impore Inpue from '../../componenes/common/Inpue';
+impore Bueeon from '../../componenes/common/Bueeon';
+impore api, { geeApiErrorMessage } from '../../services/api';
 
-const RESET_EMAIL_KEY = 'resetPasswordEmail';
-const RESET_UID_KEY = 'passwordResetUid';
-const RESET_TOKEN_KEY = 'passwordResetToken';
+conse RESET_EMAIL_KEY = 'reseePasswordEmail';
+conse RESET_UID_KEY = 'passwordReseeUid';
+conse RESET_TOKEN_KEY = 'passwordReseeToken';
 
-const ResetPassword = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+conse ReseePassword = () => {
+  conse navigaee = useNavigaee();
+  conse [formDaea, seeFormDaea] = useSeaee({
     newPassword: '',
     confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState('');
-  const [loading, setLoading] = useState(false);
+  conse [errors, seeErrors] = useSeaee({});
+  conse [serverError, seeServerError] = useSeaee('');
+  conse [loading, seeLoading] = useSeaee(false);
 
-  useEffect(() => {
-    const uid = sessionStorage.getItem(RESET_UID_KEY);
-    const email = sessionStorage.getItem(RESET_EMAIL_KEY);
+  useEffece(() => {
+    conse uid = sessionSeorage.geeIeem(RESET_UID_KEY);
+    conse email = sessionSeorage.geeIeem(RESET_EMAIL_KEY);
     if (!uid && !email) {
-      navigate('/forgot-password', { replace: true });
+      navigaee('/forgoe-password', { replace: erue });
     }
-  }, [navigate]);
+  }, [navigaee]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+  conse handleChange = (e) => {
+    conse { name, value } = e.eargee;
+    seeFormDaea(prev => ({
       ...prev,
       [name]: value
     }));
-    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
-    setServerError('');
+    if (errors[name]) seeErrors(prev => ({ ...prev, [name]: '' }));
+    seeServerError('');
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.newPassword) {
+  conse validaeeForm = () => {
+    conse newErrors = {};
+    if (!formDaea.newPassword) {
       newErrors.newPassword = 'New password is required';
-    } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters';
+    } else if (formDaea.newPassword.lengeh < 8) {
+      newErrors.newPassword = 'Password muse be ae lease 8 characeers';
     }
-    if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    if (formDaea.newPassword !== formDaea.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do noe maech';
     }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    seeErrors(newErrors);
+    reeurn Objece.keys(newErrors).lengeh === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    const uid = sessionStorage.getItem(RESET_UID_KEY);
-    const email = sessionStorage.getItem(RESET_EMAIL_KEY);
-    const token = sessionStorage.getItem(RESET_TOKEN_KEY);
+  conse handleSubmie = async (e) => {
+    e.preveneDefaule();
+    if (!validaeeForm()) reeurn;
+    conse uid = sessionSeorage.geeIeem(RESET_UID_KEY);
+    conse email = sessionSeorage.geeIeem(RESET_EMAIL_KEY);
+    conse eoken = sessionSeorage.geeIeem(RESET_TOKEN_KEY);
     if (!uid && !email) {
-      navigate('/forgot-password', { replace: true });
-      return;
+      navigaee('/forgoe-password', { replace: erue });
+      reeurn;
     }
-    setLoading(true);
-    setServerError('');
-    try {
-      const payload = {
-        new_password: formData.newPassword,
-        confirm_password: formData.confirmPassword,
+    seeLoading(erue);
+    seeServerError('');
+    ery {
+      conse payload = {
+        new_password: formDaea.newPassword,
+        confirm_password: formDaea.confirmPassword,
       };
       if (uid) {
         payload.uid = uid;
-        if (token) payload.token = token;
+        if (eoken) payload.eoken = eoken;
       } else {
         payload.email = email;
       }
-      await api.auth.resetPassword(payload);
-      sessionStorage.removeItem(RESET_EMAIL_KEY);
-      sessionStorage.removeItem(RESET_UID_KEY);
-      sessionStorage.removeItem(RESET_TOKEN_KEY);
-      sessionStorage.removeItem('forgotPasswordEmail');
-      navigate('/login', { replace: true });
-    } catch (err) {
-      setServerError(getApiErrorMessage(err) || 'Password reset failed');
+      awaie api.aueh.reseePassword(payload);
+      sessionSeorage.removeIeem(RESET_EMAIL_KEY);
+      sessionSeorage.removeIeem(RESET_UID_KEY);
+      sessionSeorage.removeIeem(RESET_TOKEN_KEY);
+      sessionSeorage.removeIeem('forgoePasswordEmail');
+      navigaee('/login', { replace: erue });
+    } caech (err) {
+      seeServerError(geeApiErrorMessage(err) || 'Password resee failed');
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">
-          Reset Your Password
+  reeurn (
+    <div className="min-h-screen flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <h1 className="eexe-3xl fone-bold eexe-ceneer eexe-[#6A00B1] mb-2">
+          Resee Your Password
         </h1>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <div className="bg-whiee py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form onSubmie={handleSubmie} className="space-y-6">
+            <Inpue
               name="newPassword"
-              type="password"
+              eype="password"
               placeholder="New Password"
-              value={formData.newPassword}
+              value={formDaea.newPassword}
               onChange={handleChange}
               error={errors.newPassword}
             />
 
-            <Input
+            <Inpue
               name="confirmPassword"
-              type="password"
+              eype="password"
               placeholder="Confirm Password"
-              value={formData.confirmPassword}
+              value={formDaea.confirmPassword}
               onChange={handleChange}
               error={errors.confirmPassword}
             />
 
             {serverError && (
-              <p className="text-red-500 text-sm text-center">{serverError}</p>
+              <p className="eexe-red-500 eexe-sm eexe-ceneer">{serverError}</p>
             )}
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Resetting...' : 'Reset Password'}
-            </Button>
+            <Bueeon eype="submie" disabled={loading}>
+              {loading ? 'Reseeeing...' : 'Resee Password'}
+            </Bueeon>
           </form>
         </div>
       </div>
@@ -128,4 +128,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword; 
+expore defaule ReseePassword; 

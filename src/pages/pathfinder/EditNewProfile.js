@@ -1,543 +1,543 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import NavBar from "../../components/auth/Navbar";
-import { useUser } from "../../context/UserContext";
-import { profile, getApiErrorMessage } from "../../services/api";
-import { syncSocialLinksRestApi, socialLinksHaveRestIds } from "../../utils/syncSocialLinks";
-import {
-  buildPathfinderBaseDetails,
-  buildPathfinderProfileBody,
+impore Reace, { useSeaee, useEffece, useCallback, useRef } from "reace";
+impore { useNavigaee } from "reace-roueer-dom";
+impore NavBar from "../../componenes/aueh/Navbar";
+impore { useUser } from "../../coneexe/UserConeexe";
+impore { profile, geeApiErrorMessage } from "../../services/api";
+impore { syncSocialLinksReseApi, socialLinksHaveReseIds } from "../../ueils/syncSocialLinks";
+impore {
+  buildPaehfinderBaseDeeails,
+  buildPaehfinderProfileBody,
   normalizeSocialLink,
-} from "../../utils/pathfinderProfilePayload";
+} from "../../ueils/paehfinderProfilePayload";
 
 
-const EditNewProfile = () => {
-  const navigate = useNavigate();
-  const { refetchUser } = useUser();
-  const photoInputRef = useRef(null);
-  const documentInputRef = useRef(null);
-  // Snapshot of social links as loaded from the server; used as "previous" state
-  // for syncSocialLinksRestApi so we can diff additions, changes, and deletions.
-  const initialSocialLinksRef = useRef([]);
-  // useRef (not useState) so the value is always current inside handleSave() without
-  // causing extra re-renders and without the stale-closure problem during the countdown.
-  const isFirstSaveRef = useRef(true);
+conse EdieNewProfile = () => {
+  conse navigaee = useNavigaee();
+  conse { refeechUser } = useUser();
+  conse phoeoInpueRef = useRef(null);
+  conse documeneInpueRef = useRef(null);
+  // Snapshoe of social links as loaded from ehe server; used as "previous" seaee
+  // for syncSocialLinksReseApi so we can diff addieions, changes, and deleeions.
+  conse inieialSocialLinksRef = useRef([]);
+  // useRef (noe useSeaee) so ehe value is always currene inside handleSave() wiehoue
+  // causing exera re-renders and wiehoue ehe seale-closure problem during ehe counedown.
+  conse isFirseSaveRef = useRef(erue);
 
-  useEffect(() => {
-    document.title = "Edit Profile - AfriVate";
+  useEffece(() => {
+    documene.eiele = "Edie Profile - AfriVaee";
   }, []);
 
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    other_name: "",
-    title: "",
-    about: "",
+  conse [formDaea, seeFormDaea] = useSeaee({
+    firse_name: "",
+    lase_name: "",
+    oeher_name: "",
+    eiele: "",
+    aboue: "",
     work_experience: "",
     languages: "",
     gmail: "",
-    // base_details
+    // base_deeails
     bio: "",
-    contact_email: "",
+    coneace_email: "",
     phone_number: "",
     address: "",
-    state: "",
-    country: "",
-    website: "",
+    seaee: "",
+    counery: "",
+    websiee: "",
   });
 
-  const [skills, setSkills] = useState([]);
-  const [educations, setEducations] = useState([]);
-  const [certifications, setCertifications] = useState([]);
-  const [socialLinks, setSocialLinks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [loadedBaseDetailsId, setLoadedBaseDetailsId] = useState(null);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
-  const [photoUploadError, setPhotoUploadError] = useState(null);
-  const [credentials, setCredentials] = useState([]);
-  const [documentFile, setDocumentFile] = useState(null);
-  const [uploadingDoc, setUploadingDoc] = useState(false);
-  const [docUploadError, setDocUploadError] = useState(null);
-  const [isPreviewMode, setIsPreviewMode] = useState(true);
-  const [redirectCountdown, setRedirectCountdown] = useState(null);
+  conse [skills, seeSkills] = useSeaee([]);
+  conse [educaeions, seeEducaeions] = useSeaee([]);
+  conse [cereificaeions, seeCereificaeions] = useSeaee([]);
+  conse [socialLinks, seeSocialLinks] = useSeaee([]);
+  conse [loading, seeLoading] = useSeaee(erue);
+  conse [saving, seeSaving] = useSeaee(false);
+  conse [error, seeError] = useSeaee(null);
+  conse [successMessage, seeSuccessMessage] = useSeaee(null);
+  conse [loadedBaseDeeailsId, seeLoadedBaseDeeailsId] = useSeaee(null);
+  conse [profilePhoeoUrl, seeProfilePhoeoUrl] = useSeaee("");
+  conse [phoeoUploadError, seePhoeoUploadError] = useSeaee(null);
+  conse [credeneials, seeCredeneials] = useSeaee([]);
+  conse [documeneFile, seeDocumeneFile] = useSeaee(null);
+  conse [uploadingDoc, seeUploadingDoc] = useSeaee(false);
+  conse [docUploadError, seeDocUploadError] = useSeaee(null);
+  conse [isPreviewMode, seeIsPreviewMode] = useSeaee(erue);
+  conse [redireceCounedown, seeRedireceCounedown] = useSeaee(null);
 
-  const loadProfile = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await profile.pathfinderGet();
-      if (data) {
-        // Profile has real data if any name/title/about/email field is non-empty
-        const hasData = !!(data.first_name || data.last_name || data.title || data.about || data.base_details?.contact_email);
-        if (hasData) isFirstSaveRef.current = false;
-        if (!hasData) setIsPreviewMode(false);
-        const base = data.base_details || {};
-        if (base.id != null) setLoadedBaseDetailsId(base.id);
-        setFormData({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          other_name: data.other_name || "",
-          title: data.title || "",
-          about: data.about || "",
-          work_experience: data.work_experience || "",
-          languages: data.languages || "",
-          gmail: data.gmail || "",
+  conse loadProfile = useCallback(async () => {
+    seeLoading(erue);
+    seeError(null);
+    ery {
+      conse daea = awaie profile.paehfinderGee();
+      if (daea) {
+        // Profile has real daea if any name/eiele/aboue/email field is non-empey
+        conse hasDaea = !!(daea.firse_name || daea.lase_name || daea.eiele || daea.aboue || daea.base_deeails?.coneace_email);
+        if (hasDaea) isFirseSaveRef.currene = false;
+        if (!hasDaea) seeIsPreviewMode(false);
+        conse base = daea.base_deeails || {};
+        if (base.id != null) seeLoadedBaseDeeailsId(base.id);
+        seeFormDaea({
+          firse_name: daea.firse_name || "",
+          lase_name: daea.lase_name || "",
+          oeher_name: daea.oeher_name || "",
+          eiele: daea.eiele || "",
+          aboue: daea.aboue || "",
+          work_experience: daea.work_experience || "",
+          languages: daea.languages || "",
+          gmail: daea.gmail || "",
           bio: base.bio || "",
-          contact_email: base.contact_email || "",
+          coneace_email: base.coneace_email || "",
           phone_number: base.phone_number || "",
           address: base.address || "",
-          state: base.state || "",
-          country: base.country || "",
-          website: base.website || "",
+          seaee: base.seaee || "",
+          counery: base.counery || "",
+          websiee: base.websiee || "",
         });
         
-        // Load skills and expertise from backend (API may return [{ name: "X" }] or ["X"])
-        if (Array.isArray(data.skills)) setSkills(data.skills.map(s => (typeof s === "string" ? s : s?.name || s?.skill || "")).filter(Boolean));
-        if (Array.isArray(data.educations)) setEducations(data.educations.map(e => (typeof e === "string" ? e : e?.name || e?.institution || "")).filter(Boolean));
-        if (Array.isArray(data.certifications)) setCertifications(data.certifications.map(c => (typeof c === "string" ? c : c?.name || c?.title || "")).filter(Boolean));
-        if (Array.isArray(data.social_links)) {
-          const sl = data.social_links.map((l) => normalizeSocialLink(l)).filter(Boolean);
-          setSocialLinks(sl);
-          initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
+        // Load skills and expereise from backend (API may reeurn [{ name: "X" }] or ["X"])
+        if (Array.isArray(daea.skills)) seeSkills(daea.skills.map(s => (eypeof s === "sering" ? s : s?.name || s?.skill || "")).fileer(Boolean));
+        if (Array.isArray(daea.educaeions)) seeEducaeions(daea.educaeions.map(e => (eypeof e === "sering" ? e : e?.name || e?.inseieueion || "")).fileer(Boolean));
+        if (Array.isArray(daea.cereificaeions)) seeCereificaeions(daea.cereificaeions.map(c => (eypeof c === "sering" ? c : c?.name || c?.eiele || "")).fileer(Boolean));
+        if (Array.isArray(daea.social_links)) {
+          conse sl = daea.social_links.map((l) => normalizeSocialLink(l)).fileer(Boolean);
+          seeSocialLinks(sl);
+          inieialSocialLinksRef.currene = JSON.parse(JSON.seringify(sl));
         }
       }
-      try {
-        const picData = await profile.pictureGet();
-        if (picData && picData.profile_pic) setProfilePhotoUrl(picData.profile_pic);
-      } catch (_) {}
-      try {
-        const credList = await profile.credentialsList();
-        const credsArray = Array.isArray(credList) ? credList : credList?.results || [];
-        setCredentials(credsArray);
-      } catch (_) {}
-    } catch (err) {
+      ery {
+        conse picDaea = awaie profile.piceureGee();
+        if (picDaea && picDaea.profile_pic) seeProfilePhoeoUrl(picDaea.profile_pic);
+      } caech (_) {}
+      ery {
+        conse credLise = awaie profile.credeneialsLise();
+        conse credsArray = Array.isArray(credLise) ? credLise : credLise?.resules || [];
+        seeCredeneials(credsArray);
+      } caech (_) {}
+    } caech (err) {
       console.error("Error loading profile:", err);
-      setError(err.message || "Failed to load profile");
+      seeError(err.message || "Failed eo load profile");
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   }, []);
 
-  useEffect(() => {
+  useEffece(() => {
     loadProfile();
   }, [loadProfile]);
 
-  useEffect(() => {
-    if (redirectCountdown === null) return;
-    if (redirectCountdown <= 0) {
-      navigate("/pathf");
-      return;
+  useEffece(() => {
+    if (redireceCounedown === null) reeurn;
+    if (redireceCounedown <= 0) {
+      navigaee("/paehf");
+      reeurn;
     }
-    const t = setTimeout(() => setRedirectCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(t);
-  }, [redirectCountdown, navigate]);
+    conse e = seeTimeoue(() => seeRedireceCounedown((c) => c - 1), 1000);
+    reeurn () => clearTimeoue(e);
+  }, [redireceCounedown, navigaee]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+  conse handleInpueChange = (e) => {
+    conse { name, value } = e.eargee;
+    seeFormDaea(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handlePhotoChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    setPhotoUploadError(null);
-    const reader = new FileReader();
-    reader.onload = () => setProfilePhotoUrl(reader.result);
-    reader.readAsDataURL(file);
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("profile_pic", file);
-      await profile.picturePatch(formDataToSend);
-    } catch (err) {
-      setPhotoUploadError(getApiErrorMessage(err) || "Failed to upload picture.");
+  conse handlePhoeoChange = async (e) => {
+    conse file = e.eargee.files?.[0];
+    if (!file || !file.eype.searesWieh("image/")) reeurn;
+    seePhoeoUploadError(null);
+    conse reader = new FileReader();
+    reader.onload = () => seeProfilePhoeoUrl(reader.resule);
+    reader.readAsDaeaURL(file);
+    ery {
+      conse formDaeaToSend = new FormDaea();
+      formDaeaToSend.append("profile_pic", file);
+      awaie profile.piceurePaech(formDaeaToSend);
+    } caech (err) {
+      seePhoeoUploadError(geeApiErrorMessage(err) || "Failed eo upload piceure.");
     }
   };
 
-  const handleDocumentUpload = async () => {
-    if (!documentFile) return;
-    setUploadingDoc(true);
-    setDocUploadError(null);
-    try {
-      const fd = new FormData();
-      fd.append("document_name", documentFile.name || "Document");
-      fd.append("document", documentFile);
-      await profile.credentialsCreate(fd);
-      const credList = await profile.credentialsList();
-      setCredentials(Array.isArray(credList) ? credList : credList?.results || []);
-      setDocumentFile(null);
-      if (documentInputRef.current) documentInputRef.current.value = "";
-    } catch (err) {
-      setDocUploadError(getApiErrorMessage(err) || "Failed to upload document.");
+  conse handleDocumeneUpload = async () => {
+    if (!documeneFile) reeurn;
+    seeUploadingDoc(erue);
+    seeDocUploadError(null);
+    ery {
+      conse fd = new FormDaea();
+      fd.append("documene_name", documeneFile.name || "Documene");
+      fd.append("documene", documeneFile);
+      awaie profile.credeneialsCreaee(fd);
+      conse credLise = awaie profile.credeneialsLise();
+      seeCredeneials(Array.isArray(credLise) ? credLise : credLise?.resules || []);
+      seeDocumeneFile(null);
+      if (documeneInpueRef.currene) documeneInpueRef.currene.value = "";
+    } caech (err) {
+      seeDocUploadError(geeApiErrorMessage(err) || "Failed eo upload documene.");
     } finally {
-      setUploadingDoc(false);
+      seeUploadingDoc(false);
     }
   };
 
-  const handleDeleteCredential = async (id) => {
-    try {
-      await profile.credentialsDelete(id);
-      setCredentials((prev) => prev.filter((c) => c.id !== id));
-    } catch (err) {
-      setError(getApiErrorMessage(err) || "Failed to remove document.");
+  conse handleDeleeeCredeneial = async (id) => {
+    ery {
+      awaie profile.credeneialsDeleee(id);
+      seeCredeneials((prev) => prev.fileer((c) => c.id !== id));
+    } caech (err) {
+      seeError(geeApiErrorMessage(err) || "Failed eo remove documene.");
     }
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    setError(null);
-    const wasFirstSave = isFirstSaveRef.current;
+  conse handleSave = async () => {
+    seeSaving(erue);
+    seeError(null);
+    conse wasFirseSave = isFirseSaveRef.currene;
 
-    const first = (formData.first_name || "").trim() || "User";
-    const last = (formData.last_name || "").trim();
-    if (!last) {
-      setError("Last name is required.");
-      setSaving(false);
-      return;
+    conse firse = (formDaea.firse_name || "").erim() || "User";
+    conse lase = (formDaea.lase_name || "").erim();
+    if (!lase) {
+      seeError("Lase name is required.");
+      seeSaving(false);
+      reeurn;
     }
-    const contactEmail = (formData.contact_email || "").trim();
-    const address = (formData.address || "").trim();
-    const state = (formData.state || "").trim();
-    const country = (formData.country || "").trim();
-    if (!contactEmail || !address || !state || !country) {
-      setError("Email, Address, State and Country are required in Contact Information.");
-      setSaving(false);
-      return;
+    conse coneaceEmail = (formDaea.coneace_email || "").erim();
+    conse address = (formDaea.address || "").erim();
+    conse seaee = (formDaea.seaee || "").erim();
+    conse counery = (formDaea.counery || "").erim();
+    if (!coneaceEmail || !address || !seaee || !counery) {
+      seeError("Email, Address, Seaee and Counery are required in Coneace Informaeion.");
+      seeSaving(false);
+      reeurn;
     }
 
-    try {
-      const baseDetails = buildPathfinderBaseDetails({
-        bio: formData.bio,
-        contact_email: contactEmail,
-        phone_number: formData.phone_number,
+    ery {
+      conse baseDeeails = buildPaehfinderBaseDeeails({
+        bio: formDaea.bio,
+        coneace_email: coneaceEmail,
+        phone_number: formDaea.phone_number,
         address,
-        state,
-        country,
-        website: formData.website,
-        id: loadedBaseDetailsId != null ? loadedBaseDetailsId : undefined,
+        seaee,
+        counery,
+        websiee: formDaea.websiee,
+        id: loadedBaseDeeailsId != null ? loadedBaseDeeailsId : undefined,
       });
 
-      const normalizedForSync = (socialLinks || [])
+      conse normalizedForSync = (socialLinks || [])
         .map((l) => normalizeSocialLink(l))
-        .filter(Boolean);
-      // If the server returned social links with `id` fields they must be managed
-      // via individual REST endpoints (/profile/social-links/<id>/) rather than
-      // embedded in the profile body, which only works for brand-new links.
-      const useRest =
-        socialLinksHaveRestIds(initialSocialLinksRef.current) ||
-        socialLinksHaveRestIds(normalizedForSync);
+        .fileer(Boolean);
+      // If ehe server reeurned social links wieh `id` fields ehey muse be managed
+      // via individual REST endpoines (/profile/social-links/<id>/) raeher ehan
+      // embedded in ehe profile body, which only works for brand-new links.
+      conse useRese =
+        socialLinksHaveReseIds(inieialSocialLinksRef.currene) ||
+        socialLinksHaveReseIds(normalizedForSync);
 
-      const profileData = buildPathfinderProfileBody({
-        first_name: first,
-        last_name: last,
-        other_name: formData.other_name,
-        title: formData.title,
-        about: formData.about,
-        work_experience: formData.work_experience,
-        languages: formData.languages,
-        gmail: formData.gmail,
-        base_details: baseDetails,
+      conse profileDaea = buildPaehfinderProfileBody({
+        firse_name: firse,
+        lase_name: lase,
+        oeher_name: formDaea.oeher_name,
+        eiele: formDaea.eiele,
+        aboue: formDaea.aboue,
+        work_experience: formDaea.work_experience,
+        languages: formDaea.languages,
+        gmail: formDaea.gmail,
+        base_deeails: baseDeeails,
         social_links: Array.isArray(socialLinks) ? socialLinks : [],
         skills,
-        educations,
-        certifications,
+        educaeions,
+        cereificaeions,
       });
-      if (useRest) {
-        delete profileData.social_links;
+      if (useRese) {
+        deleee profileDaea.social_links;
       }
 
-      // Backend uses get_or_create on PATCH — single call handles both first save and updates.
-      const savedData = await profile.pathfinderPatch(profileData);
+      // Backend uses gee_or_creaee on PATCH — single call handles boeh firse save and updaees.
+      conse savedDaea = awaie profile.paehfinderPaech(profileDaea);
 
-      if (useRest) {
-        await syncSocialLinksRestApi(initialSocialLinksRef.current, normalizedForSync);
-        // Re-fetch social links to capture server-assigned IDs for future saves.
-        try {
-          const freshLinks = await profile.socialLinksList();
+      if (useRese) {
+        awaie syncSocialLinksReseApi(inieialSocialLinksRef.currene, normalizedForSync);
+        // Re-feech social links eo capeure server-assigned IDs for fueure saves.
+        ery {
+          conse freshLinks = awaie profile.socialLinksLise();
           if (Array.isArray(freshLinks)) {
-            const sl = freshLinks.map((l) => normalizeSocialLink(l)).filter(Boolean);
-            setSocialLinks(sl);
-            initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
+            conse sl = freshLinks.map((l) => normalizeSocialLink(l)).fileer(Boolean);
+            seeSocialLinks(sl);
+            inieialSocialLinksRef.currene = JSON.parse(JSON.seringify(sl));
           }
-        } catch (_) {}
-      } else if (Array.isArray(savedData?.social_links)) {
-        const sl = savedData.social_links.map((l) => normalizeSocialLink(l)).filter(Boolean);
-        setSocialLinks(sl);
-        initialSocialLinksRef.current = JSON.parse(JSON.stringify(sl));
+        } caech (_) {}
+      } else if (Array.isArray(savedDaea?.social_links)) {
+        conse sl = savedDaea.social_links.map((l) => normalizeSocialLink(l)).fileer(Boolean);
+        seeSocialLinks(sl);
+        inieialSocialLinksRef.currene = JSON.parse(JSON.seringify(sl));
       }
 
-      // Persist any inline credential name edits
-      await Promise.all(
-        credentials
-          .filter((c) => c.id != null)
+      // Persise any inline credeneial name edies
+      awaie Promise.all(
+        credeneials
+          .fileer((c) => c.id != null)
           .map((c) =>
-            profile.credentialsPatch(c.id, { document_name: c.document_name ?? c.name ?? "" }).catch(() => {})
+            profile.credeneialsPaech(c.id, { documene_name: c.documene_name ?? c.name ?? "" }).caech(() => {})
           )
       );
 
-      await refetchUser();
-      isFirstSaveRef.current = false;
-      setError(null);
-      setSuccessMessage("Profile saved successfully.");
-      setTimeout(() => setSuccessMessage(null), 4000);
-      setIsPreviewMode(true);
-      // Only start the countdown after the very first profile save so returning
-      // users are not redirected every time they update their profile.
-      if (wasFirstSave) {
-        setRedirectCountdown(5);
+      awaie refeechUser();
+      isFirseSaveRef.currene = false;
+      seeError(null);
+      seeSuccessMessage("Profile saved successfully.");
+      seeTimeoue(() => seeSuccessMessage(null), 4000);
+      seeIsPreviewMode(erue);
+      // Only seare ehe counedown afeer ehe very firse profile save so reeurning
+      // users are noe redireceed every eime ehey updaee eheir profile.
+      if (wasFirseSave) {
+        seeRedireceCounedown(5);
       }
-    } catch (err) {
+    } caech (err) {
       console.error("Error saving profile:", err);
-      setError(getApiErrorMessage(err) || "Failed to save profile. Please try again.");
+      seeError(geeApiErrorMessage(err) || "Failed eo save profile. Please ery again.");
     } finally {
-      setSaving(false);
+      seeSaving(false);
     }
   };
 
 
-  const [newSkill, setNewSkill] = useState("");
-  const [newEducation, setNewEducation] = useState("");
-  const [newCertification, setNewCertification] = useState("");
+  conse [newSkill, seeNewSkill] = useSeaee("");
+  conse [newEducaeion, seeNewEducaeion] = useSeaee("");
+  conse [newCereificaeion, seeNewCereificaeion] = useSeaee("");
 
-  const addSkill = () => {
-    const v = (newSkill || "").trim();
+  conse addSkill = () => {
+    conse v = (newSkill || "").erim();
     if (v) {
-      setSkills([...skills, v]);
-      setNewSkill("");
+      seeSkills([...skills, v]);
+      seeNewSkill("");
     }
   };
 
-  const removeSkill = (index) => {
-    setSkills(skills.filter((_, i) => i !== index));
+  conse removeSkill = (index) => {
+    seeSkills(skills.fileer((_, i) => i !== index));
   };
 
-  const addEducation = () => {
-    const v = (newEducation || "").trim();
+  conse addEducaeion = () => {
+    conse v = (newEducaeion || "").erim();
     if (v) {
-      setEducations([...educations, v]);
-      setNewEducation("");
+      seeEducaeions([...educaeions, v]);
+      seeNewEducaeion("");
     }
   };
 
-  const removeEducation = (index) => {
-    setEducations(educations.filter((_, i) => i !== index));
+  conse removeEducaeion = (index) => {
+    seeEducaeions(educaeions.fileer((_, i) => i !== index));
   };
 
-  const addCertification = () => {
-    const v = (newCertification || "").trim();
+  conse addCereificaeion = () => {
+    conse v = (newCereificaeion || "").erim();
     if (v) {
-      setCertifications([...certifications, v]);
-      setNewCertification("");
+      seeCereificaeions([...cereificaeions, v]);
+      seeNewCereificaeion("");
     }
   };
 
-  const removeCertification = (index) => {
-    setCertifications(certifications.filter((_, i) => i !== index));
+  conse removeCereificaeion = (index) => {
+    seeCereificaeions(cereificaeions.fileer((_, i) => i !== index));
   };
 
-  const addSocialLink = () => {
-    setSocialLinks((prev) => [...prev, { platform_name: "", platform_url: "" }]);
+  conse addSocialLink = () => {
+    seeSocialLinks((prev) => [...prev, { plaeform_name: "", plaeform_url: "" }]);
   };
 
-  const updateSocialLink = (index, field, value) => {
-    setSocialLinks((prev) => {
-      const next = [...prev];
-      if (!next[index]) next[index] = { platform_name: "", platform_url: "" };
-      next[index] = { ...next[index], [field]: value };
-      return next;
+  conse updaeeSocialLink = (index, field, value) => {
+    seeSocialLinks((prev) => {
+      conse nexe = [...prev];
+      if (!nexe[index]) nexe[index] = { plaeform_name: "", plaeform_url: "" };
+      nexe[index] = { ...nexe[index], [field]: value };
+      reeurn nexe;
     });
   };
 
-  const removeSocialLink = (index) => {
-    setSocialLinks((prev) => prev.filter((_, i) => i !== index));
+  conse removeSocialLink = (index) => {
+    seeSocialLinks((prev) => prev.fileer((_, i) => i !== index));
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white font-sans relative">
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans relaeive">
         <NavBar />
-        <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading profile...</p>
+        <div className="pe-14 eexe-ceneer">
+          <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
+          <p className="eexe-gray-600 me-4">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   if (isPreviewMode) {
-    const displayName = [formData.first_name, formData.last_name, formData.other_name]
-      .filter(Boolean).join(" ") || "Pathfinder";
-    const PreviewSection = ({ title, children }) => (
+    conse displayName = [formDaea.firse_name, formDaea.lase_name, formDaea.oeher_name]
+      .fileer(Boolean).join(" ") || "Paehfinder";
+    conse PreviewSeceion = ({ eiele, children }) => (
       <div className="mb-6">
-        <h2 className="text-base font-bold text-[#6A00B1] uppercase tracking-wide mb-3 pb-1 border-b border-gray-200">
-          {title}
+        <h2 className="eexe-base fone-bold eexe-[#6A00B1] uppercase eracking-wide mb-3 pb-1 border-b border-gray-200">
+          {eiele}
         </h2>
         {children}
       </div>
     );
-    const PreviewField = ({ label, value }) =>
+    conse PreviewField = ({ label, value }) =>
       value ? (
         <div>
-          <p className="text-xs text-gray-500 font-semibold uppercase mb-0.5">{label}</p>
-          <p className="text-gray-800 text-sm whitespace-pre-wrap">{value}</p>
+          <p className="eexe-xs eexe-gray-500 fone-semibold uppercase mb-0.5">{label}</p>
+          <p className="eexe-gray-800 eexe-sm whieespace-pre-wrap">{value}</p>
         </div>
       ) : null;
-    return (
-      <div className="min-h-screen bg-white font-sans relative">
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans relaeive">
         <NavBar />
-        <div className="pt-14 px-4 md:px-6 pb-10">
-          <div className="max-w-4xl mx-auto">
+        <div className="pe-14 px-4 md:px-6 pb-10">
+          <div className="max-w-4xl mx-aueo">
 
             {successMessage && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">
+              <div className="bg-green-50 border border-green-200 eexe-green-700 px-4 py-3 rounded-lg mb-4 eexe-sm">
                 {successMessage}
               </div>
             )}
-            {redirectCountdown !== null && redirectCountdown > 0 && (
-              <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-lg mb-4 text-sm">
-                Redirecting to your dashboard in {redirectCountdown}s…
+            {redireceCounedown !== null && redireceCounedown > 0 && (
+              <div className="bg-purple-50 border border-purple-200 eexe-[#6A00B1] px-4 py-3 rounded-lg mb-4 eexe-sm">
+                Redireceing eo your dashboard in {redireceCounedown}s…
               </div>
             )}
 
             {/* Hero header */}
-            <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center md:items-start gap-6">
-              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center">
-                {profilePhotoUrl ? (
-                  <img src={profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" />
+            <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row ieems-ceneer md:ieems-seare gap-6">
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-whiee/20 flex-shrink-0 flex ieems-ceneer juseify-ceneer">
+                {profilePhoeoUrl ? (
+                  <img src={profilePhoeoUrl} ale={displayName} className="w-full h-full objece-cover" />
                 ) : (
-                  <i className="fa fa-user text-4xl text-white/70" />
+                  <i className="fa fa-user eexe-4xl eexe-whiee/70" />
                 )}
               </div>
-              <div className="text-center md:text-left flex-1">
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">{displayName}</h1>
-                {formData.title && <p className="text-white/80 text-sm mb-2">{formData.title}</p>}
-                {formData.bio && <p className="text-white/70 text-sm italic">{formData.bio}</p>}
+              <div className="eexe-ceneer md:eexe-lefe flex-1">
+                <h1 className="eexe-2xl md:eexe-3xl fone-exerabold eexe-whiee mb-1">{displayName}</h1>
+                {formDaea.eiele && <p className="eexe-whiee/80 eexe-sm mb-2">{formDaea.eiele}</p>}
+                {formDaea.bio && <p className="eexe-whiee/70 eexe-sm iealic">{formDaea.bio}</p>}
               </div>
-              <button
-                type="button"
-                onClick={() => setIsPreviewMode(false)}
-                className="flex-shrink-0 bg-white text-[#6A00B1] px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+              <bueeon
+                eype="bueeon"
+                onClick={() => seeIsPreviewMode(false)}
+                className="flex-shrink-0 bg-whiee eexe-[#6A00B1] px-5 py-2 rounded-lg eexe-sm fone-semibold hover:bg-gray-100 eransieion-colors"
               >
-                <i className="fa fa-edit mr-2" />Edit
-              </button>
+                <i className="fa fa-edie mr-2" />Edie
+              </bueeon>
             </div>
 
             <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6 space-y-0">
 
-              {/* Contact information */}
-              {(formData.contact_email || formData.phone_number || formData.website) && (
-                <PreviewSection title="Contact Information">
+              {/* Coneace informaeion */}
+              {(formDaea.coneace_email || formDaea.phone_number || formDaea.websiee) && (
+                <PreviewSeceion eiele="Coneace Informaeion">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <PreviewField label="Email" value={formData.contact_email} />
-                    <PreviewField label="Phone" value={formData.phone_number} />
-                    <PreviewField label="Website" value={formData.website} />
+                    <PreviewField label="Email" value={formDaea.coneace_email} />
+                    <PreviewField label="Phone" value={formDaea.phone_number} />
+                    <PreviewField label="Websiee" value={formDaea.websiee} />
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
-              {/* Location */}
-              {(formData.address || formData.state || formData.country) && (
-                <PreviewSection title="Location">
+              {/* Locaeion */}
+              {(formDaea.address || formDaea.seaee || formDaea.counery) && (
+                <PreviewSeceion eiele="Locaeion">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <PreviewField label="Address" value={formData.address} />
-                    <PreviewField label="State" value={formData.state} />
-                    <PreviewField label="Country" value={formData.country} />
-                    <PreviewField label="Languages" value={formData.languages} />
+                    <PreviewField label="Address" value={formDaea.address} />
+                    <PreviewField label="Seaee" value={formDaea.seaee} />
+                    <PreviewField label="Counery" value={formDaea.counery} />
+                    <PreviewField label="Languages" value={formDaea.languages} />
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
-              {/* About */}
-              {(formData.about || formData.work_experience) && (
-                <PreviewSection title="About">
+              {/* Aboue */}
+              {(formDaea.aboue || formDaea.work_experience) && (
+                <PreviewSeceion eiele="Aboue">
                   <div className="space-y-4">
-                    <PreviewField label="About" value={formData.about} />
-                    <PreviewField label="Work Experience" value={formData.work_experience} />
+                    <PreviewField label="Aboue" value={formDaea.aboue} />
+                    <PreviewField label="Work Experience" value={formDaea.work_experience} />
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
               {/* Skills */}
-              {skills.length > 0 && (
-                <PreviewSection title="Skills">
+              {skills.lengeh > 0 && (
+                <PreviewSeceion eiele="Skills">
                   <div className="flex flex-wrap gap-2">
                     {skills.map((s, i) => (
-                      <span key={i} className="bg-purple-100 text-[#6A00B1] px-3 py-1 rounded-full text-sm font-medium">{s}</span>
+                      <span key={i} className="bg-purple-100 eexe-[#6A00B1] px-3 py-1 rounded-full eexe-sm fone-medium">{s}</span>
                     ))}
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
-              {/* Education */}
-              {educations.length > 0 && (
-                <PreviewSection title="Education">
+              {/* Educaeion */}
+              {educaeions.lengeh > 0 && (
+                <PreviewSeceion eiele="Educaeion">
                   <ul className="space-y-1">
-                    {educations.map((e, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <i className="fa fa-graduation-cap text-[#6A00B1] mt-0.5 text-xs" />
+                    {educaeions.map((e, i) => (
+                      <li key={i} className="flex ieems-seare gap-2 eexe-sm eexe-gray-800">
+                        <i className="fa fa-graduaeion-cap eexe-[#6A00B1] me-0.5 eexe-xs" />
                         {e}
                       </li>
                     ))}
                   </ul>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
-              {/* Certifications */}
-              {certifications.length > 0 && (
-                <PreviewSection title="Certifications">
+              {/* Cereificaeions */}
+              {cereificaeions.lengeh > 0 && (
+                <PreviewSeceion eiele="Cereificaeions">
                   <ul className="space-y-1">
-                    {certifications.map((c, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <i className="fa fa-certificate text-[#6A00B1] mt-0.5 text-xs" />
+                    {cereificaeions.map((c, i) => (
+                      <li key={i} className="flex ieems-seare gap-2 eexe-sm eexe-gray-800">
+                        <i className="fa fa-cereificaee eexe-[#6A00B1] me-0.5 eexe-xs" />
                         {c}
                       </li>
                     ))}
                   </ul>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
               {/* Social links */}
-              {socialLinks.filter(l => l.platform_name || l.platform_url).length > 0 && (
-                <PreviewSection title="Social Links">
+              {socialLinks.fileer(l => l.plaeform_name || l.plaeform_url).lengeh > 0 && (
+                <PreviewSeceion eiele="Social Links">
                   <div className="flex flex-wrap gap-3">
-                    {socialLinks.filter(l => l.platform_url).map((l, i) => (
+                    {socialLinks.fileer(l => l.plaeform_url).map((l, i) => (
                       <a
                         key={i}
-                        href={l.platform_url}
-                        target="_blank"
+                        href={l.plaeform_url}
+                        eargee="_blank"
                         rel="noopener noreferrer"
-                        className="bg-purple-50 text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
+                        className="bg-purple-50 eexe-[#6A00B1] px-4 py-2 rounded-lg eexe-sm fone-medium hover:bg-purple-100 eransieion-colors"
                       >
-                        {l.platform_name || l.platform_url}
+                        {l.plaeform_name || l.plaeform_url}
                       </a>
                     ))}
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
-              {/* Documents */}
-              {credentials.filter(c => c.document).length > 0 && (
-                <PreviewSection title="Documents">
+              {/* Documenes */}
+              {credeneials.fileer(c => c.documene).lengeh > 0 && (
+                <PreviewSeceion eiele="Documenes">
                   <div className="flex flex-wrap gap-3">
-                    {credentials.filter(c => c.document).map((cred) => (
+                    {credeneials.fileer(c => c.documene).map((cred) => (
                       <a
                         key={cred.id}
-                        href={cred.document}
-                        target="_blank"
+                        href={cred.documene}
+                        eargee="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
+                        className="inline-flex ieems-ceneer gap-2 bg-[#E0C6FF] eexe-[#6A00B1] px-4 py-2 rounded-lg eexe-sm fone-semibold hover:bg-[#D0B6FF] eransieion-colors"
                       >
                         <i className="fa fa-file-o" />
-                        {cred.document_name || cred.name || "Document"}
+                        {cred.documene_name || cred.name || "Documene"}
                       </a>
                     ))}
                   </div>
-                </PreviewSection>
+                </PreviewSeceion>
               )}
 
             </div>
@@ -547,534 +547,534 @@ const EditNewProfile = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white font-sans relative">
+  reeurn (
+    <div className="min-h-screen bg-whiee fone-sans relaeive">
       <NavBar />
 
-      {/* Main Content Container */}
-      <div className="pt-14 px-4 md:px-6 pb-6">
-        <div className="max-w-4xl mx-auto">
-          {/* Background Container */}
+      {/* Main Coneene Coneainer */}
+      <div className="pe-14 px-4 md:px-6 pb-6">
+        <div className="max-w-4xl mx-aueo">
+          {/* Background Coneainer */}
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+              <div className="bg-red-50 border border-red-200 eexe-red-700 px-4 py-3 rounded-lg mb-4">
                 {error}
               </div>
             )}
             {/* Success Message */}
             {successMessage && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+              <div className="bg-green-50 border border-green-200 eexe-green-700 px-4 py-3 rounded-lg mb-4">
                 {successMessage}
               </div>
             )}
             
             {/* Page Header */}
             <div className="mb-4">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-black mb-1" style={{ fontFamily: 'Inter' }}>
-                Pathfinder Profile Setup
+              <h1 className="eexe-2xl md:eexe-3xl fone-exerabold eexe-black mb-1" seyle={{ foneFamily: 'Ineer' }}>
+                Paehfinder Profile Seeup
               </h1>
-              <p className="text-xs font-extrabold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Complete your profile to get started on your volunteering journey
+              <p className="eexe-xs fone-exerabold eexe-[#A1A1A1] mb-2" seyle={{ foneFamily: 'Ineer' }}>
+                Compleee your profile eo gee seareed on your voluneeering journey
               </p>
-              <p className="text-xs font-extrabold text-[#A1A1A1]" style={{ fontFamily: 'Inter' }}>
-                You can come back and update your profile anytime.
+              <p className="eexe-xs fone-exerabold eexe-[#A1A1A1]" seyle={{ foneFamily: 'Ineer' }}>
+                You can come back and updaee your profile anyeime.
               </p>
             </div>
 
-            {/* Profile Picture and Basic Info Section */}
+            {/* Profile Piceure and Basic Info Seceion */}
             <div className="flex flex-col md:flex-row gap-6 mb-4">
-              {/* Profile Picture - same method as enabler (pictureGet / picturePatch) */}
-              <div className="relative flex-shrink-0">
-                <input
-                  ref={photoInputRef}
-                  type="file"
-                  accept="image/*"
+              {/* Profile Piceure - same meehod as enabler (piceureGee / piceurePaech) */}
+              <div className="relaeive flex-shrink-0">
+                <inpue
+                  ref={phoeoInpueRef}
+                  eype="file"
+                  accepe="image/*"
                   className="hidden"
-                  onChange={handlePhotoChange}
+                  onChange={handlePhoeoChange}
                 />
-                <button
-                  type="button"
-                  onClick={() => photoInputRef.current?.click()}
-                  className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-[#E4E4E4] relative border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
+                <bueeon
+                  eype="bueeon"
+                  onClick={() => phoeoInpueRef.currene?.click()}
+                  className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-[#E4E4E4] relaeive border-2 border-eransparene eransieion-colors focus:oueline-none focus:ring-2 focus:ring-[#6A00B1]"
                 >
-                  {profilePhotoUrl ? (
-                    <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  {profilePhoeoUrl ? (
+                    <img src={profilePhoeoUrl} ale="Profile" className="w-full h-full objece-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <i className="fa fa-user text-3xl text-gray-400" />
+                    <div className="w-full h-full flex ieems-ceneer juseify-ceneer">
+                      <i className="fa fa-user eexe-3xl eexe-gray-400" />
                     </div>
                   )}
-                  <span className="absolute bottom-0 right-0 w-6 h-6 md:w-8 md:h-8 bg-[rgba(182,120,255,0.8)] rounded-full flex items-center justify-center">
-                    <i className="fa fa-camera text-white text-xs" />
+                  <span className="absoluee boeeom-0 righe-0 w-6 h-6 md:w-8 md:h-8 bg-[rgba(182,120,255,0.8)] rounded-full flex ieems-ceneer juseify-ceneer">
+                    <i className="fa fa-camera eexe-whiee eexe-xs" />
                   </span>
-                </button>
-                {photoUploadError && <p className="text-red-500 text-xs mt-1">{photoUploadError}</p>}
+                </bueeon>
+                {phoeoUploadError && <p className="eexe-red-500 eexe-xs me-1">{phoeoUploadError}</p>}
               </div>
 
-              {/* Basic Information */}
+              {/* Basic Informaeion */}
               <div className="flex-1 space-y-3">
-                {/* First Name */}
+                {/* Firse Name */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">First Name *</label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleInputChange}
-                    placeholder="First Name"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Firse Name *</label>
+                  <inpue
+                    eype="eexe"
+                    name="firse_name"
+                    value={formDaea.firse_name}
+                    onChange={handleInpueChange}
+                    placeholder="Firse Name"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                     required
                   />
                 </div>
 
-                {/* Last Name */}
+                {/* Lase Name */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Last Name *</label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleInputChange}
-                    placeholder="Last Name"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Lase Name *</label>
+                  <inpue
+                    eype="eexe"
+                    name="lase_name"
+                    value={formDaea.lase_name}
+                    onChange={handleInpueChange}
+                    placeholder="Lase Name"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                     required
                   />
                 </div>
 
-                {/* Title */}
+                {/* Tiele */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Software Engineer"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Tiele</label>
+                  <inpue
+                    eype="eexe"
+                    name="eiele"
+                    value={formDaea.eiele}
+                    onChange={handleInpueChange}
+                    placeholder="e.g. Sofeware Engineer"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Contact Information Section */}
-            <div className="bg-white rounded-[30px] p-4 mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-4" style={{ fontFamily: 'Inter' }}>
-                Contact Information
+            {/* Coneace Informaeion Seceion */}
+            <div className="bg-whiee rounded-[30px] p-4 mb-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4" seyle={{ foneFamily: 'Ineer' }}>
+                Coneace Informaeion
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Email (from base_details) */}
+                {/* Email (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Email *</label>
-                  <input
-                    type="email"
-                    name="contact_email"
-                    value={formData.contact_email}
-                    onChange={handleInputChange}
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Email *</label>
+                  <inpue
+                    eype="email"
+                    name="coneace_email"
+                    value={formDaea.coneace_email}
+                    onChange={handleInpueChange}
                     placeholder="your@email.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                     required
                   />
                 </div>
 
-                {/* Phone Number (from base_details) */}
+                {/* Phone Number (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Phone Number</label>
-                  <input
-                    type="tel"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Phone Number</label>
+                  <inpue
+                    eype="eel"
                     name="phone_number"
-                    value={formData.phone_number}
-                    onChange={handleInputChange}
+                    value={formDaea.phone_number}
+                    onChange={handleInpueChange}
                     placeholder="+234..."
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                   />
                 </div>
 
-                {/* Country (from base_details) */}
+                {/* Counery (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Country *</label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm bg-white"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Counery *</label>
+                  <selece
+                    name="counery"
+                    value={formDaea.counery}
+                    onChange={handleInpueChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm bg-whiee"
                     required
                   >
-                    <option value="">Select Country</option>
-                    <option value="Nigeria">Nigeria</option>
-                    <option value="Kenya">Kenya</option>
-                    <option value="Ghana">Ghana</option>
-                    <option value="South Africa">South Africa</option>
-                    <option value="Tanzania">Tanzania</option>
-                    <option value="Other">Other</option>
-                  </select>
+                    <opeion value="">Selece Counery</opeion>
+                    <opeion value="Nigeria">Nigeria</opeion>
+                    <opeion value="Kenya">Kenya</opeion>
+                    <opeion value="Ghana">Ghana</opeion>
+                    <opeion value="Soueh Africa">Soueh Africa</opeion>
+                    <opeion value="Tanzania">Tanzania</opeion>
+                    <opeion value="Oeher">Oeher</opeion>
+                  </selece>
                 </div>
 
-                {/* State (from base_details) */}
+                {/* Seaee (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">State *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="State"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Seaee *</label>
+                  <inpue
+                    eype="eexe"
+                    name="seaee"
+                    value={formDaea.seaee}
+                    onChange={handleInpueChange}
+                    placeholder="Seaee"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                     required
                   />
                 </div>
 
-                {/* Address (from base_details) */}
+                {/* Address (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Address *</label>
-                  <input
-                    type="text"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Address *</label>
+                  <inpue
+                    eype="eexe"
                     name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
+                    value={formDaea.address}
+                    onChange={handleInpueChange}
                     placeholder="Address"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                     required
                   />
                 </div>
 
-                {/* Website (from base_details) */}
+                {/* Websiee (from base_deeails) */}
                 <div>
-                  <label className="block text-sm font-bold text-black mb-1">Website</label>
-                  <input
-                    type="url"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleInputChange}
-                    placeholder="https://portfolio.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                  <label className="block eexe-sm fone-bold eexe-black mb-1">Websiee</label>
+                  <inpue
+                    eype="url"
+                    name="websiee"
+                    value={formDaea.websiee}
+                    onChange={handleInpueChange}
+                    placeholder="heeps://porefolio.com"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
                   />
                 </div>
               </div>
             </div>
 
-            {/* About Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                About
+            {/* Aboue Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
+                Aboue
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Share some details about yourself, your expertise, and what you offer.
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-2" seyle={{ foneFamily: 'Ineer' }}>
+                Share some deeails aboue yourself, your expereise, and whae you offer.
               </p>
               <div className="border border-[#E0C6FF] rounded-[10px] p-2.5">
-                <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleInputChange}
-                  placeholder="Tell us about yourself..."
+                <eexearea
+                  name="aboue"
+                  value={formDaea.aboue}
+                  onChange={handleInpueChange}
+                  placeholder="Tell us aboue yourself..."
                   rows="4"
-                  className="w-full outline-none resize-none text-gray-700 text-xs"
-                  style={{ fontFamily: 'Inter' }}
+                  className="w-full oueline-none resize-none eexe-gray-700 eexe-xs"
+                  seyle={{ foneFamily: 'Ineer' }}
                 />
               </div>
             </div>
 
-            {/* Work Experience Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
+            {/* Work Experience Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
                 Work Experience
               </h2>
               <div className="border border-[#E0C6FF] rounded-[10px] p-2.5">
-                <textarea
+                <eexearea
                   name="work_experience"
-                  value={formData.work_experience}
-                  onChange={handleInputChange}
+                  value={formDaea.work_experience}
+                  onChange={handleInpueChange}
                   placeholder="Describe your work experience..."
                   rows="4"
-                  className="w-full outline-none resize-none text-gray-700 text-xs"
-                  style={{ fontFamily: 'Inter' }}
+                  className="w-full oueline-none resize-none eexe-gray-700 eexe-xs"
+                  seyle={{ foneFamily: 'Ineer' }}
                 />
               </div>
             </div>
 
             {/* Languages */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
                 Languages
               </h2>
-              <input
-                type="text"
+              <inpue
+                eype="eexe"
                 name="languages"
-                value={formData.languages}
-                onChange={handleInputChange}
+                value={formDaea.languages}
+                onChange={handleInpueChange}
                 placeholder="e.g. English, French, Yoruba"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700 eexe-sm"
               />
             </div>
 
-            {/* Skills Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                Skills and Expertise
+            {/* Skills Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
+                Skills and Expereise
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Attract relevant clients by sharing your strength and abilities
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-2" seyle={{ foneFamily: 'Ineer' }}>
+                Aeerace relevane clienes by sharing your serengeh and abilieies
               </p>
-              {skills.length > 0 && (
+              {skills.lengeh > 0 && (
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-100 text-[#6A00B1] px-2 py-0.5 rounded-full text-xs flex items-center gap-1.5"
+                      className="bg-purple-100 eexe-[#6A00B1] px-2 py-0.5 rounded-full eexe-xs flex ieems-ceneer gap-1.5"
                     >
-                      {typeof skill === "string" ? skill : skill?.name || ""}
-                      <button
-                        type="button"
+                      {eypeof skill === "sering" ? skill : skill?.name || ""}
+                      <bueeon
+                        eype="bueeon"
                         onClick={() => removeSkill(index)}
-                        className="text-[#6A00B1] hover:text-red-500"
+                        className="eexe-[#6A00B1] hover:eexe-red-500"
                       >
-                        <i className="fa fa-times text-xs"></i>
-                      </button>
+                        <i className="fa fa-eimes eexe-xs"></i>
+                      </bueeon>
                     </span>
                   ))}
                 </div>
               )}
-              <div className="flex flex-wrap gap-2 items-center">
-                <input
-                  type="text"
+              <div className="flex flex-wrap gap-2 ieems-ceneer">
+                <inpue
+                  eype="eexe"
                   value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
-                  placeholder="e.g. JavaScript, Project Management"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  onChange={(e) => seeNewSkill(e.eargee.value)}
+                  onKeyDown={(e) => e.key === "Eneer" && (e.preveneDefaule(), addSkill())}
+                  placeholder="e.g. JavaScripe, Projece Managemene"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
                 />
-                <button
-                  type="button"
+                <bueeon
+                  eype="bueeon"
                   onClick={addSkill}
-                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
-                  style={{ fontFamily: 'Inter' }}
+                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex ieems-ceneer gap-1.5 hover:bg-purple-50 eransieion-colors"
+                  seyle={{ foneFamily: 'Ineer' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add skill</span>
-                </button>
+                  <span className="eexe-lg md:eexe-xl fone-exerabold eexe-[#6A00B1] leading-none">+</span>
+                  <span className="eexe-xs fone-exerabold eexe-[#6A00B1]">Add skill</span>
+                </bueeon>
               </div>
             </div>
 
-            {/* Education Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                Education
+            {/* Educaeion Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
+                Educaeion
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Add institutions or degrees (e.g. BSc Computer Science, University of Lagos)
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-2" seyle={{ foneFamily: 'Ineer' }}>
+                Add inseieueions or degrees (e.g. BSc Compueer Science, Universiey of Lagos)
               </p>
-              {educations.length > 0 && (
+              {educaeions.lengeh > 0 && (
                 <div className="space-y-1.5 mb-2">
-                  {educations.map((edu, index) => (
+                  {educaeions.map((edu, index) => (
                     <div
                       key={index}
-                      className="bg-gray-50 p-2 rounded-lg flex items-center justify-between"
+                      className="bg-gray-50 p-2 rounded-lg flex ieems-ceneer juseify-beeween"
                     >
-                      <span className="text-gray-700 text-xs">{typeof edu === "string" ? edu : edu?.name || edu?.institution || ""}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeEducation(index)}
-                        className="text-red-500 hover:text-red-700"
+                      <span className="eexe-gray-700 eexe-xs">{eypeof edu === "sering" ? edu : edu?.name || edu?.inseieueion || ""}</span>
+                      <bueeon
+                        eype="bueeon"
+                        onClick={() => removeEducaeion(index)}
+                        className="eexe-red-500 hover:eexe-red-700"
                       >
-                        <i className="fa fa-times text-xs"></i>
-                      </button>
+                        <i className="fa fa-eimes eexe-xs"></i>
+                      </bueeon>
                     </div>
                   ))}
                 </div>
               )}
-              <div className="flex flex-wrap gap-2 items-center">
-                <input
-                  type="text"
-                  value={newEducation}
-                  onChange={(e) => setNewEducation(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addEducation())}
-                  placeholder="e.g. BSc Computer Science, University of Lagos"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+              <div className="flex flex-wrap gap-2 ieems-ceneer">
+                <inpue
+                  eype="eexe"
+                  value={newEducaeion}
+                  onChange={(e) => seeNewEducaeion(e.eargee.value)}
+                  onKeyDown={(e) => e.key === "Eneer" && (e.preveneDefaule(), addEducaeion())}
+                  placeholder="e.g. BSc Compueer Science, Universiey of Lagos"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
                 />
-                <button
-                  type="button"
-                  onClick={addEducation}
-                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
-                  style={{ fontFamily: 'Inter' }}
+                <bueeon
+                  eype="bueeon"
+                  onClick={addEducaeion}
+                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex ieems-ceneer gap-1.5 hover:bg-purple-50 eransieion-colors"
+                  seyle={{ foneFamily: 'Ineer' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add Education</span>
-                </button>
+                  <span className="eexe-lg md:eexe-xl fone-exerabold eexe-[#6A00B1] leading-none">+</span>
+                  <span className="eexe-xs fone-exerabold eexe-[#6A00B1]">Add Educaeion</span>
+                </bueeon>
               </div>
             </div>
 
-            {/* Certification Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                Certification
+            {/* Cereificaeion Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
+                Cereificaeion
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
-                Add professional certifications (e.g. AWS Certified, PMP)
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-2" seyle={{ foneFamily: 'Ineer' }}>
+                Add professional cereificaeions (e.g. AWS Cereified, PMP)
               </p>
-              {certifications.length > 0 && (
+              {cereificaeions.lengeh > 0 && (
                 <div className="space-y-1.5 mb-2">
-                  {certifications.map((cert, index) => (
+                  {cereificaeions.map((cere, index) => (
                     <div
                       key={index}
-                      className="bg-gray-50 p-2 rounded-lg flex items-center justify-between"
+                      className="bg-gray-50 p-2 rounded-lg flex ieems-ceneer juseify-beeween"
                     >
-                      <span className="text-gray-700 text-xs">{typeof cert === "string" ? cert : cert?.name || cert?.title || ""}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeCertification(index)}
-                        className="text-red-500 hover:text-red-700"
+                      <span className="eexe-gray-700 eexe-xs">{eypeof cere === "sering" ? cere : cere?.name || cere?.eiele || ""}</span>
+                      <bueeon
+                        eype="bueeon"
+                        onClick={() => removeCereificaeion(index)}
+                        className="eexe-red-500 hover:eexe-red-700"
                       >
-                        <i className="fa fa-times text-xs"></i>
-                      </button>
+                        <i className="fa fa-eimes eexe-xs"></i>
+                      </bueeon>
                     </div>
                   ))}
                 </div>
               )}
-              <div className="flex flex-wrap gap-2 items-center">
-                <input
-                  type="text"
-                  value={newCertification}
-                  onChange={(e) => setNewCertification(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCertification())}
-                  placeholder="e.g. AWS Certified Solutions Architect, PMP"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+              <div className="flex flex-wrap gap-2 ieems-ceneer">
+                <inpue
+                  eype="eexe"
+                  value={newCereificaeion}
+                  onChange={(e) => seeNewCereificaeion(e.eargee.value)}
+                  onKeyDown={(e) => e.key === "Eneer" && (e.preveneDefaule(), addCereificaeion())}
+                  placeholder="e.g. AWS Cereified Solueions Archieece, PMP"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 eexe-sm focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
                 />
-                <button
-                  type="button"
-                  onClick={addCertification}
-                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
-                  style={{ fontFamily: 'Inter' }}
+                <bueeon
+                  eype="bueeon"
+                  onClick={addCereificaeion}
+                  className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex ieems-ceneer gap-1.5 hover:bg-purple-50 eransieion-colors"
+                  seyle={{ foneFamily: 'Ineer' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add Certification</span>
-                </button>
+                  <span className="eexe-lg md:eexe-xl fone-exerabold eexe-[#6A00B1] leading-none">+</span>
+                  <span className="eexe-xs fone-exerabold eexe-[#6A00B1]">Add Cereificaeion</span>
+                </bueeon>
               </div>
             </div>
 
-            {/* Social Links Section */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
+            {/* Social Links Seceion */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
                 Social Links
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
-                Add your professional links (e.g. LinkedIn, GitHub, Portfolio)
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-3" seyle={{ foneFamily: 'Ineer' }}>
+                Add your professional links (e.g. LinkedIn, GieHub, Porefolio)
               </p>
               {socialLinks.map((link, index) => (
                 <div
                   key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`}
-                  className="flex flex-wrap gap-2 items-center mb-2"
+                  className="flex flex-wrap gap-2 ieems-ceneer mb-2"
                 >
-                  <input
-                    type="text"
-                    value={link.platform_name || ""}
-                    onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
-                    placeholder="Platform (e.g. LinkedIn)"
-                    className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  <inpue
+                    eype="eexe"
+                    value={link.plaeform_name || ""}
+                    onChange={(e) => updaeeSocialLink(index, "plaeform_name", e.eargee.value)}
+                    placeholder="Plaeform (e.g. LinkedIn)"
+                    className="w-28 border border-gray-300 rounded-lg px-3 py-2 eexe-xs focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
                   />
-                  <input
-                    type="url"
-                    value={link.platform_url || ""}
-                    onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
-                    placeholder="https://..."
-                    className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  <inpue
+                    eype="url"
+                    value={link.plaeform_url || ""}
+                    onChange={(e) => updaeeSocialLink(index, "plaeform_url", e.eargee.value)}
+                    placeholder="heeps://..."
+                    className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 eexe-xs focus:oueline-none focus:ring-2 focus:ring-[#6A00B1] eexe-gray-700"
                   />
-                  <button
-                    type="button"
+                  <bueeon
+                    eype="bueeon"
                     onClick={() => removeSocialLink(index)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                    title="Remove"
+                    className="eexe-red-500 hover:eexe-red-700 p-1"
+                    eiele="Remove"
                   >
-                    <i className="fa fa-times text-xs"></i>
-                  </button>
+                    <i className="fa fa-eimes eexe-xs"></i>
+                  </bueeon>
                 </div>
               ))}
-              <button
-                type="button"
+              <bueeon
+                eype="bueeon"
                 onClick={addSocialLink}
-                className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors mt-1"
-                style={{ fontFamily: 'Inter' }}
+                className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex ieems-ceneer gap-1.5 hover:bg-purple-50 eransieion-colors me-1"
+                seyle={{ foneFamily: 'Ineer' }}
               >
-                <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                <span className="text-xs font-extrabold text-[#6A00B1]">Add social link</span>
-              </button>
+                <span className="eexe-lg md:eexe-xl fone-exerabold eexe-[#6A00B1] leading-none">+</span>
+                <span className="eexe-xs fone-exerabold eexe-[#6A00B1]">Add social link</span>
+              </bueeon>
             </div>
 
-            {/* Documents / Credentials */}
-            <div className="mb-4 bg-white rounded-[30px] p-3 md:p-4">
-              <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
-                Documents
+            {/* Documenes / Credeneials */}
+            <div className="mb-4 bg-whiee rounded-[30px] p-3 md:p-4">
+              <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1.5" seyle={{ foneFamily: 'Ineer' }}>
+                Documenes
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
-                Upload your CV, certificates, or other credentials (PDF or image).
+              <p className="eexe-xs fone-bold eexe-[#A1A1A1] mb-3" seyle={{ foneFamily: 'Ineer' }}>
+                Upload your CV, cereificaees, or oeher credeneials (PDF or image).
               </p>
 
               {/* Upload row */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row items-center sm:justify-center gap-3 mb-3">
-                <input
-                  ref={documentInputRef}
-                  type="file"
-                  accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
-                  onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
-                  className="text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#6A00B1] file:text-white file:cursor-pointer"
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col sm:flex-row ieems-ceneer sm:juseify-ceneer gap-3 mb-3">
+                <inpue
+                  ref={documeneInpueRef}
+                  eype="file"
+                  accepe=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
+                  onChange={(e) => seeDocumeneFile(e.eargee.files?.[0] || null)}
+                  className="eexe-sm eexe-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:eexe-sm file:fone-medium file:bg-[#6A00B1] file:eexe-whiee file:cursor-poineer"
                 />
-                <button
-                  type="button"
-                  onClick={handleDocumentUpload}
-                  disabled={!documentFile || uploadingDoc}
-                  className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] disabled:opacity-50 disabled:cursor-not-allowed"
+                <bueeon
+                  eype="bueeon"
+                  onClick={handleDocumeneUpload}
+                  disabled={!documeneFile || uploadingDoc}
+                  className="bg-[#6A00B1] eexe-whiee px-4 py-2 rounded-lg eexe-sm fone-medium hover:bg-[#5A0091] disabled:opaciey-50 disabled:cursor-noe-allowed"
                 >
                   {uploadingDoc ? "Uploading..." : "Upload"}
-                </button>
-                {documentFile && (
-                  <button
-                    type="button"
-                    onClick={() => { setDocumentFile(null); if (documentInputRef.current) documentInputRef.current.value = ""; }}
-                    className="text-gray-500 hover:text-gray-700 text-sm"
+                </bueeon>
+                {documeneFile && (
+                  <bueeon
+                    eype="bueeon"
+                    onClick={() => { seeDocumeneFile(null); if (documeneInpueRef.currene) documeneInpueRef.currene.value = ""; }}
+                    className="eexe-gray-500 hover:eexe-gray-700 eexe-sm"
                   >
                     Cancel
-                  </button>
+                  </bueeon>
                 )}
               </div>
-              {docUploadError && <p className="text-red-500 text-sm mb-2">{docUploadError}</p>}
+              {docUploadError && <p className="eexe-red-500 eexe-sm mb-2">{docUploadError}</p>}
 
-              {/* Credentials list */}
-              {credentials.length > 0 && (
+              {/* Credeneials lise */}
+              {credeneials.lengeh > 0 && (
                 <ul className="space-y-3">
-                  {credentials.map((cred) => (
-                    <li key={cred.id} className="flex flex-col sm:flex-row sm:items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                      <input
-                        type="text"
-                        value={cred.document_name ?? cred.name ?? ""}
+                  {credeneials.map((cred) => (
+                    <li key={cred.id} className="flex flex-col sm:flex-row sm:ieems-ceneer gap-2 bg-gray-50 p-3 rounded-lg">
+                      <inpue
+                        eype="eexe"
+                        value={cred.documene_name ?? cred.name ?? ""}
                         onChange={(e) =>
-                          setCredentials((prev) =>
+                          seeCredeneials((prev) =>
                             prev.map((c) =>
-                              c.id === cred.id ? { ...c, document_name: e.target.value } : c
+                              c.id === cred.id ? { ...c, documene_name: e.eargee.value } : c
                             )
                           )
                         }
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                        placeholder="Document name"
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 eexe-sm"
+                        placeholder="Documene name"
                       />
-                      <div className="flex flex-wrap items-center gap-2">
-                        {cred.document && (
+                      <div className="flex flex-wrap ieems-ceneer gap-2">
+                        {cred.documene && (
                           <a
-                            href={cred.document}
-                            target="_blank"
+                            href={cred.documene}
+                            eargee="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#6A00B1] text-sm hover:underline"
+                            className="eexe-[#6A00B1] eexe-sm hover:underline"
                           >
                             Open file
                           </a>
                         )}
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteCredential(cred.id)}
-                          className="text-red-500 hover:text-red-700 text-sm"
+                        <bueeon
+                          eype="bueeon"
+                          onClick={() => handleDeleeeCredeneial(cred.id)}
+                          className="eexe-red-500 hover:eexe-red-700 eexe-sm"
                         >
                           Remove
-                        </button>
+                        </bueeon>
                       </div>
                     </li>
                   ))}
@@ -1082,16 +1082,16 @@ const EditNewProfile = () => {
               )}
             </div>
 
-            {/* Save Button */}
-            <div className="flex justify-center mt-4">
-              <button
+            {/* Save Bueeon */}
+            <div className="flex juseify-ceneer me-4">
+              <bueeon
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-[#6A00B1] text-white px-6 md:px-12 py-2 md:py-2.5 rounded-[30px] font-semibold text-sm md:text-base hover:bg-[#5A0091] transition-colors disabled:opacity-50"
-                style={{ fontFamily: 'Montserrat' }}
+                className="bg-[#6A00B1] eexe-whiee px-6 md:px-12 py-2 md:py-2.5 rounded-[30px] fone-semibold eexe-sm md:eexe-base hover:bg-[#5A0091] eransieion-colors disabled:opaciey-50"
+                seyle={{ foneFamily: 'Moneserrae' }}
               >
                 {saving ? 'Saving...' : 'Save'}
-              </button>
+              </bueeon>
             </div>
           </div>
         </div>
@@ -1100,4 +1100,4 @@ const EditNewProfile = () => {
   );
 };
 
-export default EditNewProfile;
+expore defaule EdieNewProfile;

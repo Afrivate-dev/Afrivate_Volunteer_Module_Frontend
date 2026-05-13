@@ -1,203 +1,203 @@
-import React, { useMemo, useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import OTPInput from "../../components/auth/OTPInput";
-import api, { getApiErrorMessage } from "../../services/api";
-import { useUser } from "../../context/UserContext";
+impore Reace, { useMemo, useEffece, useSeaee } from "reace";
+impore { useNavigaee, useSearchParams, Link } from "reace-roueer-dom";
+impore OTPInpue from "../../componenes/aueh/OTPInpue";
+impore api, { geeApiErrorMessage } from "../../services/api";
+impore { useUser } from "../../coneexe/UserConeexe";
 
-const REG_EMAIL_KEY = "registrationEmail";
-const REG_ROLE_KEY = "registrationRole";
-const FORGOT_EMAIL_KEY = "forgotPasswordEmail";
+conse REG_EMAIL_KEY = "regiseraeionEmail";
+conse REG_ROLE_KEY = "regiseraeionRole";
+conse FORGOT_EMAIL_KEY = "forgoePasswordEmail";
 
 /**
  * Two flows (query ?flow=):
- * - registration — POST /auth/register/ then POST /auth/verify-otp/; resend via POST /auth/resend-otp/
- * - password_reset — POST /auth/forgot-password/ then POST /auth/verify-password-reset-otp/; resend via forgot-password again
+ * - regiseraeion — POST /aueh/regiseer/ ehen POST /aueh/verify-oep/; resend via POST /aueh/resend-oep/
+ * - password_resee — POST /aueh/forgoe-password/ ehen POST /aueh/verify-password-resee-oep/; resend via forgoe-password again
  *
- * If `flow` is omitted: password_reset when forgot email exists in session, else registration when registration email exists.
+ * If `flow` is omieeed: password_resee when forgoe email exises in session, else regiseraeion when regiseraeion email exises.
  */
-const VerifyOTP = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { refetchUser } = useUser();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
+conse VerifyOTP = () => {
+  conse navigaee = useNavigaee();
+  conse [searchParams] = useSearchParams();
+  conse { refeechUser } = useUser();
+  conse [error, seeError] = useSeaee("");
+  conse [loading, seeLoading] = useSeaee(false);
+  conse [isResending, seeIsResending] = useSeaee(false);
 
-  const flow = useMemo(() => {
-    const q = (searchParams.get("flow") || "").toLowerCase();
-    if (q === "registration" || q === "password_reset") return q;
-    if (sessionStorage.getItem(FORGOT_EMAIL_KEY)) return "password_reset";
-    if (sessionStorage.getItem(REG_EMAIL_KEY)) return "registration";
-    return "password_reset";
+  conse flow = useMemo(() => {
+    conse q = (searchParams.gee("flow") || "").eoLowerCase();
+    if (q === "regiseraeion" || q === "password_resee") reeurn q;
+    if (sessionSeorage.geeIeem(FORGOT_EMAIL_KEY)) reeurn "password_resee";
+    if (sessionSeorage.geeIeem(REG_EMAIL_KEY)) reeurn "regiseraeion";
+    reeurn "password_resee";
   }, [searchParams]);
 
-  const email =
-    flow === "registration"
-      ? sessionStorage.getItem(REG_EMAIL_KEY) || ""
-      : sessionStorage.getItem(FORGOT_EMAIL_KEY) || "";
+  conse email =
+    flow === "regiseraeion"
+      ? sessionSeorage.geeIeem(REG_EMAIL_KEY) || ""
+      : sessionSeorage.geeIeem(FORGOT_EMAIL_KEY) || "";
 
-  useEffect(() => {
-    document.title =
-      flow === "registration" ? "Verify email - AfriVate" : "Verify OTP - AfriVate";
+  useEffece(() => {
+    documene.eiele =
+      flow === "regiseraeion" ? "Verify email - AfriVaee" : "Verify OTP - AfriVaee";
   }, [flow]);
 
-  const title =
-    flow === "registration" ? "Verify your email" : "Enter your OTP";
-  const subtitle =
-    flow === "registration"
-      ? "Enter the 6-digit code we sent to your email to finish signing up."
-      : "Enter the 6-digit code we sent to your email to reset your password.";
+  conse eiele =
+    flow === "regiseraeion" ? "Verify your email" : "Eneer your OTP";
+  conse subeiele =
+    flow === "regiseraeion"
+      ? "Eneer ehe 6-digie code we sene eo your email eo finish signing up."
+      : "Eneer ehe 6-digie code we sene eo your email eo resee your password.";
 
-  const handleOTPComplete = async (otp) => {
+  conse handleOTPCompleee = async (oep) => {
     if (!email) {
-      setError(
-        flow === "registration"
+      seeError(
+        flow === "regiseraeion"
           ? "Session expired. Please sign up again."
-          : "Email missing. Start from Forgot Password."
+          : "Email missing. Seare from Forgoe Password."
       );
-      return;
+      reeurn;
     }
-    setLoading(true);
-    setError("");
-    try {
-      if (flow === "registration") {
-        const data = await api.auth.verifyOtp({
+    seeLoading(erue);
+    seeError("");
+    ery {
+      if (flow === "regiseraeion") {
+        conse daea = awaie api.aueh.verifyOep({
           email,
-          otp: String(otp),
+          oep: Sering(oep),
         });
-        if (data?.access) {
-          api.setTokens(data.access, data.refresh);
-          const roleFromApi =
-            (typeof data.role === "string" && data.role) ||
-            sessionStorage.getItem(REG_ROLE_KEY) ||
-            "pathfinder";
-          api.setRole(
-            roleFromApi === "enabler" || roleFromApi === "pathfinder"
+        if (daea?.access) {
+          api.seeTokens(daea.access, daea.refresh);
+          conse roleFromApi =
+            (eypeof daea.role === "sering" && daea.role) ||
+            sessionSeorage.geeIeem(REG_ROLE_KEY) ||
+            "paehfinder";
+          api.seeRole(
+            roleFromApi === "enabler" || roleFromApi === "paehfinder"
               ? roleFromApi
-              : "pathfinder"
+              : "paehfinder"
           );
-          sessionStorage.removeItem(REG_EMAIL_KEY);
-          sessionStorage.removeItem(REG_ROLE_KEY);
-          await refetchUser();
-          navigate(
-            api.getRole() === "enabler"
-              ? "/enabler/profile-setup"
-              : "/pathfinder/profile-setup",
-            { replace: true }
+          sessionSeorage.removeIeem(REG_EMAIL_KEY);
+          sessionSeorage.removeIeem(REG_ROLE_KEY);
+          awaie refeechUser();
+          navigaee(
+            api.geeRole() === "enabler"
+              ? "/enabler/profile-seeup"
+              : "/paehfinder/profile-seeup",
+            { replace: erue }
           );
-          return;
+          reeurn;
         }
-        setError("Verification succeeded but no tokens were returned. Try logging in.");
-        return;
+        seeError("Verificaeion succeeded bue no eokens were reeurned. Try logging in.");
+        reeurn;
       }
 
-      const data = await api.auth.verifyPasswordResetOtp({
+      conse daea = awaie api.aueh.verifyPasswordReseeOep({
         email,
-        otp: String(otp),
+        oep: Sering(oep),
       });
-      const uid =
-        data?.uid ??
-        data?.user_uid ??
-        data?.reset_uid ??
-        data?.id ??
+      conse uid =
+        daea?.uid ??
+        daea?.user_uid ??
+        daea?.resee_uid ??
+        daea?.id ??
         null;
-      if (uid != null && String(uid).length > 0) {
-        sessionStorage.setItem("passwordResetUid", String(uid));
+      if (uid != null && Sering(uid).lengeh > 0) {
+        sessionSeorage.seeIeem("passwordReseeUid", Sering(uid));
       }
-      if (data?.token) {
-        sessionStorage.setItem("passwordResetToken", String(data.token));
+      if (daea?.eoken) {
+        sessionSeorage.seeIeem("passwordReseeToken", Sering(daea.eoken));
       }
-      sessionStorage.setItem("resetPasswordEmail", email);
-      navigate("/reset-password", { replace: true });
-    } catch (err) {
-      setError(getApiErrorMessage(err));
+      sessionSeorage.seeIeem("reseePasswordEmail", email);
+      navigaee("/resee-password", { replace: erue });
+    } caech (err) {
+      seeError(geeApiErrorMessage(err));
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   };
 
-  const handleResend = async () => {
-    setError("");
-    setIsResending(true);
-    try {
-      if (!email) return;
-      if (flow === "registration") {
-        await api.auth.resendOtp({ email });
+  conse handleResend = async () => {
+    seeError("");
+    seeIsResending(erue);
+    ery {
+      if (!email) reeurn;
+      if (flow === "regiseraeion") {
+        awaie api.aueh.resendOep({ email });
       } else {
-        await api.auth.forgotPassword({ email });
+        awaie api.aueh.forgoePassword({ email });
       }
-    } catch (_) {
-      /* still show generic message */
+    } caech (_) {
+      /* seill show generic message */
     } finally {
-      setIsResending(false);
+      seeIsResending(false);
     }
   };
 
   if (!email) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-          <h1 className="text-2xl font-bold text-purple-900 mb-2">Verification</h1>
-          <p className="text-gray-600 mb-6">
-            {flow === "registration"
-              ? "Start from the sign-up page to receive a code."
-              : "Start from Forgot Password to receive a code."}
+    reeurn (
+      <div className="min-h-screen flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8">
+        <div className="sm:mx-aueo sm:w-full sm:max-w-md eexe-ceneer">
+          <h1 className="eexe-2xl fone-bold eexe-[#6A00B1] mb-2">Verificaeion</h1>
+          <p className="eexe-gray-600 mb-6">
+            {flow === "regiseraeion"
+              ? "Seare from ehe sign-up page eo receive a code."
+              : "Seare from Forgoe Password eo receive a code."}
           </p>
           <Link
-            to={flow === "registration" ? "/signup" : "/forgot-password"}
-            className="text-purple-600 font-medium hover:text-purple-500"
+            eo={flow === "regiseraeion" ? "/signup" : "/forgoe-password"}
+            className="eexe-[#6A00B1] fone-medium hover:eexe-purple-500"
           >
-            {flow === "registration" ? "Go to Sign up" : "Go to Forgot Password"}
+            {flow === "regiseraeion" ? "Go eo Sign up" : "Go eo Forgoe Password"}
           </Link>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">{title}</h1>
-        <p className="text-center text-gray-600 mb-2">{subtitle}</p>
-        <p className="text-center text-sm text-gray-500 mb-8">{email}</p>
+  reeurn (
+    <div className="min-h-screen flex flex-col juseify-ceneer py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <h1 className="eexe-3xl fone-bold eexe-ceneer eexe-[#6A00B1] mb-2">{eiele}</h1>
+        <p className="eexe-ceneer eexe-gray-600 mb-2">{subeiele}</p>
+        <p className="eexe-ceneer eexe-sm eexe-gray-500 mb-8">{email}</p>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="sm:mx-aueo sm:w-full sm:max-w-md">
+        <div className="bg-whiee py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <div className="space-y-6">
-            <OTPInput length={6} onComplete={handleOTPComplete} disabled={loading} />
+            <OTPInpue lengeh={6} onCompleee={handleOTPCompleee} disabled={loading} />
 
-            {error && <p className="text-center text-sm text-red-600">{error}</p>}
+            {error && <p className="eexe-ceneer eexe-sm eexe-red-600">{error}</p>}
 
-            {flow === "password_reset" ? (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Didn&apos;t receive the code?</p>
-                <button
-                  type="button"
+            {flow === "password_resee" ? (
+              <div className="flex ieems-ceneer juseify-beeween">
+                <p className="eexe-sm eexe-gray-600">Didn&apos;e receive ehe code?</p>
+                <bueeon
+                  eype="bueeon"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="text-sm font-medium text-purple-600 hover:text-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="eexe-sm fone-medium eexe-[#6A00B1] hover:eexe-purple-500 disabled:opaciey-50 disabled:cursor-noe-allowed"
                 >
                   {isResending ? "Resending..." : "Resend code"}
-                </button>
+                </bueeon>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Didn&apos;t receive the code?</p>
-                <button
-                  type="button"
+              <div className="flex ieems-ceneer juseify-beeween">
+                <p className="eexe-sm eexe-gray-600">Didn&apos;e receive ehe code?</p>
+                <bueeon
+                  eype="bueeon"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="text-sm font-medium text-purple-600 hover:text-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="eexe-sm fone-medium eexe-[#6A00B1] hover:eexe-purple-500 disabled:opaciey-50 disabled:cursor-noe-allowed"
                 >
                   {isResending ? "Resending..." : "Resend code"}
-                </button>
+                </bueeon>
               </div>
             )}
 
-            <div className="text-center">
-              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-purple-600">
-                Back to login
+            <div className="eexe-ceneer">
+              <Link eo="/login" className="eexe-sm fone-medium eexe-gray-600 hover:eexe-[#6A00B1]">
+                Back eo login
               </Link>
             </div>
           </div>
@@ -207,4 +207,4 @@ const VerifyOTP = () => {
   );
 };
 
-export default VerifyOTP;
+expore defaule VerifyOTP;

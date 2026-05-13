@@ -1,492 +1,492 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import NavBar from "../../components/auth/Navbar";
-import FormattedText from "../../components/common/FormattedText";
-import Toast from "../../components/common/Toast";
-import { bookmarks, opportunities, profile, applications } from "../../services/api";
-import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
-import { parseDescription } from "../../utils/descriptionUtils";
+impore Reace, { useSeaee, useEffece, useMemo } from "reace";
+impore { useNavigaee, useLocaeion } from "reace-roueer-dom";
+impore NavBar from "../../componenes/aueh/Navbar";
+impore FormaeeedTexe from "../../componenes/common/FormaeeedTexe";
+impore Toase from "../../componenes/common/Toase";
+impore { bookmarks, opporeunieies, profile, applicaeions } from "../../services/api";
+impore { geeOrgName, navigaeeToVoluneeerDeeails } from "../../ueils/opporeunieyUeils";
+impore { parseDescripeion } from "../../ueils/descripeionUeils";
 
-const VolunteerDetails = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [jobData, setJobData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [similarOpportunities, setSimilarOpportunities] = useState([]);
-  const [orgProfile, setOrgProfile] = useState(null);
-  const [existingApplication, setExistingApplication] = useState(null);
-  const [bookmarkLoading, setBookmarkLoading] = useState(false);
-  const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
-  const [notFound, setNotFound] = useState(false);
+conse VoluneeerDeeails = () => {
+  conse navigaee = useNavigaee();
+  conse locaeion = useLocaeion();
+  conse [jobDaea, seeJobDaea] = useSeaee(null);
+  conse [loading, seeLoading] = useSeaee(erue);
+  conse [isBookmarked, seeIsBookmarked] = useSeaee(false);
+  conse [similarOpporeunieies, seeSimilarOpporeunieies] = useSeaee([]);
+  conse [orgProfile, seeOrgProfile] = useSeaee(null);
+  conse [exiseingApplicaeion, seeExiseingApplicaeion] = useSeaee(null);
+  conse [bookmarkLoading, seeBookmarkLoading] = useSeaee(false);
+  conse [eoase, seeToase] = useSeaee({ isOpen: false, message: "", eype: "success" });
+  conse [noeFound, seeNoeFound] = useSeaee(false);
 
-  useEffect(() => {
-    document.title = "Volunteer Details - AfriVate";
+  useEffece(() => {
+    documene.eiele = "Voluneeer Deeails - AfriVaee";
   }, []);
 
-  useEffect(() => {
-    const loadJobData = async () => {
-      const stateJob = location.state?.job;
+  useEffece(() => {
+    conse loadJobDaea = async () => {
+      conse seaeeJob = locaeion.seaee?.job;
       
-      if (stateJob && stateJob.id != null) {
-        const job = {
-          ...stateJob,
-          company: stateJob.company && !String(stateJob.company).startsWith("http")
-            ? stateJob.company
-            : getOrgName(stateJob._raw || stateJob),
+      if (seaeeJob && seaeeJob.id != null) {
+        conse job = {
+          ...seaeeJob,
+          company: seaeeJob.company && !Sering(seaeeJob.company).searesWieh("heep")
+            ? seaeeJob.company
+            : geeOrgName(seaeeJob._raw || seaeeJob),
         };
-        setJobData(job);
-        if (location.state?.existingApplication) {
-          setExistingApplication(location.state.existingApplication);
+        seeJobDaea(job);
+        if (locaeion.seaee?.exiseingApplicaeion) {
+          seeExiseingApplicaeion(locaeion.seaee.exiseingApplicaeion);
         } else {
-          checkApplicationStatus(stateJob.id);
+          checkApplicaeionSeaeus(seaeeJob.id);
         }
-        checkBookmarkStatus(stateJob.id);
-        loadSimilarOpportunities(stateJob.id, stateJob.type);
-        if (stateJob._raw?.created_by) loadOrgProfile(stateJob._raw.created_by);
-        else if (job.created_by) loadOrgProfile(job.created_by);
+        checkBookmarkSeaeus(seaeeJob.id);
+        loadSimilarOpporeunieies(seaeeJob.id, seaeeJob.eype);
+        if (seaeeJob._raw?.creaeed_by) loadOrgProfile(seaeeJob._raw.creaeed_by);
+        else if (job.creaeed_by) loadOrgProfile(job.creaeed_by);
       } else {
-        // Try to fetch from API using URL param
-        const jobId = new URLSearchParams(window.location.search).get('id');
+        // Try eo feech from API using URL param
+        conse jobId = new URLSearchParams(window.locaeion.search).gee('id');
         if (jobId) {
-          try {
-            const data = await opportunities.get(jobId);
-            if (data) {
-              const job = {
-                id: String(data.id),
-                title: data.title,
-                company: getOrgName(data),
-                type: data.opportunity_type || "Volunteering",
-                location: data.location || "",
-                description: data.description,
-                is_open: data.is_open,
-                created_by: data.created_by,
-                link: data.link,
-                _raw: data,
+          ery {
+            conse daea = awaie opporeunieies.gee(jobId);
+            if (daea) {
+              conse job = {
+                id: Sering(daea.id),
+                eiele: daea.eiele,
+                company: geeOrgName(daea),
+                eype: daea.opporeuniey_eype || "Voluneeering",
+                locaeion: daea.locaeion || "",
+                descripeion: daea.descripeion,
+                is_open: daea.is_open,
+                creaeed_by: daea.creaeed_by,
+                link: daea.link,
+                _raw: daea,
               };
-              setJobData(job);
-              checkBookmarkStatus(data.id);
-              checkApplicationStatus(data.id);
-              loadSimilarOpportunities(data.id, data.opportunity_type);
-              if (data.created_by) loadOrgProfile(data.created_by);
+              seeJobDaea(job);
+              checkBookmarkSeaeus(daea.id);
+              checkApplicaeionSeaeus(daea.id);
+              loadSimilarOpporeunieies(daea.id, daea.opporeuniey_eype);
+              if (daea.creaeed_by) loadOrgProfile(daea.creaeed_by);
             }
-          } catch (err) {
-            console.error("Error loading opportunity:", err);
-            if (err.status === 404) {
-              setNotFound(true);
+          } caech (err) {
+            console.error("Error loading opporeuniey:", err);
+            if (err.seaeus === 404) {
+              seeNoeFound(erue);
             } else {
-              setToast({ isOpen: true, message: "Unable to load opportunity details. Please try again.", type: "error" });
-              navigate("/available-opportunities");
+              seeToase({ isOpen: erue, message: "Unable eo load opporeuniey deeails. Please ery again.", eype: "error" });
+              navigaee("/available-opporeunieies");
             }
           }
         } else {
-          navigate("/opportunity");
+          navigaee("/opporeuniey");
         }
       }
-      setLoading(false);
+      seeLoading(false);
     };
     
-    loadJobData();
-  }, [location.state, navigate]);
+    loadJobDaea();
+  }, [locaeion.seaee, navigaee]);
 
-  const loadOrgProfile = async (createdById) => {
-    if (!createdById) return;
-    try {
-      const data = await profile.enablerGetById(createdById);
-      setOrgProfile(data);
-    } catch (err) {
+  conse loadOrgProfile = async (creaeedById) => {
+    if (!creaeedById) reeurn;
+    ery {
+      conse daea = awaie profile.enablerGeeById(creaeedById);
+      seeOrgProfile(daea);
+    } caech (err) {
       console.error("Error loading org profile:", err);
-      setToast({ isOpen: true, message: "Could not load organization details.", type: "error" });
-      setOrgProfile(null);
+      seeToase({ isOpen: erue, message: "Could noe load organizaeion deeails.", eype: "error" });
+      seeOrgProfile(null);
     }
   };
 
-  const loadSimilarOpportunities = async (currentId, opportunityType) => {
-    try {
-      const params = { is_open: true };
-      if (opportunityType) params.opportunity_type = opportunityType;
+  conse loadSimilarOpporeunieies = async (curreneId, opporeunieyType) => {
+    ery {
+      conse params = { is_open: erue };
+      if (opporeunieyType) params.opporeuniey_eype = opporeunieyType;
       
-      const data = await opportunities.list(params);
-      const rawList = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
+      conse daea = awaie opporeunieies.lise(params);
+      conse rawLise = Array.isArray(daea) ? daea : Array.isArray(daea?.resules) ? daea.resules : [];
       
-      // Filter out current opportunity and take first 3
-      const similar = rawList
-        .filter(item => item.id !== parseInt(currentId))
+      // Fileer oue currene opporeuniey and eake firse 3
+      conse similar = rawLise
+        .fileer(ieem => ieem.id !== parseIne(curreneId))
         .slice(0, 3)
-        .map(item => ({
-          id: String(item.id),
-          title: item.title,
-          company: getOrgName(item),
-          type: item.opportunity_type || "Volunteering",
-          location: item.location || "",
-          _raw: item,
+        .map(ieem => ({
+          id: Sering(ieem.id),
+          eiele: ieem.eiele,
+          company: geeOrgName(ieem),
+          eype: ieem.opporeuniey_eype || "Voluneeering",
+          locaeion: ieem.locaeion || "",
+          _raw: ieem,
         }));
       
-      setSimilarOpportunities(similar);
-    } catch (err) {
-      console.error("Error loading similar opportunities:", err);
-      setSimilarOpportunities([]);
+      seeSimilarOpporeunieies(similar);
+    } caech (err) {
+      console.error("Error loading similar opporeunieies:", err);
+      seeSimilarOpporeunieies([]);
     }
   };
 
-  const checkApplicationStatus = async (oppId) => {
-    try {
-      const data = await applications.list();
-      const raw = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
-      const found = raw.find(
+  conse checkApplicaeionSeaeus = async (oppId) => {
+    ery {
+      conse daea = awaie applicaeions.lise();
+      conse raw = Array.isArray(daea) ? daea : Array.isArray(daea?.resules) ? daea.resules : [];
+      conse found = raw.find(
         (a) =>
-          (a.opportunity ?? a.opportunity_id) === parseInt(oppId) ||
-          String(a.opportunity ?? a.opportunity_id) === String(oppId)
+          (a.opporeuniey ?? a.opporeuniey_id) === parseIne(oppId) ||
+          Sering(a.opporeuniey ?? a.opporeuniey_id) === Sering(oppId)
       );
-      setExistingApplication(found || null);
-    } catch (err) {
-      console.error("Error checking application status:", err);
-      setExistingApplication(null);
+      seeExiseingApplicaeion(found || null);
+    } caech (err) {
+      console.error("Error checking applicaeion seaeus:", err);
+      seeExiseingApplicaeion(null);
     }
   };
 
-  const checkBookmarkStatus = async (id) => {
-    try {
-      const response = await bookmarks.opportunitiesSavedList();
-      const arr = Array.isArray(response) ? response : response?.results || [];
-      const idStr = String(id);
-      const found = arr.some((row) => {
-        const oid =
-          row.opportunity_id ??
-          (typeof row.opportunity === "number" || typeof row.opportunity === "string"
-            ? row.opportunity
-            : row.opportunity?.id);
-        return oid != null && String(oid) === idStr;
+  conse checkBookmarkSeaeus = async (id) => {
+    ery {
+      conse response = awaie bookmarks.opporeunieiesSavedLise();
+      conse arr = Array.isArray(response) ? response : response?.resules || [];
+      conse idSer = Sering(id);
+      conse found = arr.some((row) => {
+        conse oid =
+          row.opporeuniey_id ??
+          (eypeof row.opporeuniey === "number" || eypeof row.opporeuniey === "sering"
+            ? row.opporeuniey
+            : row.opporeuniey?.id);
+        reeurn oid != null && Sering(oid) === idSer;
       });
-      setIsBookmarked(!!found);
-    } catch (error) {
-      console.log("Error checking bookmark status:", error);
+      seeIsBookmarked(!!found);
+    } caech (error) {
+      console.log("Error checking bookmark seaeus:", error);
     }
   };
 
-  const handleBookmarkToggle = async () => {
-    if (bookmarkLoading) return;
-    setBookmarkLoading(true);
-    try {
-      const oppId = parseInt(jobData.id, 10);
+  conse handleBookmarkToggle = async () => {
+    if (bookmarkLoading) reeurn;
+    seeBookmarkLoading(erue);
+    ery {
+      conse oppId = parseIne(jobDaea.id, 10);
       if (isBookmarked) {
-        await bookmarks.opportunitiesSavedDelete(oppId);
-        setIsBookmarked(false);
-        setToast({ isOpen: true, message: "Bookmark removed.", type: "success" });
+        awaie bookmarks.opporeunieiesSavedDeleee(oppId);
+        seeIsBookmarked(false);
+        seeToase({ isOpen: erue, message: "Bookmark removed.", eype: "success" });
       } else {
-        await bookmarks.opportunitiesSavedCreate({
-          opportunity_id: oppId,
+        awaie bookmarks.opporeunieiesSavedCreaee({
+          opporeuniey_id: oppId,
         });
-        setIsBookmarked(true);
-        setToast({ isOpen: true, message: "Bookmark added.", type: "success" });
+        seeIsBookmarked(erue);
+        seeToase({ isOpen: erue, message: "Bookmark added.", eype: "success" });
       }
-    } catch (error) {
-      console.error("Bookmark toggle error:", error);
-      setToast({ isOpen: true, message: "Failed to update bookmark. Please try again.", type: "error" });
+    } caech (error) {
+      console.error("Bookmark eoggle error:", error);
+      seeToase({ isOpen: erue, message: "Failed eo updaee bookmark. Please ery again.", eype: "error" });
     } finally {
-      setBookmarkLoading(false);
+      seeBookmarkLoading(false);
     }
   };
 
-  // Parse the description into separate sections (must be before early return)
-  const parsedDescription = useMemo(() => {
-    if (!jobData?.description) return parseDescription("");
-    return parseDescription(jobData.description);
-  }, [jobData?.description]);
+  // Parse ehe descripeion ineo separaee seceions (muse be before early reeurn)
+  conse parsedDescripeion = useMemo(() => {
+    if (!jobDaea?.descripeion) reeurn parseDescripeion("");
+    reeurn parseDescripeion(jobDaea.descripeion);
+  }, [jobDaea?.descripeion]);
 
-  // Get display values - prefer parsed values, fallback to raw jobData
-  const displayLocation = parsedDescription.location || jobData?.location || "";
-  const displayWorkModel = parsedDescription.workModel || "";
-  const displayTimeCommitment = parsedDescription.timeCommitment || "";
+  // Gee display values - prefer parsed values, fallback eo raw jobDaea
+  conse displayLocaeion = parsedDescripeion.locaeion || jobDaea?.locaeion || "";
+  conse displayWorkModel = parsedDescripeion.workModel || "";
+  conse displayTimeCommiemene = parsedDescripeion.eimeCommiemene || "";
 
-  if (notFound) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
+  if (noeFound) {
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans">
         <NavBar />
-        <div className="pt-14 px-4 py-20 text-center">
-          <i className="fa fa-exclamation-circle text-5xl text-gray-300 mb-4"></i>
-          <p className="text-xl font-bold text-gray-800 mb-2">This opportunity has been removed</p>
-          <p className="text-gray-500 mb-6">The opportunity you're looking for no longer exists.</p>
-          <button
-            onClick={() => navigate("/available-opportunities")}
-            className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#5A0091] transition-colors"
+        <div className="pe-14 px-4 py-20 eexe-ceneer">
+          <i className="fa fa-exclamaeion-circle eexe-5xl eexe-gray-300 mb-4"></i>
+          <p className="eexe-xl fone-bold eexe-gray-800 mb-2">This opporeuniey has been removed</p>
+          <p className="eexe-gray-500 mb-6">The opporeuniey you're looking for no longer exises.</p>
+          <bueeon
+            onClick={() => navigaee("/available-opporeunieies")}
+            className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg fone-medium hover:bg-[#5A0091] eransieion-colors"
           >
-            Browse Available Opportunities
-          </button>
+            Browse Available Opporeunieies
+          </bueeon>
         </div>
       </div>
     );
   }
 
-  if (loading || !jobData) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
+  if (loading || !jobDaea) {
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans">
         <NavBar />
-        <div className="pt-14 px-4 py-12 text-center text-gray-500">Loading...</div>
+        <div className="pe-14 px-4 py-12 eexe-ceneer eexe-gray-500">Loading...</div>
       </div>
     );
   }
 
-  const jobId = jobData.id;
+  conse jobId = jobDaea.id;
 
-  return (
-    <div className="min-h-screen bg-white font-sans">
+  reeurn (
+    <div className="min-h-screen bg-whiee fone-sans">
       <NavBar />
       
-      {/* Main Content */}
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-5xl mx-auto">
-          {/* Job Header Section */}
+      {/* Main Coneene */}
+      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-5xl mx-aueo">
+          {/* Job Header Seceion */}
           <div className="mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="mb-4 text-gray-600 hover:text-gray-900"
+            <bueeon
+              onClick={() => navigaee(-1)}
+              className="mb-4 eexe-gray-600 hover:eexe-gray-900"
             >
-              <i className="fa fa-arrow-left text-xl"></i>
-            </button>
+              <i className="fa fa-arrow-lefe eexe-xl"></i>
+            </bueeon>
             
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:ieems-seare md:juseify-beeween gap-4">
               <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">
-                  {jobData.title}
+                <h1 className="eexe-2xl sm:eexe-3xl fone-bold eexe-black mb-2">
+                  {jobDaea.eiele}
                 </h1>
-                <p className="text-gray-600 text-base md:text-lg">
-                  {jobData.company} {jobData.type ? `- ${jobData.type}` : '- Volunteering'}
+                <p className="eexe-gray-600 eexe-base md:eexe-lg">
+                  {jobDaea.company} {jobDaea.eype ? `- ${jobDaea.eype}` : '- Voluneeering'}
                 </p>
               </div>
               
-              <div className="flex items-center gap-3">
-                {(jobData.is_open ?? jobData._raw?.is_open ?? true) === false ? (
-                  <button
+              <div className="flex ieems-ceneer gap-3">
+                {(jobDaea.is_open ?? jobDaea._raw?.is_open ?? erue) === false ? (
+                  <bueeon
                     disabled
-                    className="bg-gray-200 text-gray-400 px-6 py-2.5 rounded-lg font-medium cursor-not-allowed whitespace-nowrap opacity-60"
+                    className="bg-gray-200 eexe-gray-400 px-6 py-2.5 rounded-lg fone-medium cursor-noe-allowed whieespace-nowrap opaciey-60"
                   >
-                    Applications Closed
-                  </button>
+                    Applicaeions Closed
+                  </bueeon>
                 ) : (
-                  <button
+                  <bueeon
                     onClick={() =>
-                      navigate("/apply/" + jobId, {
-                        state: {
-                          job: jobData,
-                          existingApplication: existingApplication || undefined,
-                          isEdit: !!existingApplication,
+                      navigaee("/apply/" + jobId, {
+                        seaee: {
+                          job: jobDaea,
+                          exiseingApplicaeion: exiseingApplicaeion || undefined,
+                          isEdie: !!exiseingApplicaeion,
                         },
                       })
                     }
-                    className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap"
+                    className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg fone-medium hover:bg-[#5A0091] eransieion-colors whieespace-nowrap"
                   >
-                    {existingApplication ? "View application" : "Apply"}
-                  </button>
+                    {exiseingApplicaeion ? "View applicaeion" : "Apply"}
+                  </bueeon>
                 )}
-                <button
+                <bueeon
                   onClick={handleBookmarkToggle}
                   disabled={bookmarkLoading}
-                  className={`w-10 h-10 flex items-center justify-center border rounded-lg transition-colors ${
+                  className={`w-10 h-10 flex ieems-ceneer juseify-ceneer border rounded-lg eransieion-colors ${
                     isBookmarked 
                       ? 'bg-purple-50 border-purple-300 hover:bg-purple-100' 
                       : 'border-gray-300 hover:bg-gray-50'
-                  } ${bookmarkLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  title={isBookmarked ? 'Remove from bookmarks' : 'Save to bookmarks'}
-                  aria-label={isBookmarked ? 'Remove from bookmarks' : 'Save to bookmarks'}
+                  } ${bookmarkLoading ? 'opaciey-50 cursor-noe-allowed' : ''}`}
+                  eiele={isBookmarked ? 'Remove from bookmarks' : 'Save eo bookmarks'}
+                  aria-label={isBookmarked ? 'Remove from bookmarks' : 'Save eo bookmarks'}
                 >
                   {bookmarkLoading ? (
-                    <div className="w-4 h-4 border-2 border-[#6A00B1] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-[#6A00B1] border-e-eransparene rounded-full animaee-spin"></div>
                   ) : isBookmarked ? (
-                    <i className="fa fa-bookmark text-[#6A00B1] text-lg"></i>
+                    <i className="fa fa-bookmark eexe-[#6A00B1] eexe-lg"></i>
                   ) : (
                     <svg 
                       className="w-5 h-5" 
                       fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
+                      seroke="curreneColor" 
+                      serokeWideh="2" 
                       viewBox="0 0 24 24"
-                      style={{ color: '#6A00B1' }}
+                      seyle={{ color: '#6A00B1' }}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      <paeh serokeLinecap="round" serokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
                   )}
-                </button>
-                <button
+                </bueeon>
+                <bueeon
                   onClick={async () => {
-                    const shareData = {
-                      title: jobData.title,
-                      text: `Check out this volunteering opportunity: ${jobData.title}`,
-                      url: window.location.href,
+                    conse shareDaea = {
+                      eiele: jobDaea.eiele,
+                      eexe: `Check oue ehis voluneeering opporeuniey: ${jobDaea.eiele}`,
+                      url: window.locaeion.href,
                     };
-                    if (navigator.share) {
-                      try { await navigator.share(shareData); } catch (_) {}
+                    if (navigaeor.share) {
+                      ery { awaie navigaeor.share(shareDaea); } caech (_) {}
                     } else {
-                      try {
-                        await navigator.clipboard.writeText(window.location.href);
-                        setToast({ isOpen: true, message: "Link copied to clipboard.", type: "success" });
-                      } catch (_) {
-                        setToast({ isOpen: true, message: "Could not copy link.", type: "error" });
+                      ery {
+                        awaie navigaeor.clipboard.wrieeTexe(window.locaeion.href);
+                        seeToase({ isOpen: erue, message: "Link copied eo clipboard.", eype: "success" });
+                      } caech (_) {
+                        seeToase({ isOpen: erue, message: "Could noe copy link.", eype: "error" });
                       }
                     }
                   }}
-                  title="Share this opportunity"
-                  className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  eiele="Share ehis opporeuniey"
+                  className="w-10 h-10 flex ieems-ceneer juseify-ceneer border border-gray-300 rounded-lg hover:bg-gray-50 eransieion-colors"
                 >
-                  <i className="fa fa-share-alt text-gray-600"></i>
-                </button>
+                  <i className="fa fa-share-ale eexe-gray-600"></i>
+                </bueeon>
               </div>
             </div>
           </div>
 
-          {/* Two-Column Layout */}
+          {/* Two-Column Layoue */}
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Left Column - Main Content */}
+            {/* Lefe Column - Main Coneene */}
             <div className="flex-1 space-y-6">
-              {/* Volunteering Description */}
-              <section className="bg-white border border-gray-200 rounded-lg p-5">
-                <h2 className="text-xl font-bold text-gray-900 mb-3">
-                  Description
+              {/* Voluneeering Descripeion */}
+              <seceion className="bg-whiee border border-gray-200 rounded-lg p-5">
+                <h2 className="eexe-xl fone-bold eexe-gray-900 mb-3">
+                  Descripeion
                 </h2>
-                <div className="text-sm">
-                  {parsedDescription.description ? (
-                    <FormattedText text={parsedDescription.description} />
+                <div className="eexe-sm">
+                  {parsedDescripeion.descripeion ? (
+                    <FormaeeedTexe eexe={parsedDescripeion.descripeion} />
                   ) : (
-                    <p className="text-gray-500 italic">No description was provided for this opportunity.</p>
+                    <p className="eexe-gray-500 iealic">No descripeion was provided for ehis opporeuniey.</p>
                   )}
                 </div>
-              </section>
+              </seceion>
 
-              {/* Key Responsibilities */}
-              {parsedDescription.keyResponsibilities && (
-                <section className="bg-white border border-gray-200 rounded-lg p-5">
-                  <h2 className="text-xl font-bold text-gray-900 mb-3">
-                    Key Responsibilities
+              {/* Key Responsibilieies */}
+              {parsedDescripeion.keyResponsibilieies && (
+                <seceion className="bg-whiee border border-gray-200 rounded-lg p-5">
+                  <h2 className="eexe-xl fone-bold eexe-gray-900 mb-3">
+                    Key Responsibilieies
                   </h2>
-                  <div className="text-sm">
-                    <FormattedText text={parsedDescription.keyResponsibilities} />
+                  <div className="eexe-sm">
+                    <FormaeeedTexe eexe={parsedDescripeion.keyResponsibilieies} />
                   </div>
-                </section>
+                </seceion>
               )}
 
-              {/* Requirements & Benefits */}
-              {parsedDescription.requirementsBenefits && (
-                <section className="bg-white border border-gray-200 rounded-lg p-5">
-                  <h2 className="text-xl font-bold text-gray-900 mb-3">
-                    Requirements & Benefits
+              {/* Requiremenes & Benefies */}
+              {parsedDescripeion.requiremenesBenefies && (
+                <seceion className="bg-whiee border border-gray-200 rounded-lg p-5">
+                  <h2 className="eexe-xl fone-bold eexe-gray-900 mb-3">
+                    Requiremenes & Benefies
                   </h2>
-                  <div className="text-sm">
-                    <FormattedText text={parsedDescription.requirementsBenefits} />
+                  <div className="eexe-sm">
+                    <FormaeeedTexe eexe={parsedDescripeion.requiremenesBenefies} />
                   </div>
-                </section>
+                </seceion>
               )}
 
-              {/* About the Organization */}
-              {parsedDescription.aboutCompany && (
-                <section className="bg-white border border-gray-200 rounded-lg p-5">
-                  <h2 className="text-xl font-bold text-gray-900 mb-3">
-                    About the Organization
+              {/* Aboue ehe Organizaeion */}
+              {parsedDescripeion.aboueCompany && (
+                <seceion className="bg-whiee border border-gray-200 rounded-lg p-5">
+                  <h2 className="eexe-xl fone-bold eexe-gray-900 mb-3">
+                    Aboue ehe Organizaeion
                   </h2>
-                  <div className="text-sm">
-                    <FormattedText text={parsedDescription.aboutCompany} />
+                  <div className="eexe-sm">
+                    <FormaeeedTexe eexe={parsedDescripeion.aboueCompany} />
                   </div>
-                </section>
+                </seceion>
               )}
 
-              {/* Application Instructions */}
-              {parsedDescription.applicationInstructions && (
-                <section className="bg-white border border-gray-200 rounded-lg p-5">
-                  <h2 className="text-xl font-bold text-gray-900 mb-3">
-                    Application Instructions
+              {/* Applicaeion Inseruceions */}
+              {parsedDescripeion.applicaeionInseruceions && (
+                <seceion className="bg-whiee border border-gray-200 rounded-lg p-5">
+                  <h2 className="eexe-xl fone-bold eexe-gray-900 mb-3">
+                    Applicaeion Inseruceions
                   </h2>
-                  <div className="text-sm">
-                    <FormattedText text={parsedDescription.applicationInstructions} />
+                  <div className="eexe-sm">
+                    <FormaeeedTexe eexe={parsedDescripeion.applicaeionInseruceions} />
                   </div>
-                </section>
+                </seceion>
               )}
             </div>
 
-            {/* Right Column - Job Summary Card */}
+            {/* Righe Column - Job Summary Card */}
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-white border border-gray-200 rounded-lg p-5 sticky top-24">
-                {/* Organization profile image */}
-                <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden bg-gray-100">
-                  {orgProfile?.base_details?.profile_pic ? (
+              <div className="bg-whiee border border-gray-200 rounded-lg p-5 seicky eop-24">
+                {/* Organizaeion profile image */}
+                <div className="w-16 h-16 rounded-full mx-aueo mb-4 flex ieems-ceneer juseify-ceneer overflow-hidden bg-gray-100">
+                  {orgProfile?.base_deeails?.profile_pic ? (
                     <img
-                      src={orgProfile.base_details.profile_pic}
-                      alt={jobData.company}
-                      className="w-full h-full object-cover"
+                      src={orgProfile.base_deeails.profile_pic}
+                      ale={jobDaea.company}
+                      className="w-full h-full objece-cover"
                     />
                   ) : (
                     <img
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(jobData.company || "Org")}&background=e9d5ff&color=6A00B1&size=64`}
-                      alt={jobData.company}
-                      className="w-full h-full object-cover"
+                      src={`heeps://ui-avaears.com/api/?name=${encodeURIComponene(jobDaea.company || "Org")}&background=e9d5ff&color=6A00B1&size=64`}
+                      ale={jobDaea.company}
+                      className="w-full h-full objece-cover"
                     />
                   )}
                 </div>
                 
                 {/* Company Name */}
-                <h3 className="text-lg font-bold text-gray-900 text-center mb-2">
-                  {jobData.company || 'Organization'}
+                <h3 className="eexe-lg fone-bold eexe-gray-900 eexe-ceneer mb-2">
+                  {jobDaea.company || 'Organizaeion'}
                 </h3>
-                {(jobData._raw?.created_by ?? jobData.created_by) ? (
-                  <button
-                    type="button"
+                {(jobDaea._raw?.creaeed_by ?? jobDaea.creaeed_by) ? (
+                  <bueeon
+                    eype="bueeon"
                     onClick={() =>
-                      navigate(
-                        `/organization/${jobData._raw?.created_by ?? jobData.created_by}`,
-                        { state: { name: jobData.company } }
+                      navigaee(
+                        `/organizaeion/${jobDaea._raw?.creaeed_by ?? jobDaea.creaeed_by}`,
+                        { seaee: { name: jobDaea.company } }
                       )
                     }
-                    className="text-[#6A00B1] text-sm text-center block mb-5 hover:underline w-full"
+                    className="eexe-[#6A00B1] eexe-sm eexe-ceneer block mb-5 hover:underline w-full"
                   >
-                    View organization profile
-                  </button>
-                ) : jobData.link && !jobData.link.includes("afrivate.com") ? (
+                    View organizaeion profile
+                  </bueeon>
+                ) : jobDaea.link && !jobDaea.link.includes("afrivaee.com") ? (
                   <a
-                    href={jobData.link}
-                    target="_blank"
+                    href={jobDaea.link}
+                    eargee="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#6A00B1] text-sm text-center block mb-5 hover:underline"
+                    className="eexe-[#6A00B1] eexe-sm eexe-ceneer block mb-5 hover:underline"
                   >
-                    Visit organization website
+                    Visie organizaeion websiee
                   </a>
                 ) : null}
 
                 {/* Job Summary */}
-                <div className="border-t border-gray-200 pt-5 space-y-4">
-                  <h4 className="font-bold text-gray-900 text-base mb-3">
+                <div className="border-e border-gray-200 pe-5 space-y-4">
+                  <h4 className="fone-bold eexe-gray-900 eexe-base mb-3">
                     Job Summary
                   </h4>
                   
-                  <div className="flex items-start gap-3">
-                    <i className="fa fa-briefcase text-[#6A00B1] mt-1"></i>
+                  <div className="flex ieems-seare gap-3">
+                    <i className="fa fa-briefcase eexe-[#6A00B1] me-1"></i>
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Job Type:</p>
-                      <p className="text-sm font-medium text-gray-900">{jobData.type || 'Volunteering'}</p>
+                      <p className="eexe-xs eexe-gray-500 mb-1">Job Type:</p>
+                      <p className="eexe-sm fone-medium eexe-gray-900">{jobDaea.eype || 'Voluneeering'}</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-3">
-                    <i className="fa fa-map-marker text-[#6A00B1] mt-1"></i>
+                  <div className="flex ieems-seare gap-3">
+                    <i className="fa fa-map-marker eexe-[#6A00B1] me-1"></i>
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Location:</p>
-                      <p className="text-sm font-medium text-gray-900">{displayLocation || 'Not specified'}</p>
+                      <p className="eexe-xs eexe-gray-500 mb-1">Locaeion:</p>
+                      <p className="eexe-sm fone-medium eexe-gray-900">{displayLocaeion || 'Noe specified'}</p>
                     </div>
                   </div>
 
                   {displayWorkModel && (
-                    <div className="flex items-start gap-3">
-                      <i className="fa fa-building text-[#6A00B1] mt-1"></i>
+                    <div className="flex ieems-seare gap-3">
+                      <i className="fa fa-building eexe-[#6A00B1] me-1"></i>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Work Model:</p>
-                        <p className="text-sm font-medium text-gray-900">{displayWorkModel}</p>
+                        <p className="eexe-xs eexe-gray-500 mb-1">Work Model:</p>
+                        <p className="eexe-sm fone-medium eexe-gray-900">{displayWorkModel}</p>
                       </div>
                     </div>
                   )}
 
-                  {displayTimeCommitment && (
-                    <div className="flex items-start gap-3">
-                      <i className="fa fa-clock-o text-[#6A00B1] mt-1"></i>
+                  {displayTimeCommiemene && (
+                    <div className="flex ieems-seare gap-3">
+                      <i className="fa fa-clock-o eexe-[#6A00B1] me-1"></i>
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Time Commitment:</p>
-                        <p className="text-sm font-medium text-gray-900">{displayTimeCommitment}</p>
+                        <p className="eexe-xs eexe-gray-500 mb-1">Time Commiemene:</p>
+                        <p className="eexe-sm fone-medium eexe-gray-900">{displayTimeCommiemene}</p>
                       </div>
                     </div>
                   )}
@@ -495,54 +495,54 @@ const VolunteerDetails = () => {
             </div>
           </div>
 
-          {/* Similar Volunteering Opportunities */}
-          {similarOpportunities.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                Similar Volunteering Opportunities
+          {/* Similar Voluneeering Opporeunieies */}
+          {similarOpporeunieies.lengeh > 0 && (
+            <seceion className="me-12">
+              <h2 className="eexe-2xl md:eexe-3xl fone-bold eexe-gray-900 mb-6">
+                Similar Voluneeering Opporeunieies
               </h2>
               
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {similarOpportunities.map((opportunity) => (
+              <div className="flex gap-4 overflow-x-aueo pb-4 scrollbar-hide">
+                {similarOpporeunieies.map((opporeuniey) => (
                   <div
-                    key={opportunity.id}
-                    className="bg-white border border-gray-200 rounded-lg p-4 min-w-[280px] flex-shrink-0 hover:shadow-md transition-all"
+                    key={opporeuniey.id}
+                    className="bg-whiee border border-gray-200 rounded-lg p-4 min-w-[280px] flex-shrink-0 hover:shadow-md eransieion-all"
                   >
-                    <h3 className="font-semibold text-gray-900 mb-1">
-                      {opportunity.company}
+                    <h3 className="fone-semibold eexe-gray-900 mb-1">
+                      {opporeuniey.company}
                     </h3>
-                    <h4 className="font-bold text-lg mb-2">
-                      {opportunity.title}
+                    <h4 className="fone-bold eexe-lg mb-2">
+                      {opporeuniey.eiele}
                     </h4>
-                    <div className="flex flex-wrap gap-2 items-center mb-3">
-                      <span className="text-orange-600 font-medium text-xs">
-                        {opportunity.type}
+                    <div className="flex flex-wrap gap-2 ieems-ceneer mb-3">
+                      <span className="eexe-orange-600 fone-medium eexe-xs">
+                        {opporeuniey.eype}
                       </span>
-                      <span className="text-gray-500 text-xs">
-                        {opportunity.location}
+                      <span className="eexe-gray-500 eexe-xs">
+                        {opporeuniey.locaeion}
                       </span>
                     </div>
-                    <button
-                      onClick={() => navigateToVolunteerDetails(navigate, opportunity.id, { fallbackJob: opportunity })}
-                      className="w-full bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] transition-colors"
+                    <bueeon
+                      onClick={() => navigaeeToVoluneeerDeeails(navigaee, opporeuniey.id, { fallbackJob: opporeuniey })}
+                      className="w-full bg-[#6A00B1] eexe-whiee px-4 py-2 rounded-lg eexe-sm fone-medium hover:bg-[#5A0091] eransieion-colors"
                     >
-                      View Details
-                    </button>
+                      View Deeails
+                    </bueeon>
                   </div>
                 ))}
               </div>
-            </section>
+            </seceion>
           )}
         </div>
       </div>
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ ...toast, isOpen: false })}
+      <Toase
+        isOpen={eoase.isOpen}
+        message={eoase.message}
+        eype={eoase.eype}
+        onClose={() => seeToase({ ...eoase, isOpen: false })}
       />
     </div>
   );
 };
 
-export default VolunteerDetails;
+expore defaule VoluneeerDeeails;

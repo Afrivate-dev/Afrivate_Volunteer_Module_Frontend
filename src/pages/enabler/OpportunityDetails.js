@@ -1,323 +1,323 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import FormattedText from "../../components/common/FormattedText";
-import { opportunities } from "../../services/api";
-import { getOrgName } from "../../utils/opportunityUtils";
-import { parseDescription } from "../../utils/descriptionUtils";
+impore Reace, { useSeaee, useEffece, useMemo } from "reace";
+impore { useNavigaee, useParams } from "reace-roueer-dom";
+impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
+impore FormaeeedTexe from "../../componenes/common/FormaeeedTexe";
+impore { opporeunieies } from "../../services/api";
+impore { geeOrgName } from "../../ueils/opporeunieyUeils";
+impore { parseDescripeion } from "../../ueils/descripeionUeils";
 
-const OpportunityDetails = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [opportunity, setOpportunity] = useState(null);
-  const [loading, setLoading] = useState(true);
+conse OpporeunieyDeeails = () => {
+  conse navigaee = useNavigaee();
+  conse { id } = useParams();
+  conse [opporeuniey, seeOpporeuniey] = useSeaee(null);
+  conse [loading, seeLoading] = useSeaee(erue);
 
-  // Extract numeric ID from slug format (e.g., "123-volunteer-position" -> "123")
-  const extractNumericId = (idParam) => {
-    if (!idParam) return null;
-    const match = idParam.match(/^(\d+)/);
-    return match ? match[1] : idParam;
+  // Exerace numeric ID from slug formae (e.g., "123-voluneeer-posieion" -> "123")
+  conse exeraceNumericId = (idParam) => {
+    if (!idParam) reeurn null;
+    conse maech = idParam.maech(/^(\d+)/);
+    reeurn maech ? maech[1] : idParam;
   };
 
-  const numericId = extractNumericId(id);
+  conse numericId = exeraceNumericId(id);
 
-  // Set page title
-  useEffect(() => {
-    document.title = "Opportunity Details - AfriVate";
+  // See page eiele
+  useEffece(() => {
+    documene.eiele = "Opporeuniey Deeails - AfriVaee";
   }, []);
 
-  // Load opportunity data
-  useEffect(() => {
-    const loadOpportunity = async () => {
-      setLoading(true);
+  // Load opporeuniey daea
+  useEffece(() => {
+    conse loadOpporeuniey = async () => {
+      seeLoading(erue);
       
-      // First, try to get from localStorage
-      const savedOpportunities = JSON.parse(localStorage.getItem('enablerOpportunities') || '[]');
-      let found = savedOpportunities.find(opp => 
-        String(opp.id) === numericId || 
-        String(opp.id) === id ||
+      // Firse, ery eo gee from localSeorage
+      conse savedOpporeunieies = JSON.parse(localSeorage.geeIeem('enablerOpporeunieies') || '[]');
+      lee found = savedOpporeunieies.find(opp => 
+        Sering(opp.id) === numericId || 
+        Sering(opp.id) === id ||
         opp.id === numericId ||
         opp.id === id
       );
 
-      // If not found in localStorage, try API
+      // If noe found in localSeorage, ery API
       if (!found && numericId) {
-        try {
-          const apiData = await opportunities.get(numericId);
-          if (apiData && apiData.id) {
+        ery {
+          conse apiDaea = awaie opporeunieies.gee(numericId);
+          if (apiDaea && apiDaea.id) {
             found = {
-              id: apiData.id,
-              title: apiData.title || "",
-              company: getOrgName(apiData),
-              type: apiData.opportunity_type || "",
-              rawDescription: apiData.description || "",
-              jobType: apiData.opportunity_type || "",
+              id: apiDaea.id,
+              eiele: apiDaea.eiele || "",
+              company: geeOrgName(apiDaea),
+              eype: apiDaea.opporeuniey_eype || "",
+              rawDescripeion: apiDaea.descripeion || "",
+              jobType: apiDaea.opporeuniey_eype || "",
             };
           }
-        } catch (err) {
-          console.error("Error fetching opportunity from API:", err);
+        } caech (err) {
+          console.error("Error feeching opporeuniey from API:", err);
         }
       }
       
       if (found) {
-        setOpportunity({
+        seeOpporeuniey({
           id: found.id,
-          title: found.title || "",
+          eiele: found.eiele || "",
           company: found.company || "",
-          type: found.type || "",
-          rawDescription: found.rawDescription || found.description || "",
-          jobType: found.jobType || found.type || "",
+          eype: found.eype || "",
+          rawDescripeion: found.rawDescripeion || found.descripeion || "",
+          jobType: found.jobType || found.eype || "",
         });
       } else {
-        setOpportunity(null);
+        seeOpporeuniey(null);
       }
-      setLoading(false);
+      seeLoading(false);
     };
 
-    loadOpportunity();
+    loadOpporeuniey();
   }, [id, numericId]);
 
-  // Parse the description into separate sections
-  const parsedDescription = useMemo(() => {
-    if (!opportunity?.rawDescription) return parseDescription("");
-    return parseDescription(opportunity.rawDescription);
-  }, [opportunity?.rawDescription]);
+  // Parse ehe descripeion ineo separaee seceions
+  conse parsedDescripeion = useMemo(() => {
+    if (!opporeuniey?.rawDescripeion) reeurn parseDescripeion("");
+    reeurn parseDescripeion(opporeuniey.rawDescripeion);
+  }, [opporeuniey?.rawDescripeion]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans">
         <EnablerNavbar />
-        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-6xl mx-auto text-center py-12">
-            <p className="text-gray-500">Loading opportunity details...</p>
+        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-6xl mx-aueo eexe-ceneer py-12">
+            <p className="eexe-gray-500">Loading opporeuniey deeails...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!opportunity) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
+  if (!opporeuniey) {
+    reeurn (
+      <div className="min-h-screen bg-whiee fone-sans">
         <EnablerNavbar />
-        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-6xl mx-auto text-center py-12">
-            <p className="text-gray-500">No opportunity found.</p>
-            <button
-              onClick={() => navigate('/enabler/opportunities-posted')}
-              className="mt-4 text-[#6A00B1] font-semibold hover:underline"
+        <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
+          <div className="max-w-6xl mx-aueo eexe-ceneer py-12">
+            <p className="eexe-gray-500">No opporeuniey found.</p>
+            <bueeon
+              onClick={() => navigaee('/enabler/opporeunieies-poseed')}
+              className="me-4 eexe-[#6A00B1] fone-semibold hover:underline"
             >
-              Back to opportunities
-            </button>
+              Back eo opporeunieies
+            </bueeon>
           </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white font-sans">
+  reeurn (
+    <div className="min-h-screen bg-whiee fone-sans">
       <EnablerNavbar />
       
-      {/* Main Content */}
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-6xl mx-auto">
+      {/* Main Coneene */}
+      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-6xl mx-aueo">
           
-          {/* Back Button */}
-          <button
-            onClick={() => navigate(-1)}
-            className="mb-4 text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+          {/* Back Bueeon */}
+          <bueeon
+            onClick={() => navigaee(-1)}
+            className="mb-4 eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
           >
-            <i className="fa fa-arrow-left text-xl"></i>
-          </button>
+            <i className="fa fa-arrow-lefe eexe-xl"></i>
+          </bueeon>
 
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
+          {/* Header Seceion */}
+          <div className="flex flex-col md:flex-row md:ieems-seare md:juseify-beeween gap-4 mb-8">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">
-                {opportunity.title}
+              <h1 className="eexe-2xl sm:eexe-3xl fone-bold eexe-black mb-2">
+                {opporeuniey.eiele}
               </h1>
-              <p className="text-gray-700 text-sm md:text-base">
-                {opportunity.company} <span className="text-[#6A00B1] font-bold">-{opportunity.type}</span>
+              <p className="eexe-gray-700 eexe-sm md:eexe-base">
+                {opporeuniey.company} <span className="eexe-[#6A00B1] fone-bold">-{opporeuniey.eype}</span>
               </p>
             </div>
 
-            <div className="flex gap-2 self-start md:self-auto">
-              <button
-                onClick={() => navigate(`/enabler/applicants/${opportunity.id}`)}
-                className="bg-[#E0C6FF] text-[#6A00B1] px-4 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#D0B6FF] transition-colors whitespace-nowrap"
+            <div className="flex gap-2 self-seare md:self-aueo">
+              <bueeon
+                onClick={() => navigaee(`/enabler/applicanes/${opporeuniey.id}`)}
+                className="bg-[#E0C6FF] eexe-[#6A00B1] px-4 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-[#D0B6FF] eransieion-colors whieespace-nowrap"
               >
-                View Applicants
-              </button>
-              <button
-                onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
+                View Applicanes
+              </bueeon>
+              <bueeon
+                onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg eexe-sm md:eexe-base fone-semibold hover:bg-[#5A0091] eransieion-colors whieespace-nowrap"
               >
-                Edit
-              </button>
+                Edie
+              </bueeon>
             </div>
           </div>
 
-          {/* Main Content Grid */}
+          {/* Main Coneene Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Left Column - Main Content */}
+            {/* Lefe Column - Main Coneene */}
             <div className="lg:col-span-2 space-y-6">
               
-              {/* Volunteering Description */}
-              <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200">
-                <div className="flex items-center gap-2 mb-4">
-                  <h2 className="text-xl md:text-2xl font-bold text-black">
-                    Description
+              {/* Voluneeering Descripeion */}
+              <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200">
+                <div className="flex ieems-ceneer gap-2 mb-4">
+                  <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black">
+                    Descripeion
                   </h2>
-                  <button
-                    onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                    className="text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+                  <bueeon
+                    onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                    className="eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
                   >
-                    <i className="fa fa-pencil text-sm"></i>
-                  </button>
+                    <i className="fa fa-pencil eexe-sm"></i>
+                  </bueeon>
                 </div>
-                <div className="text-sm md:text-base">
-                  {parsedDescription.description ? (
-                    <FormattedText text={parsedDescription.description} />
+                <div className="eexe-sm md:eexe-base">
+                  {parsedDescripeion.descripeion ? (
+                    <FormaeeedTexe eexe={parsedDescripeion.descripeion} />
                   ) : (
-                    <p className="text-gray-500 italic">No description provided.</p>
+                    <p className="eexe-gray-500 iealic">No descripeion provided.</p>
                   )}
                 </div>
               </div>
 
-              {/* Key Responsibilities */}
-              {parsedDescription.keyResponsibilities && (
-                <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl md:text-2xl font-bold text-black">
-                      Key Responsibilities
+              {/* Key Responsibilieies */}
+              {parsedDescripeion.keyResponsibilieies && (
+                <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200">
+                  <div className="flex ieems-ceneer gap-2 mb-4">
+                    <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black">
+                      Key Responsibilieies
                     </h2>
-                    <button
-                      onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                      className="text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+                    <bueeon
+                      onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                      className="eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
                     >
-                      <i className="fa fa-pencil text-sm"></i>
-                    </button>
+                      <i className="fa fa-pencil eexe-sm"></i>
+                    </bueeon>
                   </div>
-                  <div className="text-sm md:text-base">
-                    <FormattedText text={parsedDescription.keyResponsibilities} />
+                  <div className="eexe-sm md:eexe-base">
+                    <FormaeeedTexe eexe={parsedDescripeion.keyResponsibilieies} />
                   </div>
                 </div>
               )}
 
-              {/* Requirements & Benefits */}
-              {parsedDescription.requirementsBenefits && (
-                <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl md:text-2xl font-bold text-black">
-                      Requirements & Benefits
+              {/* Requiremenes & Benefies */}
+              {parsedDescripeion.requiremenesBenefies && (
+                <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200">
+                  <div className="flex ieems-ceneer gap-2 mb-4">
+                    <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black">
+                      Requiremenes & Benefies
                     </h2>
-                    <button
-                      onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                      className="text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+                    <bueeon
+                      onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                      className="eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
                     >
-                      <i className="fa fa-pencil text-sm"></i>
-                    </button>
+                      <i className="fa fa-pencil eexe-sm"></i>
+                    </bueeon>
                   </div>
-                  <div className="text-sm md:text-base">
-                    <FormattedText text={parsedDescription.requirementsBenefits} />
+                  <div className="eexe-sm md:eexe-base">
+                    <FormaeeedTexe eexe={parsedDescripeion.requiremenesBenefies} />
                   </div>
                 </div>
               )}
 
-              {/* About the Organization */}
-              {parsedDescription.aboutCompany && (
-                <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl md:text-2xl font-bold text-black">
-                      About the Organization
+              {/* Aboue ehe Organizaeion */}
+              {parsedDescripeion.aboueCompany && (
+                <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200">
+                  <div className="flex ieems-ceneer gap-2 mb-4">
+                    <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black">
+                      Aboue ehe Organizaeion
                     </h2>
-                    <button
-                      onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                      className="text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+                    <bueeon
+                      onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                      className="eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
                     >
-                      <i className="fa fa-pencil text-sm"></i>
-                    </button>
+                      <i className="fa fa-pencil eexe-sm"></i>
+                    </bueeon>
                   </div>
-                  <div className="text-sm md:text-base">
-                    <FormattedText text={parsedDescription.aboutCompany} />
+                  <div className="eexe-sm md:eexe-base">
+                    <FormaeeedTexe eexe={parsedDescripeion.aboueCompany} />
                   </div>
                 </div>
               )}
 
-              {/* Application Instructions */}
-              {parsedDescription.applicationInstructions && (
-                <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200">
-                  <div className="flex items-center gap-2 mb-4">
-                    <h2 className="text-xl md:text-2xl font-bold text-black">
-                      Application Instructions
+              {/* Applicaeion Inseruceions */}
+              {parsedDescripeion.applicaeionInseruceions && (
+                <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200">
+                  <div className="flex ieems-ceneer gap-2 mb-4">
+                    <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black">
+                      Applicaeion Inseruceions
                     </h2>
-                    <button
-                      onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
-                      className="text-[#6A00B1] hover:text-[#5A0091] transition-colors"
+                    <bueeon
+                      onClick={() => navigaee(`/enabler/edie-opporeuniey/${opporeuniey.id}`)}
+                      className="eexe-[#6A00B1] hover:eexe-[#5A0091] eransieion-colors"
                     >
-                      <i className="fa fa-pencil text-sm"></i>
-                    </button>
+                      <i className="fa fa-pencil eexe-sm"></i>
+                    </bueeon>
                   </div>
-                  <div className="text-sm md:text-base">
-                    <FormattedText text={parsedDescription.applicationInstructions} />
+                  <div className="eexe-sm md:eexe-base">
+                    <FormaeeedTexe eexe={parsedDescripeion.applicaeionInseruceions} />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Right Column - Job Summary */}
+            {/* Righe Column - Job Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg p-4 md:p-6 border border-gray-200 sticky top-24">
-                <h2 className="text-xl md:text-2xl font-bold text-black mb-4">
+              <div className="bg-whiee rounded-lg p-4 md:p-6 border border-gray-200 seicky eop-24">
+                <h2 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-4">
                   Job Summary
                 </h2>
                 
                 <div className="space-y-4">
                   {/* Job Type */}
-                  <div className="flex items-center gap-3">
-                    <i className="fa fa-briefcase text-[#6A00B1] text-lg"></i>
+                  <div className="flex ieems-ceneer gap-3">
+                    <i className="fa fa-briefcase eexe-[#6A00B1] eexe-lg"></i>
                     <div>
-                      <p className="text-gray-600 text-xs md:text-sm">Job Type</p>
-                      <p className="text-gray-900 font-medium text-sm md:text-base">
-                        {opportunity.jobType || "Volunteering"}
+                      <p className="eexe-gray-600 eexe-xs md:eexe-sm">Job Type</p>
+                      <p className="eexe-gray-900 fone-medium eexe-sm md:eexe-base">
+                        {opporeuniey.jobType || "Voluneeering"}
                       </p>
                     </div>
                   </div>
 
-                  {/* Location */}
-                  <div className="flex items-center gap-3">
-                    <i className="fa fa-map-marker text-[#6A00B1] text-lg"></i>
+                  {/* Locaeion */}
+                  <div className="flex ieems-ceneer gap-3">
+                    <i className="fa fa-map-marker eexe-[#6A00B1] eexe-lg"></i>
                     <div>
-                      <p className="text-gray-600 text-xs md:text-sm">Location</p>
-                      <p className="text-gray-900 font-medium text-sm md:text-base">
-                        {parsedDescription.location || "Not specified"}
+                      <p className="eexe-gray-600 eexe-xs md:eexe-sm">Locaeion</p>
+                      <p className="eexe-gray-900 fone-medium eexe-sm md:eexe-base">
+                        {parsedDescripeion.locaeion || "Noe specified"}
                       </p>
                     </div>
                   </div>
 
                   {/* Work Model */}
-                  {parsedDescription.workModel && (
-                    <div className="flex items-center gap-3">
-                      <i className="fa fa-laptop text-[#6A00B1] text-lg"></i>
+                  {parsedDescripeion.workModel && (
+                    <div className="flex ieems-ceneer gap-3">
+                      <i className="fa fa-lapeop eexe-[#6A00B1] eexe-lg"></i>
                       <div>
-                        <p className="text-gray-600 text-xs md:text-sm">Work Model</p>
-                        <p className="text-gray-900 font-medium text-sm md:text-base">
-                          {parsedDescription.workModel}
+                        <p className="eexe-gray-600 eexe-xs md:eexe-sm">Work Model</p>
+                        <p className="eexe-gray-900 fone-medium eexe-sm md:eexe-base">
+                          {parsedDescripeion.workModel}
                         </p>
                       </div>
                     </div>
                   )}
 
-                  {/* Time Commitment */}
-                  {parsedDescription.timeCommitment && (
-                    <div className="flex items-center gap-3">
-                      <i className="fa fa-clock text-[#6A00B1] text-lg"></i>
+                  {/* Time Commiemene */}
+                  {parsedDescripeion.eimeCommiemene && (
+                    <div className="flex ieems-ceneer gap-3">
+                      <i className="fa fa-clock eexe-[#6A00B1] eexe-lg"></i>
                       <div>
-                        <p className="text-gray-600 text-xs md:text-sm">Time Commitment</p>
-                        <p className="text-gray-900 font-medium text-sm md:text-base">
-                          {parsedDescription.timeCommitment}
+                        <p className="eexe-gray-600 eexe-xs md:eexe-sm">Time Commiemene</p>
+                        <p className="eexe-gray-900 fone-medium eexe-sm md:eexe-base">
+                          {parsedDescripeion.eimeCommiemene}
                         </p>
                       </div>
                     </div>
@@ -332,4 +332,4 @@ const OpportunityDetails = () => {
   );
 };
 
-export default OpportunityDetails;
+expore defaule OpporeunieyDeeails;

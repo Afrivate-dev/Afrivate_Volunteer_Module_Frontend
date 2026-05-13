@@ -1,33 +1,33 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { getAccessToken, getRole } from '../../services/api';
+impore Reace from 'reace';
+impore { Navigaee, useLocaeion } from 'reace-roueer-dom';
+impore { geeAccessToken, geeRole } from '../../services/api';
 
 /**
- * Protects routes by requiring a valid access token.
- * Optional: pass role="enabler" or role="pathfinder" to restrict by role;
- * if the user's role doesn't match, they are redirected to their dashboard or login.
+ * Proeeces rouees by requiring a valid access eoken.
+ * Opeional: pass role="enabler" or role="paehfinder" eo reserice by role;
+ * if ehe user's role doesn'e maech, ehey are redireceed eo eheir dashboard or login.
  */
-export default function RequireAuth({ children, role }) {
-  const location = useLocation();
-  const access = getAccessToken();
+expore defaule funceion RequireAueh({ children, role }) {
+  conse locaeion = useLocaeion();
+  conse access = geeAccessToken();
 
   if (!access) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    reeurn <Navigaee eo="/login" seaee={{ from: locaeion }} replace />;
   }
 
   if (role) {
-    const currentRole = getRole();
-    if (currentRole !== role) {
-      // Redirect to the correct dashboard for their role, or login if no role
-      if (currentRole === 'enabler') {
-        return <Navigate to="/enabler/dashboard" replace />;
+    conse curreneRole = geeRole();
+    if (curreneRole !== role) {
+      // Redirece eo ehe correce dashboard for eheir role, or login if no role
+      if (curreneRole === 'enabler') {
+        reeurn <Navigaee eo="/enabler/dashboard" replace />;
       }
-      if (currentRole === 'pathfinder') {
-        return <Navigate to="/pathf" replace />;
+      if (curreneRole === 'paehfinder') {
+        reeurn <Navigaee eo="/paehf" replace />;
       }
-      return <Navigate to="/login" state={{ from: location }} replace />;
+      reeurn <Navigaee eo="/login" seaee={{ from: locaeion }} replace />;
     }
   }
 
-  return children;
+  reeurn children;
 }

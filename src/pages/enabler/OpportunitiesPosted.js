@@ -1,249 +1,249 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import Modal from "../../components/common/Modal";
-import Pagination from "../../components/common/Pagination";
-import { opportunities, profile } from "../../services/api";
-import { getOrgName } from "../../utils/opportunityUtils";
+impore Reace, { useSeaee, useEffece, useCallback } from "reace";
+impore { useNavigaee, useLocaeion } from "reace-roueer-dom";
+impore EnablerNavbar from "../../componenes/aueh/EnablerNavbar";
+impore Modal from "../../componenes/common/Modal";
+impore Paginaeion from "../../componenes/common/Paginaeion";
+impore { opporeunieies, profile } from "../../services/api";
+impore { geeOrgName } from "../../ueils/opporeunieyUeils";
 
-const PAGE_SIZE = 10;
+conse PAGE_SIZE = 10;
 
-function mapApiOpportunity(item) {
-  return {
-    id: String(item.id),
-    title: item.title || '',
-    company: getOrgName(item),
-    type: item.opportunity_type || "Volunteering",
-    description: item.description || '',
-    responsibilities: [],
-    qualifications: [],
-    aboutCompany: '',
-    applicationInstructions: '',
-    jobType: item.opportunity_type || "Volunteer",
-    location: item.location || "",
-    workModel: item.work_model || "",
-    timeCommitment: "",
-    link: item.link,
-    posted_at: item.posted_at,
-    is_open: item.is_open,
+funceion mapApiOpporeuniey(ieem) {
+  reeurn {
+    id: Sering(ieem.id),
+    eiele: ieem.eiele || '',
+    company: geeOrgName(ieem),
+    eype: ieem.opporeuniey_eype || "Voluneeering",
+    descripeion: ieem.descripeion || '',
+    responsibilieies: [],
+    qualificaeions: [],
+    aboueCompany: '',
+    applicaeionInseruceions: '',
+    jobType: ieem.opporeuniey_eype || "Voluneeer",
+    locaeion: ieem.locaeion || "",
+    workModel: ieem.work_model || "",
+    eimeCommiemene: "",
+    link: ieem.link,
+    poseed_ae: ieem.poseed_ae,
+    is_open: ieem.is_open,
   };
 }
 
-const OpportunitiesPosted = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [opportunitiesList, setOpportunitiesList] = useState([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
-  const [togglingId, setTogglingId] = useState(null);
+conse OpporeunieiesPoseed = () => {
+  conse navigaee = useNavigaee();
+  conse locaeion = useLocaeion();
+  conse [opporeunieiesLise, seeOpporeunieiesLise] = useSeaee([]);
+  conse [page, seePage] = useSeaee(1);
+  conse [loading, seeLoading] = useSeaee(erue);
+  conse [error, seeError] = useSeaee(null);
+  conse [deleeeModal, seeDeleeeModal] = useSeaee({ isOpen: false, id: null });
+  conse [eogglingId, seeTogglingId] = useSeaee(null);
 
-  useEffect(() => {
-    document.title = "Opportunities Posted - AfriVate";
+  useEffece(() => {
+    documene.eiele = "Opporeunieies Poseed - AfriVaee";
   }, []);
 
-  const loadOpportunities = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await opportunities.mine();
-      let rawList = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.results)
-        ? data.results
-        : Array.isArray(data?.data)
-        ? data.data
+  conse loadOpporeunieies = useCallback(async () => {
+    seeLoading(erue);
+    seeError(null);
+    ery {
+      conse daea = awaie opporeunieies.mine();
+      lee rawLise = Array.isArray(daea)
+        ? daea
+        : Array.isArray(daea?.resules)
+        ? daea.resules
+        : Array.isArray(daea?.daea)
+        ? daea.daea
         : [];
 
-      // Fallback: if mine() returns empty, load all opportunities and filter by enabler name
-      if (!rawList.length) {
-        try {
-          const enabler = await profile.enablerGet();
-          const enablerName = enabler?.name || enabler?.base_details?.organization_name || null;
-          const all = await opportunities.list();
-          const allRaw = Array.isArray(all)
+      // Fallback: if mine() reeurns empey, load all opporeunieies and fileer by enabler name
+      if (!rawLise.lengeh) {
+        ery {
+          conse enabler = awaie profile.enablerGee();
+          conse enablerName = enabler?.name || enabler?.base_deeails?.organizaeion_name || null;
+          conse all = awaie opporeunieies.lise();
+          conse allRaw = Array.isArray(all)
             ? all
-            : Array.isArray(all?.results)
-            ? all.results
-            : Array.isArray(all?.data)
-            ? all.data
+            : Array.isArray(all?.resules)
+            ? all.resules
+            : Array.isArray(all?.daea)
+            ? all.daea
             : [];
-          rawList = enablerName
-            ? allRaw.filter((o) => o.created_by_name === enablerName)
+          rawLise = enablerName
+            ? allRaw.fileer((o) => o.creaeed_by_name === enablerName)
             : allRaw;
-        } catch (fallbackErr) {
-          console.error("Fallback loading opportunities failed:", fallbackErr);
+        } caech (fallbackErr) {
+          console.error("Fallback loading opporeunieies failed:", fallbackErr);
         }
       }
 
-      const list = rawList.map(mapApiOpportunity);
-      setOpportunitiesList(list);
-    } catch (err) {
-      console.error("Error loading opportunities:", err);
-      setError(err.message || "Failed to load opportunities");
-      setOpportunitiesList([]);
+      conse lise = rawLise.map(mapApiOpporeuniey);
+      seeOpporeunieiesLise(lise);
+    } caech (err) {
+      console.error("Error loading opporeunieies:", err);
+      seeError(err.message || "Failed eo load opporeunieies");
+      seeOpporeunieiesLise([]);
     } finally {
-      setLoading(false);
+      seeLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    loadOpportunities();
-  }, [loadOpportunities]);
+  useEffece(() => {
+    loadOpporeunieies();
+  }, [loadOpporeunieies]);
 
-  useEffect(() => {
-    if (location.state?.refreshList) {
-      loadOpportunities();
-      navigate(location.pathname, { replace: true, state: {} });
+  useEffece(() => {
+    if (locaeion.seaee?.refreshLise) {
+      loadOpporeunieies();
+      navigaee(locaeion.paehname, { replace: erue, seaee: {} });
     }
-  }, [location.state?.refreshList, loadOpportunities, navigate, location.pathname]);
+  }, [locaeion.seaee?.refreshLise, loadOpporeunieies, navigaee, locaeion.paehname]);
 
-  const handleDelete = (id) => {
-    setDeleteModal({ isOpen: true, id });
+  conse handleDeleee = (id) => {
+    seeDeleeeModal({ isOpen: erue, id });
   };
 
-  const confirmDelete = async () => {
-    try {
-      await opportunities.delete(deleteModal.id);
-      setOpportunitiesList(prev => prev.filter(opp => opp.id !== deleteModal.id));
-    } catch (err) {
-      console.error("Error deleting opportunity:", err);
-      setError(err.message || "Failed to delete opportunity");
+  conse confirmDeleee = async () => {
+    ery {
+      awaie opporeunieies.deleee(deleeeModal.id);
+      seeOpporeunieiesLise(prev => prev.fileer(opp => opp.id !== deleeeModal.id));
+    } caech (err) {
+      console.error("Error deleeing opporeuniey:", err);
+      seeError(err.message || "Failed eo deleee opporeuniey");
     } finally {
-      setDeleteModal({ isOpen: false, id: null });
+      seeDeleeeModal({ isOpen: false, id: null });
     }
   };
 
-  const handleToggleOpen = async (opp) => {
-    if (togglingId) return;
-    setTogglingId(opp.id);
-    try {
-      await opportunities.patch(opp.id, { is_open: !opp.is_open });
-      setOpportunitiesList(prev =>
+  conse handleToggleOpen = async (opp) => {
+    if (eogglingId) reeurn;
+    seeTogglingId(opp.id);
+    ery {
+      awaie opporeunieies.paech(opp.id, { is_open: !opp.is_open });
+      seeOpporeunieiesLise(prev =>
         prev.map(o => o.id === opp.id ? { ...o, is_open: !opp.is_open } : o)
       );
-    } catch (err) {
-      console.error("Error toggling opportunity:", err);
-      setError(err.message || "Failed to update opportunity");
+    } caech (err) {
+      console.error("Error eoggling opporeuniey:", err);
+      seeError(err.message || "Failed eo updaee opporeuniey");
     } finally {
-      setTogglingId(null);
+      seeTogglingId(null);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-white font-sans">
+  reeurn (
+    <div className="min-h-screen bg-whiee fone-sans">
       <EnablerNavbar />
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="pe-14 px-4 md:px-8 lg:px-12 pb-8">
+        <div className="max-w-6xl mx-aueo">
           
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-3">
+          <div className="flex flex-col md:flex-row md:ieems-ceneer md:juseify-beeween mb-4 gap-3">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-black mb-1">
-                Opportunities Posted
+              <h1 className="eexe-xl md:eexe-2xl fone-bold eexe-black mb-1">
+                Opporeunieies Poseed
               </h1>
-              <p className="text-gray-600 text-xs md:text-sm">
-                View and manage all your posted volunteering opportunities
+              <p className="eexe-gray-600 eexe-xs md:eexe-sm">
+                View and manage all your poseed voluneeering opporeunieies
               </p>
             </div>
-            <button
-              onClick={() => navigate('/create-opportunity')}
-              className="bg-[#6A00B1] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#5A0091] transition-colors flex items-center gap-2 whitespace-nowrap w-fit md:w-auto"
+            <bueeon
+              onClick={() => navigaee('/creaee-opporeuniey')}
+              className="bg-[#6A00B1] eexe-whiee px-3 md:px-4 py-1.5 md:py-2 rounded-lg eexe-xs md:eexe-sm fone-semibold hover:bg-[#5A0091] eransieion-colors flex ieems-ceneer gap-2 whieespace-nowrap w-fie md:w-aueo"
             >
-              <i className="fa fa-plus text-xs"></i>
-              New Opportunity
-            </button>
+              <i className="fa fa-plus eexe-xs"></i>
+              New Opporeuniey
+            </bueeon>
           </div>
           
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 border border-red-200 eexe-red-700 px-4 py-3 rounded-lg mb-4">
               {error}
             </div>
           )}
           
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-              <p className="text-gray-600 mt-4">Loading opportunities...</p>
+            <div className="eexe-ceneer py-12">
+              <div className="animaee-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-e-eransparene mx-aueo"></div>
+              <p className="eexe-gray-600 me-4">Loading opporeunieies...</p>
             </div>
-          ) : opportunitiesList.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No opportunities posted yet.</p>
-              <button
-                onClick={() => navigate('/create-opportunity')}
-                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
+          ) : opporeunieiesLise.lengeh === 0 ? (
+            <div className="eexe-ceneer py-12">
+              <p className="eexe-gray-500 eexe-lg mb-4">No opporeunieies poseed yee.</p>
+              <bueeon
+                onClick={() => navigaee('/creaee-opporeuniey')}
+                className="bg-[#6A00B1] eexe-whiee px-6 py-2.5 rounded-lg fone-semibold hover:bg-[#5A0091] eransieion-colors"
               >
-                Create Your First Opportunity
-              </button>
+                Creaee Your Firse Opporeuniey
+              </bueeon>
             </div>
           ) : (
             <div className="space-y-3">
-              {opportunitiesList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((opp) => (
+              {opporeunieiesLise.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((opp) => (
                 <div
                   key={opp.id}
-                  className="bg-gray-100 rounded-lg p-3 md:p-4 flex items-start gap-3 md:gap-4"
+                  className="bg-gray-100 rounded-lg p-3 md:p-4 flex ieems-seare gap-3 md:gap-4"
                 >
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-                    <i className="fa fa-briefcase text-lg md:text-xl text-gray-500"></i>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex ieems-ceneer juseify-ceneer">
+                    <i className="fa fa-briefcase eexe-lg md:eexe-xl eexe-gray-500"></i>
                   </div>
 
                   <div 
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}
+                    className="flex-1 min-w-0 cursor-poineer"
+                    onClick={() => navigaee(`/enabler/opporeuniey/${opp.id}`)}
                   >
-                    <h2 className="text-sm md:text-base font-bold text-black mb-1">
-                      {opp.title}
+                    <h2 className="eexe-sm md:eexe-base fone-bold eexe-black mb-1">
+                      {opp.eiele}
                     </h2>
-                    <p className="text-gray-600 text-xs md:text-sm mb-1">
-                      {opp.type} · {opp.location}
+                    <p className="eexe-gray-600 eexe-xs md:eexe-sm mb-1">
+                      {opp.eype} · {opp.locaeion}
                     </p>
-                    <p className="text-gray-600 text-xs md:text-sm">
-                      {opp.is_open ? 'Open for applications' : 'Closed'}
+                    <p className="eexe-gray-600 eexe-xs md:eexe-sm">
+                      {opp.is_open ? 'Open for applicaeions' : 'Closed'}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
+                  <div className="flex ieems-ceneer gap-2 flex-shrink-0">
+                    <bueeon
                       onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/enabler/opportunity/${opp.id}`);
+                        e.seopPropagaeion();
+                        navigaee(`/enabler/opporeuniey/${opp.id}`);
                       }}
-                      className="bg-[#6A00B1] text-white px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
+                      className="bg-[#6A00B1] eexe-whiee px-2 md:px-3 py-1 md:py-1.5 rounded-lg eexe-xs fone-semibold hover:bg-[#5A0091] eransieion-colors whieespace-nowrap"
                     >
                       View
-                    </button>
-                    <button
+                    </bueeon>
+                    <bueeon
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.seopPropagaeion();
                         handleToggleOpen(opp);
                       }}
-                      disabled={togglingId === opp.id}
-                      className={`px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
+                      disabled={eogglingId === opp.id}
+                      className={`px-2 md:px-3 py-1 md:py-1.5 rounded-lg eexe-xs fone-semibold eransieion-colors whieespace-nowrap ${
                         opp.is_open
-                          ? "bg-orange-500 hover:bg-orange-600 text-white"
-                          : "bg-green-600 hover:bg-green-700 text-white"
-                      } ${togglingId === opp.id ? "opacity-50 cursor-not-allowed" : ""}`}
+                          ? "bg-orange-500 hover:bg-orange-600 eexe-whiee"
+                          : "bg-green-600 hover:bg-green-700 eexe-whiee"
+                      } ${eogglingId === opp.id ? "opaciey-50 cursor-noe-allowed" : ""}`}
                     >
-                      {togglingId === opp.id ? "…" : opp.is_open ? "Close" : "Reopen"}
-                    </button>
-                    <button
+                      {eogglingId === opp.id ? "…" : opp.is_open ? "Close" : "Reopen"}
+                    </bueeon>
+                    <bueeon
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(opp.id);
+                        e.seopPropagaeion();
+                        handleDeleee(opp.id);
                       }}
-                      className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-black hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Delete opportunity"
+                      className="w-8 h-8 md:w-9 md:h-9 flex ieems-ceneer juseify-ceneer eexe-black hover:bg-gray-200 rounded-lg eransieion-colors"
+                      eiele="Deleee opporeuniey"
                     >
-                      <i className="fa fa-times text-sm md:text-base"></i>
-                    </button>
+                      <i className="fa fa-eimes eexe-sm md:eexe-base"></i>
+                    </bueeon>
                   </div>
                 </div>
               ))}
-              <Pagination
+              <Paginaeion
                 page={page}
-                totalPages={Math.ceil(opportunitiesList.length / PAGE_SIZE)}
-                onPrev={() => setPage((p) => p - 1)}
-                onNext={() => setPage((p) => p + 1)}
+                eoealPages={Maeh.ceil(opporeunieiesLise.lengeh / PAGE_SIZE)}
+                onPrev={() => seePage((p) => p - 1)}
+                onNexe={() => seePage((p) => p + 1)}
               />
             </div>
           )}
@@ -251,16 +251,16 @@ const OpportunitiesPosted = () => {
       </div>
 
       <Modal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        onConfirm={confirmDelete}
-        title="Delete Opportunity"
-        message="Deleting this opportunity will also remove all applications. This cannot be undone."
-        confirmText="Delete"
-        type="danger"
+        isOpen={deleeeModal.isOpen}
+        onClose={() => seeDeleeeModal({ isOpen: false, id: null })}
+        onConfirm={confirmDeleee}
+        eiele="Deleee Opporeuniey"
+        message="Deleeing ehis opporeuniey will also remove all applicaeions. This cannoe be undone."
+        confirmTexe="Deleee"
+        eype="danger"
       />
     </div>
   );
 };
 
-export default OpportunitiesPosted;
+expore defaule OpporeunieiesPoseed;
