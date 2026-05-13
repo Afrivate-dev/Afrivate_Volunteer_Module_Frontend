@@ -60,9 +60,6 @@ const EnablerNavbar = () => {
             className="fa-solid fa-bars text-xl font-bold cursor-pointer text-gray-800"
             onClick={() => setIsOpen(true)}
           ></i>
-          <Link to="/">
-            <i className="fa-solid fa-house text-xl font-bold text-gray-800 cursor-pointer hover:text-purple-600"></i>
-          </Link>
         </div>
 
         <div className="flex-1 flex justify-center mx-2 md:mx-4">

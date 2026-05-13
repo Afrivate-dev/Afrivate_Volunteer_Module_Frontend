@@ -18,6 +18,7 @@ const VolunteerDetails = () => {
   const [existingApplication, setExistingApplication] = useState(null);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     document.title = "Volunteer Details - AfriVate";
@@ -58,6 +59,7 @@ const VolunteerDetails = () => {
                 type: data.opportunity_type || "Volunteering",
                 location: data.location || "",
                 description: data.description,
+                is_open: data.is_open,
                 created_by: data.created_by,
                 link: data.link,
                 _raw: data,
@@ -70,8 +72,12 @@ const VolunteerDetails = () => {
             }
           } catch (err) {
             console.error("Error loading opportunity:", err);
-            setToast({ isOpen: true, message: "Unable to load opportunity details. Please try again.", type: "error" });
-            navigate("/available-opportunities");
+            if (err.status === 404) {
+              setNotFound(true);
+            } else {
+              setToast({ isOpen: true, message: "Unable to load opportunity details. Please try again.", type: "error" });
+              navigate("/available-opportunities");
+            }
           }
         } else {
           navigate("/opportunity");
@@ -193,6 +199,25 @@ const VolunteerDetails = () => {
   const displayWorkModel = parsedDescription.workModel || "";
   const displayTimeCommitment = parsedDescription.timeCommitment || "";
 
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-white font-sans">
+        <NavBar />
+        <div className="pt-14 px-4 py-20 text-center">
+          <i className="fa fa-exclamation-circle text-5xl text-gray-300 mb-4"></i>
+          <p className="text-xl font-bold text-gray-800 mb-2">This opportunity has been removed</p>
+          <p className="text-gray-500 mb-6">The opportunity you're looking for no longer exists.</p>
+          <button
+            onClick={() => navigate("/available-opportunities")}
+            className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#5A0091] transition-colors"
+          >
+            Browse Available Opportunities
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading || !jobData) {
     return (
       <div className="min-h-screen bg-white font-sans">
@@ -231,20 +256,29 @@ const VolunteerDetails = () => {
               </div>
               
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() =>
-                    navigate("/apply/" + jobId, {
-                      state: {
-                        job: jobData,
-                        existingApplication: existingApplication || undefined,
-                        isEdit: !!existingApplication,
-                      },
-                    })
-                  }
-                  className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap"
-                >
-                  {existingApplication ? "View application" : "Apply"}
-                </button>
+                {(jobData.is_open ?? jobData._raw?.is_open ?? true) === false ? (
+                  <button
+                    disabled
+                    className="bg-gray-200 text-gray-400 px-6 py-2.5 rounded-lg font-medium cursor-not-allowed whitespace-nowrap opacity-60"
+                  >
+                    Applications Closed
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      navigate("/apply/" + jobId, {
+                        state: {
+                          job: jobData,
+                          existingApplication: existingApplication || undefined,
+                          isEdit: !!existingApplication,
+                        },
+                      })
+                    }
+                    className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap"
+                  >
+                    {existingApplication ? "View application" : "Apply"}
+                  </button>
+                )}
                 <button
                   onClick={handleBookmarkToggle}
                   disabled={bookmarkLoading}

@@ -37,6 +37,7 @@ const OpportunitiesPosted = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
+  const [togglingId, setTogglingId] = useState(null);
 
   useEffect(() => {
     document.title = "Opportunities Posted - AfriVate";
@@ -111,6 +112,22 @@ const OpportunitiesPosted = () => {
       setError(err.message || "Failed to delete opportunity");
     } finally {
       setDeleteModal({ isOpen: false, id: null });
+    }
+  };
+
+  const handleToggleOpen = async (opp) => {
+    if (togglingId) return;
+    setTogglingId(opp.id);
+    try {
+      await opportunities.patch(opp.id, { is_open: !opp.is_open });
+      setOpportunitiesList(prev =>
+        prev.map(o => o.id === opp.id ? { ...o, is_open: !opp.is_open } : o)
+      );
+    } catch (err) {
+      console.error("Error toggling opportunity:", err);
+      setError(err.message || "Failed to update opportunity");
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -198,6 +215,20 @@ const OpportunitiesPosted = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        handleToggleOpen(opp);
+                      }}
+                      disabled={togglingId === opp.id}
+                      className={`px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
+                        opp.is_open
+                          ? "bg-orange-500 hover:bg-orange-600 text-white"
+                          : "bg-green-600 hover:bg-green-700 text-white"
+                      } ${togglingId === opp.id ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {togglingId === opp.id ? "…" : opp.is_open ? "Close" : "Reopen"}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleDelete(opp.id);
                       }}
                       className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-black hover:bg-gray-200 rounded-lg transition-colors"
@@ -224,7 +255,7 @@ const OpportunitiesPosted = () => {
         onClose={() => setDeleteModal({ isOpen: false, id: null })}
         onConfirm={confirmDelete}
         title="Delete Opportunity"
-        message="Are you sure you want to delete this opportunity?"
+        message="Deleting this opportunity will also remove all applications. This cannot be undone."
         confirmText="Delete"
         type="danger"
       />
