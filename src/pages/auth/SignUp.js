@@ -128,7 +128,7 @@ const SignUp = () => {
     <div className="min-h-screen bg-white flex flex-col justify-center px-5 py-2 sm:px-8 lg:px-10">
       <div className="sm:px-20 max-w-md w-full mx-auto bg-[rgba(246,246,246)] p-8 rounded-lg shadow">
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-[#45005A] to-[#B678FF] bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-[#6A00B1] to-[#B678FF] bg-clip-text text-transparent mb-2">
             Sign Up
           </h1>
           <p className="text-center text-gray-600 text-sm">
@@ -178,7 +178,7 @@ const SignUp = () => {
 
           <div className="relative flex w-full bg-gray-200 rounded-2xl overflow-hidden">
             <div
-              className={`absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-[#45005A] to-[#B678FF] transition-transform duration-300 rounded-2xl ${
+              className={`absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-[#6A00B1] to-[#B678FF] transition-transform duration-300 rounded-2xl ${
                 formData.userType === "pathfinder"
                   ? "translate-x-0"
                   : "translate-x-full"

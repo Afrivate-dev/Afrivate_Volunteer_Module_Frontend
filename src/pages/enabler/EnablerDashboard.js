@@ -92,7 +92,7 @@ const EnablerDashboard = () => {
       <div className="min-h-screen bg-white font-sans flex items-center justify-center">
         <EnablerNavbar />
         <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto mb-4" />
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>

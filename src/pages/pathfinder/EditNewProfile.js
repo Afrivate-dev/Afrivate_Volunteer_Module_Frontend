@@ -362,7 +362,7 @@ const EditNewProfile = () => {
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
         <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
       </div>
@@ -399,7 +399,7 @@ const EditNewProfile = () => {
               </div>
             )}
             {redirectCountdown !== null && redirectCountdown > 0 && (
-              <div className="bg-purple-50 border border-purple-200 text-purple-700 px-4 py-3 rounded-lg mb-4 text-sm">
+              <div className="bg-purple-50 border border-purple-200 text-[#6A00B1] px-4 py-3 rounded-lg mb-4 text-sm">
                 Redirecting to your dashboard in {redirectCountdown}s…
               </div>
             )}

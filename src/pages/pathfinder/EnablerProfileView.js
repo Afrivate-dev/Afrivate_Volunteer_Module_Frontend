@@ -177,7 +177,7 @@ const [loading, setLoading] = useState(true);
           </button>
 
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-[#6A00B1] to-[#8B2FA8] rounded-3xl p-6 md:p-8 text-white mb-8">
+          <div className="bg-gradient-to-r from-[#6A00B1] to-[#6A00B1] rounded-3xl p-6 md:p-8 text-white mb-8">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
               {/* Profile Picture */}
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center border-4 border-white/30">

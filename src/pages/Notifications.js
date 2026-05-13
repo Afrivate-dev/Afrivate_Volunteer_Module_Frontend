@@ -140,7 +140,7 @@ const Notifications = () => {
                 return (
                   <div
                     key={item.id}
-                    className={`rounded-[30px] border p-5 ${isUnread ? 'border-purple-600 bg-purple-50' : 'border-gray-200 bg-white'}`}
+                    className={`rounded-[30px] border p-5 ${isUnread ? 'border-[#6A00B1] bg-purple-50' : 'border-gray-200 bg-white'}`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="min-w-0">

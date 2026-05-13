@@ -36,7 +36,7 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">
+        <h1 className="text-3xl font-bold text-center text-[#6A00B1] mb-2">
           Forgot Password
         </h1>
         <p className="text-center text-gray-600 mb-8">
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
           <div className="mt-6 text-center">
             <Link
               to="/login"
-              className="text-sm font-medium text-purple-600 hover:text-purple-500"
+              className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1]"
             >
               Go Back To Login
             </Link>

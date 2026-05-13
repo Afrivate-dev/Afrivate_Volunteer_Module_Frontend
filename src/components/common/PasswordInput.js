@@ -22,7 +22,7 @@ const PasswordInput = ({
       {label && (
         <label
           htmlFor={name}
-          className="block text-purple-900 font-medium mb-2"
+          className="block text-[#6A00B1] font-medium mb-2"
         >
           {label}
         </label>
@@ -39,7 +39,7 @@ const PasswordInput = ({
           className={`
             w-full px-4 py-3 pr-12 rounded-lg bg-white
             border ${error ? 'border-red-500' : 'border-0'}
-            focus:outline-none focus:ring-2 focus:ring-purple-500
+            focus:outline-none focus:ring-2 focus:ring-[#6A00B1]
             placeholder-gray-400
           `}
           {...props}
@@ -47,7 +47,7 @@ const PasswordInput = ({
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded p-1"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] rounded p-1"
           title={visible ? 'Hide password' : 'Show password'}
           aria-label={visible ? 'Hide password' : 'Show password'}
         >

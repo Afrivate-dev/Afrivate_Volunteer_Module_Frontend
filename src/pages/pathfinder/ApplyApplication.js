@@ -417,7 +417,7 @@ const ApplyApplication = () => {
                   </div>
                   <button
                     type="button"
-                    className="text-purple-600 text-xs hover:underline"
+                    className="text-[#6A00B1] text-xs hover:underline"
                     onClick={() => setProfileCvUrl(null)}
                   >
                     Replace

@@ -91,7 +91,7 @@ const EnablerProfile = () => {
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
         <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
       </div>
@@ -268,7 +268,7 @@ const EnablerProfile = () => {
             {/* Documents List */}
             {credentialsLoading ? (
               <div className="text-center py-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#6A00B1] border-t-transparent mx-auto"></div>
               </div>
             ) : credentials && credentials.length > 0 ? (
               <div className="space-y-3">

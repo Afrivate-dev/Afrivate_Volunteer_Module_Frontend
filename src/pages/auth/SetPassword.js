@@ -61,7 +61,7 @@ const SetPassword = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">Set a password</h1>
+        <h1 className="text-3xl font-bold text-center text-[#6A00B1] mb-2">Set a password</h1>
         <p className="text-center text-gray-600 mb-8 text-sm">
           Add a password to your account so you can sign in with email as well as Google.
         </p>
@@ -89,7 +89,7 @@ const SetPassword = () => {
             </Button>
           </form>
           <p className="mt-6 text-center text-sm text-gray-600">
-            <Link to={getRole() === "enabler" ? "/enabler/settings" : "/pathf"} className="text-purple-600">
+            <Link to={getRole() === "enabler" ? "/enabler/settings" : "/pathf"} className="text-[#6A00B1]">
               Skip for now
             </Link>
           </p>

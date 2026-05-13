@@ -409,7 +409,7 @@ const Settings = () => {
       <div className="min-h-screen bg-white font-sans">
         <EnablerNavbar />
         <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading settings...</p>
         </div>
       </div>
@@ -807,7 +807,7 @@ const Settings = () => {
           </div>
 
           <div className="border-t border-gray-200 pt-8">
-            <h2 className="text-xl md:text-2xl font-bold text-[#45005A] mb-2">Password</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-[#6A00B1] mb-2">Password</h2>
             <p className="text-gray-700 text-sm md:text-base mb-3">
               Signed in with Google? Add a password so you can sign in with email too.
             </p>

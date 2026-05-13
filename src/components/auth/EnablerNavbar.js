@@ -67,7 +67,7 @@ const EnablerNavbar = () => {
         </div>
 
         <div className="flex items-center">
-          <Link to="/notifications" className="text-gray-800 hover:text-purple-600 relative">
+          <Link to="/notifications" className="text-gray-800 hover:text-[#6A00B1] relative">
             <i className="fa-regular fa-bell text-xl" role="img" aria-label="Notifications"></i>
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">

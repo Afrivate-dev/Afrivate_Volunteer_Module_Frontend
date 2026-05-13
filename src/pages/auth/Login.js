@@ -133,10 +133,10 @@ const Login = () => {
         <div className="bg-[rgba(246,246,246)]  py-8 px-7 rounded-[15px] shadow sm:rounded-[15px] sm:px-20">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-center text-[#45005A] mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center text-[#6A00B1] mb-2">
             Login
           </h1>
-          <p className="text-center text-[#45005A] font-medium">
+          <p className="text-center text-[#6A00B1] font-medium">
             Welcome back! Sign in to continue your volunteering journey
           </p>
         </div>
@@ -188,7 +188,7 @@ const Login = () => {
                   type="checkbox"
                   checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#6A00B1] focus:ring-[#6A00B1] border-gray-300 rounded"
                 />
                 <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-900">
                   Remember me
@@ -197,7 +197,7 @@ const Login = () => {
 
               <Link
                 to="/forgot-password"
-                className="text-sm font-medium text-purple-600 hover:text-purple-500"
+                className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1]"
               >
                 Forgot Password?
               </Link>
@@ -219,7 +219,7 @@ const Login = () => {
             Don't have an account?{' '}
             <Link
               to="/signup"
-              className="font-medium text-purple-600 hover:text-purple-500"
+              className="font-medium text-[#6A00B1] hover:text-[#6A00B1]"
             >
               Sign Up
             </Link>

@@ -279,10 +279,10 @@ const CreateOpportunity = () => {
             {currentStep === 4 && (
               <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-purple-900">Preview & Verify Information</h3>
+                  <h3 className="text-lg font-bold text-[#6A00B1]">Preview & Verify Information</h3>
                   <button
                     onClick={() => setCurrentStep(3)}
-                    className="text-purple-600 hover:text-purple-800"
+                    className="text-[#6A00B1] hover:text-[#6A00B1]"
                   >
                     <i className="fa fa-edit"></i> Edit
                   </button>
@@ -290,59 +290,59 @@ const CreateOpportunity = () => {
                 <div className="space-y-3 text-sm">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <span className="text-purple-700 font-medium">Opportunity Type:</span>
+                      <span className="text-[#6A00B1] font-medium">Opportunity Type:</span>
                       <p className="text-gray-800 capitalize">{formData.opportunityType}</p>
                     </div>
                     <div>
-                      <span className="text-purple-700 font-medium">Title:</span>
+                      <span className="text-[#6A00B1] font-medium">Title:</span>
                       <p className="text-gray-800">{formData.title}</p>
                     </div>
                   </div>
                   <div>
-                    <span className="text-purple-700 font-medium">Description:</span>
+                    <span className="text-[#6A00B1] font-medium">Description:</span>
                     <p className="text-gray-800">{formData.description}</p>
                   </div>
                   {formData.keyResponsibilities && (
                     <div>
-                      <span className="text-purple-700 font-medium">Key Responsibilities:</span>
+                      <span className="text-[#6A00B1] font-medium">Key Responsibilities:</span>
                       <p className="text-gray-800 whitespace-pre-wrap">{formData.keyResponsibilities}</p>
                     </div>
                   )}
                   {formData.requirementsBenefits && (
                     <div>
-                      <span className="text-purple-700 font-medium">Requirements & Benefits:</span>
+                      <span className="text-[#6A00B1] font-medium">Requirements & Benefits:</span>
                       <p className="text-gray-800 whitespace-pre-wrap">{formData.requirementsBenefits}</p>
                     </div>
                   )}
                   {formData.aboutCompany && (
                     <div>
-                      <span className="text-purple-700 font-medium">About the Organization:</span>
+                      <span className="text-[#6A00B1] font-medium">About the Organization:</span>
                       <p className="text-gray-800">{formData.aboutCompany}</p>
                     </div>
                   )}
                   {formData.applicationInstructions && (
                     <div>
-                      <span className="text-purple-700 font-medium">Application Instructions:</span>
+                      <span className="text-[#6A00B1] font-medium">Application Instructions:</span>
                       <p className="text-gray-800">{formData.applicationInstructions}</p>
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <span className="text-purple-700 font-medium">Work Model:</span>
+                      <span className="text-[#6A00B1] font-medium">Work Model:</span>
                       <p className="text-gray-800">{formData.workModel}</p>
                     </div>
                     <div>
-                      <span className="text-purple-700 font-medium">Location:</span>
+                      <span className="text-[#6A00B1] font-medium">Location:</span>
                       <p className="text-gray-800">{formData.location}</p>
                     </div>
                     <div>
-                      <span className="text-purple-700 font-medium">Time Commitment:</span>
+                      <span className="text-[#6A00B1] font-medium">Time Commitment:</span>
                       <p className="text-gray-800">{formData.timeCommitment}</p>
                     </div>
                   </div>
                   {customQuestions.length > 0 && (
                     <div>
-                      <span className="text-purple-700 font-medium">Custom Questions ({customQuestions.length}):</span>
+                      <span className="text-[#6A00B1] font-medium">Custom Questions ({customQuestions.length}):</span>
                       <ul className="text-gray-800 mt-1">
                         {customQuestions.map((q, index) => (
                           <li key={q.id} className="ml-4 list-disc">{q.question}</li>

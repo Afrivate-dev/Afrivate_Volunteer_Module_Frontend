@@ -11,8 +11,8 @@ const Button = ({
   const baseStyles = 'px-6 py-3 rounded-full font-medium transition duration-300';
   const variantStyles = {
     primary: 'bg-[#6A00B1] text-white hover:opacity-90 ',
-    secondary: 'border-2 border-purple-600 text-purple-600 hover:bg-purple-50',
-    link: 'text-purple-600 hover:text-purple-700 bg-transparent'
+    secondary: 'border-2 border-[#6A00B1] text-[#6A00B1] hover:bg-purple-50',
+    link: 'text-[#6A00B1] hover:text-[#6A00B1] bg-transparent'
   };
 
   return (

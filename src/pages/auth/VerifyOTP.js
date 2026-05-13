@@ -137,7 +137,7 @@ const VerifyOTP = () => {
     return (
       <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-          <h1 className="text-2xl font-bold text-purple-900 mb-2">Verification</h1>
+          <h1 className="text-2xl font-bold text-[#6A00B1] mb-2">Verification</h1>
           <p className="text-gray-600 mb-6">
             {flow === "registration"
               ? "Start from the sign-up page to receive a code."
@@ -145,7 +145,7 @@ const VerifyOTP = () => {
           </p>
           <Link
             to={flow === "registration" ? "/signup" : "/forgot-password"}
-            className="text-purple-600 font-medium hover:text-purple-500"
+            className="text-[#6A00B1] font-medium hover:text-[#6A00B1]"
           >
             {flow === "registration" ? "Go to Sign up" : "Go to Forgot Password"}
           </Link>
@@ -157,7 +157,7 @@ const VerifyOTP = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-purple-900 mb-2">{title}</h1>
+        <h1 className="text-3xl font-bold text-center text-[#6A00B1] mb-2">{title}</h1>
         <p className="text-center text-gray-600 mb-2">{subtitle}</p>
         <p className="text-center text-sm text-gray-500 mb-8">{email}</p>
       </div>
@@ -176,7 +176,7 @@ const VerifyOTP = () => {
                   type="button"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="text-sm font-medium text-purple-600 hover:text-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isResending ? "Resending..." : "Resend code"}
                 </button>
@@ -188,7 +188,7 @@ const VerifyOTP = () => {
                   type="button"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="text-sm font-medium text-purple-600 hover:text-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isResending ? "Resending..." : "Resend code"}
                 </button>
@@ -196,7 +196,7 @@ const VerifyOTP = () => {
             )}
 
             <div className="text-center">
-              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-purple-600">
+              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-[#6A00B1]">
                 Back to login
               </Link>
             </div>
