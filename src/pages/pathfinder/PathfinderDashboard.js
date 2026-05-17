@@ -138,12 +138,11 @@ const PathfinderDashboard = () => {
 
           {/* Search Bar */}
           <div className="relative w-full max-w-xl mx-auto">
-            <div className="absolute inset-0 bg-[rgba(217,217,217,0.4)] border border-[#E9E9E9] rounded-2xl"></div>
-            <i className="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <i className="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"></i>
             <input
               type="text"
               placeholder="Search opportunities..."
-              className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+              className="w-full pl-9 pr-3 py-2.5 bg-[rgba(217,217,217,0.4)] border border-[#E9E9E9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm relative z-20"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
