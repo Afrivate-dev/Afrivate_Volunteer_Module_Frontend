@@ -215,6 +215,7 @@ const PathfinderDashboard = () => {
                           job: item,
                           existingApplication: app,
                           isEdit: true,
+                          from: "/dashboard",
                         },
                       });
                     } else {
@@ -254,6 +255,7 @@ const PathfinderDashboard = () => {
                             job: item,
                             existingApplication: app,
                             isEdit: true,
+                            from: "/dashboard",
                           },
                         });
                       } else {

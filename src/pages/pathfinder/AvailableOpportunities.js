@@ -163,6 +163,7 @@ const AvailableOpportunities = () => {
           job: item,
           existingApplication: appliedMap[item.id],
           isEdit: true,
+          from: "/available-opportunities",
         },
       });
     } else {
@@ -170,6 +171,7 @@ const AvailableOpportunities = () => {
       navigate(`/apply/${item.id}`, {
         state: {
           job: item,
+          from: "/available-opportunities",
         },
       });
     }

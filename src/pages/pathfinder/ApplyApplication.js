@@ -110,15 +110,6 @@ const ApplyApplication = () => {
         motivation: parsed.motivation || (app.cover_letter || p.motivation),
       }));
 
-      // If we have custom questions, try to map answers by matching question text
-      if (customQuestions.length > 0) {
-        const parsedQ = parsed.qaByText || {};
-        const mapped = {};
-        customQuestions.forEach((q) => {
-          if (parsedQ[q.question]) mapped[q.id] = parsedQ[q.question];
-        });
-        if (Object.keys(mapped).length) setCustomAnswers(mapped);
-      }
     }
     if (job) {
       setOpportunity({
@@ -189,6 +180,22 @@ const ApplyApplication = () => {
     setLoading(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opportunityId, location.state]);
+
+  // Runs after customQuestions state is populated so the pre-fill check sees the real array.
+  useEffect(() => {
+    if (!location.state?.isEdit) return;
+    if (customQuestions.length === 0) return;
+    const job = location.state?.job;
+    if (!job) return;
+    const rawDesc = job._raw?.description || job.description || "";
+    const parsed = parseDescription(rawDesc);
+    const parsedQ = parsed.qaByText || {};
+    const mapped = {};
+    customQuestions.forEach((q) => {
+      if (parsedQ[q.question]) mapped[q.id] = parsedQ[q.question];
+    });
+    if (Object.keys(mapped).length) setCustomAnswers(mapped);
+  }, [customQuestions, location.state]);
 
   useEffect(() => {
     document.title = isEditMode ? "View Application - AfriVate" : "Apply - AfriVate";
@@ -311,7 +318,9 @@ const ApplyApplication = () => {
         await applications.create(applicationData);
         setToast({ isOpen: true, message: "Application submitted successfully!", type: "success" });
       }
-      setTimeout(() => navigate("/my-applications"), 1500);
+      setTimeout(() => navigate("/my-applications", {
+        state: { from: location.state?.from || "/dashboard" }
+      }), 1500);
     } catch (error) {
       console.error("Application submission error:", error);
       setToast({

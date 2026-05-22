@@ -1,12 +1,13 @@
 import React from 'react';
 
-const Button = ({ 
-  children, 
-  onClick, 
+const Button = ({
+  children,
+  onClick,
   type = 'button',
   variant = 'primary',
   fullWidth = true,
-  className = ''
+  className = '',
+  disabled = false,
 }) => {
   const baseStyles = 'px-6 py-3 rounded-full font-medium transition duration-300';
   const variantStyles = {
@@ -19,7 +20,8 @@ const Button = ({
     <button
       type={type}
       onClick={onClick}
-      className={`${baseStyles} ${variantStyles[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      disabled={disabled}
+      className={`${baseStyles} ${variantStyles[variant]} ${fullWidth ? 'w-full' : ''} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {children}
     </button>

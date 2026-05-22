@@ -108,6 +108,7 @@ const EditOpportunity = () => {
         location: formData.location,
         workModel: formData.workModel,
         timeCommitment: formData.timeCommitment,
+        customQuestions: customQuestions,
       });
 
       const link = createOpportunityLink(formData.title, formData.opportunityType);

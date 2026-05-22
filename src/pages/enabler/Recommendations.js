@@ -100,7 +100,7 @@ const Recommendations = () => {
 
         // Add applicants
         applicationsArray.forEach((a) => {
-          const uid = a.user;
+          const uid = a.applicant_id;
           if (uid != null && !seenIds.has(uid)) {
             seenIds.add(uid);
             userIds.push(uid);

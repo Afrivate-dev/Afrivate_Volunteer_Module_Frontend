@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const OTPInput = ({ length = 4, onComplete }) => {
+const OTPInput = ({ length = 4, onComplete, disabled = false }) => {
   const [otp, setOtp] = useState(new Array(length).fill(''));
   const inputs = useRef([]);
 
@@ -72,6 +72,7 @@ const OTPInput = ({ length = 4, onComplete }) => {
           onChange={e => handleChange(e, index)}
           onKeyDown={e => handleKeyDown(e, index)}
           onPaste={handlePaste}
+          disabled={disabled}
           className="
             w-12 h-12 text-center text-xl font-semibold
             border-2 border-gray-300 rounded-full

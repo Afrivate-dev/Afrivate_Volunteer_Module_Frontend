@@ -1,3 +1,4 @@
+import React from 'react';
 import iconGroup from '../Assets/img/icons/Group.png'
 import icon1 from '../Assets/img/icons/Vector (1).png'
 import icon2 from '../Assets/img/icons/Vector (2).png'

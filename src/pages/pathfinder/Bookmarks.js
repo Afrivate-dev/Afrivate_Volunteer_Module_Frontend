@@ -63,9 +63,9 @@ const Bookmarks = () => {
         const details = row.enabler_details || {};
         const baseDetails = details.base_details || {};
         const name =
+          details.name ||
           details.organization_name ||
           details.company_name ||
-          [details.first_name, details.last_name].filter(Boolean).join(" ").trim() ||
           "Organisation";
         const location = [baseDetails.state, baseDetails.country]
           .filter(Boolean)

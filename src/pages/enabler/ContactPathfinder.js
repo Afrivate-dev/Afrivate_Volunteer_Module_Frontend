@@ -56,7 +56,7 @@ const ContactPathfinder = () => {
         message: message.trim(),
         priority: "info",
         type: "personal",
-        link: `/pathfinder/profile/${pathfinder.id}`
+        link: `/enabler/pathfinder/${pathfinder.id}`
       });
       setToast({ isOpen: true, message: "Message sent successfully. The pathfinder will be notified.", type: "success" });
       setSubject("");

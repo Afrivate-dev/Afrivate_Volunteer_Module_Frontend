@@ -18,6 +18,7 @@ function normalizeEnablerProfile(data) {
     id: data.id,
     name: data.name || base.contact_email || 'Enabler',
     role: 'Enabler',
+    hasProfile: true,
     profileCompletion: 75,
     profileViews: 0,
     earningsThisMonth: 0,
@@ -35,6 +36,7 @@ function normalizePathfinderProfile(data) {
     id: data.id,
     name,
     role: 'Pathfinder',
+    hasProfile: true,
     profileCompletion: 75,
     profileViews: 0,
     earningsThisMonth: 0,
@@ -93,6 +95,7 @@ export const UserProvider = ({ children }) => {
       setUser(null);
     } catch (err) {
       console.error("Error fetching user profile:", err);
+      setError("Failed to load user data. Please refresh the page.");
       // Preserve role so RoleRedirect can still route to profile-setup instead of treating
       // the user as unauthenticated. A 404 (no profile yet) is the common case here.
       if (role === 'pathfinder') {

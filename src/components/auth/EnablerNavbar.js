@@ -165,10 +165,12 @@ const EnablerNavbar = () => {
           </ul>
 
           <div className="px-3 pb-6">
-            <Link to="/create-opportunity" onClick={() => setIsOpen(false)}>
-              <button className="w-full bg-[#6A00B1] text-white font-bold py-3 rounded-lg hover:bg-[#5A0091] transition-colors shadow-md">
-                Post an opportunity
-              </button>
+            <Link
+              to="/create-opportunity"
+              onClick={() => setIsOpen(false)}
+              className="block w-full bg-[#6A00B1] text-white font-bold py-3 rounded-lg hover:bg-[#5A0091] transition-colors shadow-md text-center"
+            >
+              Post an opportunity
             </Link>
           </div>
         </div>

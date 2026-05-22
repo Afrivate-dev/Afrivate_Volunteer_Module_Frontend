@@ -344,7 +344,7 @@ const CreateOpportunity = () => {
                     <div>
                       <span className="text-[#6A00B1] font-medium">Custom Questions ({customQuestions.length}):</span>
                       <ul className="text-gray-800 mt-1">
-                        {customQuestions.map((q, index) => (
+                        {customQuestions.map((q) => (
                           <li key={q.id} className="ml-4 list-disc">{q.question}</li>
                         ))}
                       </ul>

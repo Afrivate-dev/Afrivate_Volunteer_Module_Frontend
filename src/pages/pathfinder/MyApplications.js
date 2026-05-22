@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { applications } from "../../services/api";
 import { navigateToVolunteerDetails } from "../../utils/opportunityUtils";
@@ -9,6 +9,7 @@ import { navigateToVolunteerDetails } from "../../utils/opportunityUtils";
  */
 const MyApplications = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [applicationsList, setApplicationsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,7 +90,7 @@ const MyApplications = () => {
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 sm:mb-6">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(location.state?.from || "/dashboard")}
               className="mb-3 sm:mb-4 text-gray-600 hover:text-gray-900 touch-manipulation"
               aria-label="Go back"
             >

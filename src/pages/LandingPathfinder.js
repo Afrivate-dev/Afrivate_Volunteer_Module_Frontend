@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import bgImg from '../Assets/Subtract (5).png';
 import logoImg from '../Assets/Vector (1).png';
 import pic1 from '../Assets/Picture 1.png';
@@ -14,6 +15,7 @@ const LandingPathfinder = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const { logout } = useUser();
 
   const handleSearch = () => {
     if (searchQuery.trim()) sessionStorage.setItem('discoverQuery', searchQuery.trim());
@@ -79,11 +81,12 @@ const LandingPathfinder = () => {
           <span className="ml-3 sm:text-4xl lg:text-2xl font-poppins font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-300 text-glow-white">
             AFRIVATE
           </span>
-          <Link to="/">
-          <button className="flex bg-[#9900FF4D] py-3 px-3 rounded-xl text-xs font-base font-montserrat   lg:hidden block ml-10">
+          <button
+            className="flex bg-[#9900FF4D] py-3 px-3 rounded-xl text-xs font-base font-montserrat   lg:hidden block ml-10"
+            onClick={async () => { await logout(); navigate('/'); }}
+          >
            Log out
           </button>
-        </Link>
           <i
             className="flex fa-solid fa-bars ml-auto text-xl p-4 text-purple-100  lg:hidden"
             onClick={() => setIsOpen(true)}
@@ -106,11 +109,12 @@ const LandingPathfinder = () => {
           </div>
         </div>
 
-        <Link to="/">
-          <button className="!hidden lg:!block bg-[#9900FF4D] py-3 px-8 rounded-2xl lg:text-sm font-base font-montserrat  mt-[-5px]">
-            Log Out
-          </button>
-        </Link>
+        <button
+          className="!hidden lg:!block bg-[#9900FF4D] py-3 px-8 rounded-2xl lg:text-sm font-base font-montserrat  mt-[-5px]"
+          onClick={async () => { await logout(); navigate('/'); }}
+        >
+          Log Out
+        </button>
       </nav>
 
 
