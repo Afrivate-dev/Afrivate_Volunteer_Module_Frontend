@@ -10,7 +10,7 @@ const GLOBE_IMAGE_URL = globeImage;
 const MAN_IMAGE_URL = heroImage; 
 
 const BRAND_PURPLE = "#843A7F"; 
-// const LIGHT_ACCENT = "#BEB5BC";
+const LIGHT_ACCENT = "#BEB5BC";
 
 /* ─────────────────────────────────────────────────────────────
     Password field with toggle eye
