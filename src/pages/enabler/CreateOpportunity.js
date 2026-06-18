@@ -1,122 +1,91 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import { useUser } from "../../context/UserContext";
 import Toast from "../../components/common/Toast";
 import { opportunities } from "../../services/api";
 import { combineDescription, createOpportunityLink } from "../../utils/descriptionUtils";
 
+const STEPS = [
+  { num: 1, label: "Basics", sub: "General info" },
+  { num: 2, label: "Details", sub: "Scope & skills" },
+  { num: 3, label: "Logistics", sub: "Dates & location" },
+  { num: 4, label: "Review", sub: "Final summary" },
+];
+
+const OPP_TYPES = ["volunteering","internship","mentorship","fellowship","contract","full-time","part-time"];
+const WORK_MODES = ["Remote","On-site","Hybrid"];
+const TIME_COMMITMENTS = ["Part-time (20h / week)","Full-time (40h / week)","Flexible","Weekends only","Evenings only"];
+
+const inputCls = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white";
+const textareaCls = inputCls + " resize-none";
+
+const TipBox = ({ text }) => (
+  <div className="bg-purple-50 border-l-4 border-[#8D4087] rounded-r-xl p-4 mb-5 flex items-start gap-2">
+    <span className="text-[#8D4087] mt-0.5">💡</span>
+    <p className="text-sm text-purple-900">{text}</p>
+  </div>
+);
+
 const CreateOpportunity = () => {
   const navigate = useNavigate();
   const { user } = useUser();
 
-  useEffect(() => {
-    document.title = "Create Opportunity - AfriVate";
-  }, []);
-  
+  useEffect(() => { document.title = "Create Opportunity - AfriVate"; }, []);
+
   const [currentStep, setCurrentStep] = useState(1);
+  const [posted, setPosted] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(true);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    keyResponsibilities: "",
-    requirementsBenefits: "",
-    aboutCompany: "",
-    applicationInstructions: "",
-    workModel: "Hybrid",
-    location: "",
-    timeCommitment: "",
-    opportunityType: "volunteering",
+    title: "", description: "", keyResponsibilities: "", requirementsBenefits: "",
+    aboutCompany: "", applicationInstructions: "", workModel: "Hybrid", location: "",
+    timeCommitment: "", opportunityType: "volunteering",
   });
   const [customQuestions, setCustomQuestions] = useState([]);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [showAddQuestion, setShowAddQuestion] = useState(false);
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [posting, setPosting] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [showAddQuestion, setShowAddQuestion] = useState(false);
-  const [newQuestion, setNewQuestion] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleProceed = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const addCustomQuestion = () => {
-    if (newQuestion && newQuestion.trim()) {
+    if (newQuestion.trim()) {
       setCustomQuestions((prev) => [...prev, { id: `q-${Date.now()}`, question: newQuestion.trim() }]);
-      setNewQuestion("");
-      setShowAddQuestion(false);
+      setNewQuestion(""); setShowAddQuestion(false);
     }
   };
-  
-  const removeCustomQuestion = (id) => {
-    setCustomQuestions((prev) => prev.filter((x) => x.id !== id));
-  };
 
-  const cancelAddQuestion = () => {
-    setNewQuestion("");
-    setShowAddQuestion(false);
-  };
+  const removeCustomQuestion = (id) => setCustomQuestions((prev) => prev.filter((x) => x.id !== id));
 
   const handlePost = async () => {
     setPosting(true);
     try {
-      // Combine all sections into description field with markers
       const combinedDesc = combineDescription({
-        description: formData.description,
-        keyResponsibilities: formData.keyResponsibilities,
-        requirementsBenefits: formData.requirementsBenefits,
-        aboutCompany: formData.aboutCompany,
-        applicationInstructions: formData.applicationInstructions,
-        location: formData.location,
-        workModel: formData.workModel,
-        timeCommitment: formData.timeCommitment,
-        customQuestions,
+        description: formData.description, keyResponsibilities: formData.keyResponsibilities,
+        requirementsBenefits: formData.requirementsBenefits, aboutCompany: formData.aboutCompany,
+        applicationInstructions: formData.applicationInstructions, location: formData.location,
+        workModel: formData.workModel, timeCommitment: formData.timeCommitment, customQuestions,
       });
-
       const link = createOpportunityLink(formData.title, formData.opportunityType);
-      if (!link.startsWith("https://")) {
-        throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
-      }
-
-      const opportunityData = {
-        title: formData.title.trim(),
-        description: combinedDesc,
+      if (!link.startsWith("https://")) throw new Error("Generated opportunity link must use HTTPS.");
+      await opportunities.create({
+        title: formData.title.trim(), description: combinedDesc,
         opportunity_type: formData.opportunityType || "volunteering",
-        link,
-        is_open: true,
-      };
-
-      await opportunities.create(opportunityData);
-
-      setToast({ isOpen: true, message: "Opportunity posted successfully!", type: "success" });
-      setTimeout(() => {
-        navigate(`/enabler/opportunities-posted`, { replace: true, state: { refreshList: true } });
-      }, 1200);
-      
+        link, is_open: publishOpen,
+      });
+      setPosted(true);
     } catch (err) {
-      console.error("Error posting opportunity:", err);
       const body = err?.body;
       let msg = err?.message || "Failed to post opportunity. Please try again.";
       if (body && typeof body === "object") {
         if (typeof body.detail === "string") msg = body.detail;
         else if (Array.isArray(body.detail)) msg = body.detail.join(". ");
-        else if (body.link && Array.isArray(body.link)) msg = `Link: ${body.link.join(". ")}`;
-        else if (body.title && Array.isArray(body.title)) msg = `Title: ${body.title.join(". ")}`;
-        else if (body.description && Array.isArray(body.description)) msg = `Description: ${body.description.join(". ")}`;
         else {
-          const parts = [];
-          for (const [k, v] of Object.entries(body)) {
-            if (Array.isArray(v)) parts.push(`${k}: ${v.join(", ")}`);
-            else if (typeof v === "string") parts.push(`${k}: ${v}`);
-          }
+          const parts = Object.entries(body).map(([k, v]) => Array.isArray(v) ? `${k}: ${v.join(", ")}` : typeof v === "string" ? `${k}: ${v}` : "").filter(Boolean);
           if (parts.length) msg = parts.join(". ");
         }
       }
@@ -126,52 +95,52 @@ const CreateOpportunity = () => {
     }
   };
 
-  const handleStepClick = (stepNumber) => {
-    setCurrentStep(stepNumber);
-  };
-
-  const canProceed = () => {
-    if (currentStep === 1) {
-      return formData.title.trim() !== "" && formData.description.trim() !== "";
-    } else if (currentStep === 2) {
-      return formData.keyResponsibilities.trim() !== "" || formData.requirementsBenefits.trim() !== "";
-    } else if (currentStep === 3) {
-      return formData.location.trim() !== "" && formData.timeCommitment.trim() !== "";
-    }
-    return false;
-  };
-
-  const canPreview = () => {
-    return formData.location.trim() !== "" && formData.timeCommitment.trim() !== "";
-  };
-
-  const handlePreview = () => {
-    if (canPreview()) {
-      setShowPreview(true);
-      setCurrentStep(4);
-    }
-  };
-
-  const profileIncomplete = user?.hasProfile === false || !user?.name;
-
-  if (profileIncomplete) {
+  // ── Success Screen ──────────────────────────────────────────────────────────
+  if (posted) {
     return (
-      <div className="min-h-screen bg-white font-sans">
+      <div className="min-h-screen bg-[#FAFAFA] font-sans">
         <EnablerNavbar />
-        <div className="pt-14 px-4 md:px-8 pb-8">
-          <div className="max-w-lg mx-auto mt-16 text-center">
-            <div className="bg-purple-50 border border-purple-200 rounded-[30px] p-8">
-              <i className="fa-solid fa-building text-4xl text-[#6A00B1] mb-4 block" />
-              <h2 className="text-xl font-bold text-black mb-2">Profile not complete</h2>
-              <p className="text-gray-600 mb-6">
-                Please complete your organisation profile before posting opportunities.
-              </p>
-              <Link
-                to="/enabler/profile-setup"
-                className="inline-block bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
-              >
-                Complete profile
-              </Link>
+        <div className="pt-16 max-w-3xl mx-auto px-4 py-12">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center mb-6">
+            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-white text-2xl">✓</span>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">Opportunity posted!</h1>
+            <p className="text-gray-500 max-w-md mx-auto mb-8">
+              Your opportunity is now live and visible to Pathfinders. You will receive notifications as soon as candidates begin applying or expressing interest.
+            </p>
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <button onClick={() => navigate("/enabler/opportunities-posted")}
+                className="border border-[#8D4087] text-[#8D4087] px-6 py-3 rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors flex items-center gap-2">
+                View my opportunities →
+              </button>
+              <button onClick={() => navigate("/enabler/dashboard")}
+                className="bg-[#8D4087] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#651F5F] transition-colors">
+                Back to Dashboard
+              </button>
+            </div>
+            <hr className="border-gray-100 mb-6" />
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-4">SHARE THIS OPPORTUNITY</p>
+            <div className="flex items-center justify-center gap-3">
+              {["🔗","✉️","📤"].map((icon, i) => (
+                <button key={i} className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
+                  {icon}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mb-4 text-xl">📣</div>
+              <h3 className="font-bold text-gray-900 mb-1">Boost Visibility</h3>
+              <p className="text-sm text-gray-500">Promote this posting to reach 5x more qualified Pathfinders in your region.</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-4 text-xl">➕</div>
+              <h3 className="font-bold text-gray-900 mb-1">Post Another</h3>
+              <p className="text-sm text-gray-500">Ready to scale? Create another opportunity using your saved templates.</p>
+              <button onClick={() => { setPosted(false); setCurrentStep(1); setFormData({ title:"",description:"",keyResponsibilities:"",requirementsBenefits:"",aboutCompany:"",applicationInstructions:"",workModel:"Hybrid",location:"",timeCommitment:"",opportunityType:"volunteering" }); setCustomQuestions([]); }}
+                className="mt-3 text-[#8D4087] text-sm font-semibold hover:underline">Post now →</button>
             </div>
           </div>
         </div>
@@ -179,466 +148,325 @@ const CreateOpportunity = () => {
     );
   }
 
+  // ── Sidebar ─────────────────────────────────────────────────────────────────
+  const Sidebar = () => (
+    <div className="w-60 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 self-start">
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">PROGRESS</p>
+      <div className="space-y-4">
+        {STEPS.map((step, i) => {
+          const active = currentStep === step.num;
+          const done = currentStep > step.num;
+          return (
+            <div key={step.num} className="flex items-start gap-3">
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={() => done && setCurrentStep(step.num)}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                    active ? "bg-[#8D4087] text-white" : done ? "bg-purple-100 text-[#8D4087]" : "bg-gray-100 text-gray-400"
+                  }`}>
+                  {done ? "✓" : step.num === 1 ? "📄" : step.num === 2 ? "📋" : step.num === 3 ? "🕐" : "✅"}
+                </button>
+                {i < STEPS.length - 1 && (
+                  <div className={`w-0.5 h-6 mt-1 ${done ? "bg-[#8D4087]" : "bg-gray-200"}`} />
+                )}
+              </div>
+              <div className="pt-1">
+                <p className={`text-sm font-semibold ${active ? "text-[#8D4087]" : done ? "text-gray-700" : "text-gray-400"}`}>{step.label}</p>
+                <p className="text-xs text-gray-400">{step.sub}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-6 bg-purple-50 rounded-xl p-3">
+        <p className="text-xs text-purple-700 italic">"Tip: Opportunities with detailed descriptions get 40% more applications from qualified Pathfinders."</p>
+      </div>
+    </div>
+  );
+
+  const StepHeader = ({ title, subtitle, part }) => (
+    <div className="flex items-start justify-between mb-5">
+      <div>
+        <h2 className="text-xl font-bold text-[#8D4087]">{title}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
+      </div>
+      <span className="bg-purple-100 text-[#8D4087] text-xs font-semibold px-3 py-1 rounded-full">{part}</span>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
+      <div className="pt-16">
+        {/* Purple Header */}
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8 flex items-center gap-4">
+          <button onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate(-1)}
+            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+            ←
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Post an opportunity</h1>
+            <p className="text-purple-200 text-sm mt-1">Connect with talented Pathfinders ready to contribute.</p>
+          </div>
+        </div>
 
-      <div className="pt-14 px-4 md:px-6 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-[30px] p-6 md:p-8 shadow-sm">
-            
-            <div className="mb-4 md:mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">
-                Create an Opportunity
-              </h1>
-              <p className="text-gray-600 text-sm md:text-base">
-                Post a new volunteering opportunity and connect with talented pathfinders
-              </p>
-            </div>
+        {/* Step Content */}
+        <div className="max-w-5xl mx-auto px-4 py-8 flex gap-6 items-start">
+          <Sidebar />
 
-            <div className="flex items-center justify-center mb-6 md:mb-8">
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleStepClick(1)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                    currentStep === 1 
-                      ? 'bg-[#6A00B1] text-white cursor-default' 
-                      : 'bg-gray-200 text-gray-500 border-2 border-gray-300 hover:bg-gray-300 cursor-pointer'
-                  }`}
-                >
-                  1
-                </button>
-                {currentStep === 1 ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-[#6A00B1]"></div>
-                ) : currentStep > 1 ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-gray-300"></div>
-                ) : (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-gray-300"></div>
-                )}
-              </div>
-
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleStepClick(2)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                    currentStep === 2 
-                      ? 'bg-[#6A00B1] text-white cursor-default' 
-                      : currentStep > 2
-                      ? 'bg-gray-200 text-gray-500 border-2 border-gray-300 hover:bg-gray-300 cursor-pointer'
-                      : 'bg-gray-200 text-gray-500 border-2 border-gray-300 hover:bg-gray-300 cursor-pointer'
-                  }`}
-                >
-                  2
-                </button>
-                {currentStep === 2 ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-[#6A00B1]"></div>
-                ) : currentStep > 2 ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-[#6A00B1]"></div>
-                ) : (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-gray-300"></div>
-                )}
-              </div>
-
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleStepClick(3)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                    currentStep === 3 || showPreview
-                      ? 'bg-[#6A00B1] text-white cursor-default' 
-                      : 'bg-gray-200 text-gray-500 border-2 border-gray-300 hover:bg-gray-300 cursor-pointer'
-                  }`}
-                >
-                  3
-                </button>
-                {currentStep === 3 || showPreview ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-[#6A00B1]"></div>
-                ) : currentStep > 3 ? (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-[#6A00B1]"></div>
-                ) : (
-                  <div className="w-16 md:w-24 h-0.5 border-t-2 border-dashed border-gray-300"></div>
-                )}
-              </div>
-
-              <div className="flex items-center">
-                <button
-                  onClick={() => handleStepClick(4)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
-                    currentStep === 4
-                      ? 'bg-[#6A00B1] text-white cursor-default' 
-                      : showPreview
-                      ? 'bg-[#6A00B1] text-white cursor-pointer'
-                      : 'bg-gray-200 text-gray-500 border-2 border-gray-300 hover:bg-gray-300 cursor-not-allowed'
-                  }`}
-                  disabled={!showPreview}
-                >
-                  4
-                </button>
-              </div>
-            </div>
-
-            {currentStep === 4 && (
-              <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-[#6A00B1]">Preview & Verify Information</h3>
-                  <button
-                    onClick={() => setCurrentStep(3)}
-                    className="text-[#6A00B1] hover:text-[#6A00B1]"
-                  >
-                    <i className="fa fa-edit"></i> Edit
-                  </button>
-                </div>
-                <div className="space-y-3 text-sm">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Opportunity Type:</span>
-                      <p className="text-gray-800 capitalize">{formData.opportunityType}</p>
-                    </div>
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Title:</span>
-                      <p className="text-gray-800">{formData.title}</p>
+          <div className="flex-1">
+            {/* Step 1: Basics */}
+            {currentStep === 1 && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <StepHeader title="Step 1: Basics" subtitle="Start with the fundamental identity of your opportunity." part="Part 1 of 4" />
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1.5">Opportunity Type</label>
+                    <div className="relative">
+                      <select name="opportunityType" value={formData.opportunityType} onChange={handleInputChange}
+                        className={inputCls + " appearance-none pr-8 capitalize"}>
+                        {OPP_TYPES.map((t) => <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                      </select>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▾</span>
                     </div>
                   </div>
                   <div>
-                    <span className="text-[#6A00B1] font-medium">Description:</span>
-                    <p className="text-gray-800">{formData.description}</p>
+                    <label className="block text-sm text-gray-600 mb-1.5">Title</label>
+                    <input name="title" value={formData.title} onChange={handleInputChange}
+                      placeholder="e.g. Senior Product Designer for FinTech" className={inputCls} />
                   </div>
-                  {formData.keyResponsibilities && (
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Key Responsibilities:</span>
-                      <p className="text-gray-800 whitespace-pre-wrap">{formData.keyResponsibilities}</p>
-                    </div>
-                  )}
-                  {formData.requirementsBenefits && (
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Requirements & Benefits:</span>
-                      <p className="text-gray-800 whitespace-pre-wrap">{formData.requirementsBenefits}</p>
-                    </div>
-                  )}
-                  {formData.aboutCompany && (
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">About the Organization:</span>
-                      <p className="text-gray-800">{formData.aboutCompany}</p>
-                    </div>
-                  )}
-                  {formData.applicationInstructions && (
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Application Instructions:</span>
-                      <p className="text-gray-800">{formData.applicationInstructions}</p>
-                    </div>
-                  )}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Work Model:</span>
-                      <p className="text-gray-800">{formData.workModel}</p>
-                    </div>
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Location:</span>
-                      <p className="text-gray-800">{formData.location}</p>
-                    </div>
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Time Commitment:</span>
-                      <p className="text-gray-800">{formData.timeCommitment}</p>
-                    </div>
-                  </div>
-                  {customQuestions.length > 0 && (
-                    <div>
-                      <span className="text-[#6A00B1] font-medium">Custom Questions ({customQuestions.length}):</span>
-                      <ul className="text-gray-800 mt-1">
-                        {customQuestions.map((q) => (
-                          <li key={q.id} className="ml-4 list-disc">{q.question}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </div>
-                <div className="mt-4 flex gap-3">
-                  <button
-                    type="button"
-                    onClick={handlePost}
-                    disabled={posting}
-                    className={`px-4 py-2 bg-[#6A00B1] text-white rounded-lg hover:bg-[#5A0091] transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    {posting ? "Posting..." : "Confirm & Post"} <i className="fa fa-check ml-1"></i>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1.5">Description</label>
+                  <textarea name="description" value={formData.description} onChange={handleInputChange} rows={8}
+                    placeholder="Clearly describe the role, impact, and who you are looking for..."
+                    className={textareaCls} />
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-xs text-gray-400">Recommended: 200 - 500 words.</p>
+                    <p className="text-xs text-gray-400">{formData.description.split(/\s+/).filter(Boolean).length} / 500</p>
+                  </div>
+                </div>
+                <hr className="border-gray-100 my-5" />
+                <div className="flex items-center justify-end gap-4">
+                  <button onClick={() => setToast({ isOpen: true, message: "Draft saved!", type: "success" })}
+                    className="text-sm text-gray-500 font-semibold hover:text-gray-700">Save as Draft</button>
+                  <button onClick={() => setCurrentStep(2)} disabled={!formData.title.trim() || !formData.description.trim()}
+                    className="bg-[#8D4087] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#651F5F] transition-colors disabled:opacity-40 flex items-center gap-2">
+                    Next →
                   </button>
                 </div>
               </div>
             )}
 
-            {currentStep === 1 && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Opportunity Type
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="opportunityType"
-                      value={formData.opportunityType}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 appearance-none bg-white pr-8 md:pr-10 text-sm md:text-base"
-                    >
-                      <option value="volunteering">Volunteering</option>
-                      <option value="internship">Internship</option>
-                      <option value="scholarship">Scholarship</option>
-                      <option value="job">Job</option>
-                      <option value="grant">Grant</option>
-                    </select>
-                    <i className="fa fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Opportunity Title
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="Enter opportunity title"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Opportunity Description
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Enter opportunity description"
-                    rows="5"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-                  />
-                </div>
-
-                <div className="flex justify-end mt-6 md:mt-8">
-                  <button
-                    onClick={handleProceed}
-                    disabled={!canProceed()}
-                    className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold text-white transition-colors ${
-                      canProceed()
-                        ? 'bg-[#6A00B1] hover:bg-[#5A0091]'
-                        : 'bg-gray-300 cursor-not-allowed'
-                    }`}
-                  >
-                    Proceed
-                  </button>
-                </div>
-              </div>
-            )}
-
+            {/* Step 2: Details */}
             {currentStep === 2 && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Key Responsibilities
-                  </label>
-                  <textarea
-                    name="keyResponsibilities"
-                    value={formData.keyResponsibilities}
-                    onChange={handleInputChange}
-                    placeholder="Enter key responsibilities for this opportunity"
-                    rows="4"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-                  />
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <StepHeader title="Step 2: Details" subtitle="Define the scope, skills required, and role expectations." part="Part 2 of 4" />
+                <TipBox text="Tip: Be specific about skills needed — Pathfinders self-select when the requirements are clear, saving you screening time." />
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-sm text-gray-600">Key Responsibilities</label>
+                      <span className="text-xs text-gray-400">Required</span>
+                    </div>
+                    <textarea name="keyResponsibilities" value={formData.keyResponsibilities} onChange={handleInputChange} rows={4}
+                      placeholder={"e.g., - Lead the design of a new administrative portal\n- Facilitate weekly stakeholder feedback sessions\n- Mentor junior designers in the team"}
+                      className={textareaCls} />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-sm text-gray-600">Requirements &amp; Benefits</label>
+                      <span className="text-xs text-gray-400">Required</span>
+                    </div>
+                    <textarea name="requirementsBenefits" value={formData.requirementsBenefits} onChange={handleInputChange} rows={4}
+                      placeholder="What background is needed? What will the Pathfinder gain?"
+                      className={textareaCls} />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1.5">About Your Organisation</label>
+                    <textarea name="aboutCompany" value={formData.aboutCompany} onChange={handleInputChange} rows={3}
+                      placeholder="Briefly describe your mission and team culture..."
+                      className={textareaCls} />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-sm text-gray-600">Application Instructions (optional)</label>
+                      <span className="text-xs text-gray-400">Optional</span>
+                    </div>
+                    <textarea name="applicationInstructions" value={formData.applicationInstructions} onChange={handleInputChange} rows={3}
+                      placeholder="Should applicants include a portfolio or a specific cover letter?"
+                      className={textareaCls} />
+                  </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Requirements & Benefits
-                  </label>
-                  <textarea
-                    name="requirementsBenefits"
-                    value={formData.requirementsBenefits}
-                    onChange={handleInputChange}
-                    placeholder="Enter requirements and benefits for this opportunity"
-                    rows="4"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    About the Organization
-                  </label>
-                  <textarea
-                    name="aboutCompany"
-                    value={formData.aboutCompany}
-                    onChange={handleInputChange}
-                    placeholder="Tell applicants about your organization"
-                    rows="4"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Application Instructions
-                  </label>
-                  <textarea
-                    name="applicationInstructions"
-                    value={formData.applicationInstructions}
-                    onChange={handleInputChange}
-                    placeholder="Provide any special instructions for applicants"
-                    rows="3"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-                  />
-                </div>
-
-                <div className="flex justify-center mt-6 md:mt-8">
-                  <button
-                    onClick={handleProceed}
-                    disabled={!canProceed()}
-                    className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold text-white transition-colors ${
-                      canProceed()
-                        ? 'bg-[#6A00B1] hover:bg-[#5A0091]'
-                        : 'bg-gray-300 cursor-not-allowed'
-                    }`}
-                  >
-                    Proceed
+                <hr className="border-gray-100 my-5" />
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setCurrentStep(1)}
+                    className="border border-gray-200 text-gray-600 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
+                    ← Back
                   </button>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setToast({ isOpen: true, message: "Draft saved!", type: "success" })}
+                      className="text-sm text-gray-500 font-semibold hover:text-gray-700">Save as Draft</button>
+                    <button onClick={() => setCurrentStep(3)}
+                      className="bg-[#8D4087] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#651F5F] transition-colors flex items-center gap-2">
+                      Next →
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
+            {/* Step 3: Logistics */}
             {currentStep === 3 && (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Work Model
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="workModel"
-                      value={formData.workModel}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 appearance-none bg-white pr-8 md:pr-10 text-sm md:text-base"
-                    >
-                      <option value="Hybrid">Hybrid</option>
-                      <option value="Remote">Remote</option>
-                      <option value="On-site">On-site</option>
-                    </select>
-                    <i className="fa fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Location <span className="text-gray-500 font-normal">(Enter the location for this opportunity)</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Lagos, Nigeria or Remote or Hybrid"
-                    className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    You can enter any location - city, country, or "Remote" for remote positions
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Time Commitment
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="timeCommitment"
-                      value={formData.timeCommitment}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 appearance-none bg-white pr-8 md:pr-10 text-sm md:text-base"
-                    >
-                      <option value="">Select time commitment</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Flexible">Flexible</option>
-                      <option value="Project-based">Project-based</option>
-                    </select>
-                    <i className="fa fa-chevron-down absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm md:text-base font-bold text-black mb-2">
-                    Custom Application Questions
-                  </label>
-                  <p className="text-gray-600 text-xs md:text-sm mb-2">
-                    Add questions that pathfinders must answer when applying (optional)
-                  </p>
-                  
-                  {/* Existing Questions List */}
-                  {customQuestions.map((q) => (
-                    <div key={q.id} className="flex items-center gap-2 mb-2 bg-gray-50 p-2 rounded">
-                      <span className="flex-1 text-sm text-gray-700">{q.question}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeCustomQuestion(q.id)}
-                        className="text-red-500 hover:text-red-700 text-sm font-semibold"
-                      >
-                        <i className="fa fa-times"></i>
-                      </button>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <StepHeader title="Step 3: Logistics" subtitle="Set the location, schedule, and custom screening questions." part="Part 3 of 4" />
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1.5">Work Mode</label>
+                    <div className="relative">
+                      <select name="workModel" value={formData.workModel} onChange={handleInputChange}
+                        className={inputCls + " appearance-none pr-8"}>
+                        <option value="">Select mode</option>
+                        {WORK_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▾</span>
                     </div>
-                  ))}
-                  
-                  {/* Add Question Form - Inline instead of prompt */}
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1.5">Time Commitment</label>
+                    <div className="relative">
+                      <select name="timeCommitment" value={formData.timeCommitment} onChange={handleInputChange}
+                        className={inputCls + " appearance-none pr-8"}>
+                        <option value="">Select commitment</option>
+                        {TIME_COMMITMENTS.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▾</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-5">
+                  <label className="block text-sm text-gray-600 mb-1.5">Location</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">📍</span>
+                    <input name="location" value={formData.location} onChange={handleInputChange}
+                      placeholder="Enter city, region, or 'Remote'" className={inputCls + " pl-9"} />
+                  </div>
+                </div>
+
+                {/* Custom Questions */}
+                <div className="mb-5">
+                  <label className="block text-sm text-gray-600 mb-2">Custom Application Questions (optional)</label>
+                  {customQuestions.length > 0 && (
+                    <div className="space-y-2 mb-3">
+                      {customQuestions.map((q) => (
+                        <div key={q.id} className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-3">
+                          <p className="text-sm text-gray-700">{q.question}</p>
+                          <button onClick={() => removeCustomQuestion(q.id)} className="text-gray-400 hover:text-red-500 ml-3">✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {showAddQuestion ? (
-                    <div className="mt-3 p-3 border border-purple-200 rounded-lg bg-purple-50">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Enter your question
-                      </label>
-                      <textarea
-                        value={newQuestion}
-                        onChange={(e) => setNewQuestion(e.target.value)}
-                        placeholder="Type your question here..."
-                        rows={2}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
-                      />
-                      <div className="flex gap-2 mt-2">
-                        <button
-                          type="button"
-                          onClick={addCustomQuestion}
-                          disabled={!newQuestion.trim()}
-                          className="px-3 py-1.5 bg-[#6A00B1] text-white text-sm rounded-lg hover:bg-[#5A0091] disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Add
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelAddQuestion}
-                          className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-100"
-                        >
-                          Cancel
-                        </button>
-                      </div>
+                    <div className="flex gap-2">
+                      <input value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)}
+                        placeholder="Type your question..." className={inputCls + " flex-1"} autoFocus
+                        onKeyDown={(e) => e.key === "Enter" && addCustomQuestion()} />
+                      <button onClick={addCustomQuestion} className="bg-[#8D4087] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#651F5F]">Add</button>
+                      <button onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }} className="border border-gray-200 text-gray-500 px-4 py-2 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
                     </div>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setShowAddQuestion(true)}
-                      className="mt-2 text-[#6A00B1] font-semibold text-sm hover:underline"
-                    >
-                      + Add question
+                    <button onClick={() => setShowAddQuestion(true)} disabled={customQuestions.length >= 5}
+                      className={`w-full border-2 border-dashed rounded-xl py-8 flex flex-col items-center gap-2 transition-colors ${customQuestions.length < 5 ? "border-purple-200 hover:border-[#8D4087] cursor-pointer" : "border-gray-200 cursor-not-allowed opacity-50"}`}>
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-[#8D4087] text-xl font-bold">+</div>
+                      <p className="text-sm font-semibold text-[#8D4087]">Add your first question</p>
+                      <p className="text-xs text-gray-400">Ask up to 5 custom questions to screen candidates.</p>
                     </button>
                   )}
                 </div>
 
-                <div className="flex justify-between mt-6 md:mt-8">
-                  <button
-                    onClick={handlePreview}
-                    disabled={!canPreview()}
-                    className={`px-6 md:px-8 py-2 md:py-3 rounded-lg text-sm md:text-base font-semibold transition-colors ${
-                      canPreview()
-                        ? 'bg-[#6A00B1] text-white hover:bg-[#5A0091]'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    Preview & Verify
+                <TipBox text="Tip: Adding custom questions helps you identify the most motivated Pathfinders before you even read a full application." />
+
+                <hr className="border-gray-100 my-5" />
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setCurrentStep(2)}
+                    className="border border-gray-200 text-gray-600 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
+                    ← Back
+                  </button>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setToast({ isOpen: true, message: "Draft saved!", type: "success" })}
+                      className="text-sm text-gray-500 font-semibold hover:text-gray-700">Save as Draft</button>
+                    <button onClick={() => setCurrentStep(4)} disabled={!formData.location.trim() || !formData.timeCommitment.trim()}
+                      className="bg-[#8D4087] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#651F5F] transition-colors disabled:opacity-40 flex items-center gap-2">
+                      Preview &amp; review →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 4: Review */}
+            {currentStep === 4 && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <StepHeader title="Step 4: Review" subtitle="Check everything looks good before publishing." part="Part 4 of 4" />
+
+                {/* Summary Header */}
+                <div className="grid grid-cols-4 gap-3 mb-5 pb-5 border-b border-gray-100">
+                  {[
+                    { label: "TYPE", val: formData.opportunityType },
+                    { label: "WORK MODE", val: formData.workModel || "—" },
+                    { label: "LOCATION", val: formData.location || "—" },
+                    { label: "COMMITMENT", val: formData.timeCommitment || "—" },
+                  ].map((item) => (
+                    <div key={item.label}>
+                      <p className="text-xs text-gray-400 font-semibold uppercase mb-1">{item.label}</p>
+                      <p className="text-sm font-bold text-[#8D4087] capitalize">{item.val}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Editable sections */}
+                {[
+                  { key: "OPPORTUNITY TITLE", val: formData.title, step: 1 },
+                  { key: "DESCRIPTION", val: formData.description, step: 1 },
+                  { key: "KEY REQUIREMENTS", val: formData.keyResponsibilities, step: 2 },
+                ].map(({ key, val, step }) => (
+                  <div key={key} className="mb-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs text-gray-400 font-semibold uppercase">{key}</p>
+                      <button onClick={() => setCurrentStep(step)}
+                        className="text-xs text-[#8D4087] font-semibold hover:underline flex items-center gap-1">
+                        ✏️ Edit
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-800 whitespace-pre-wrap">{val || <span className="text-gray-400 italic">Not provided</span>}</p>
+                  </div>
+                ))}
+
+                {/* Publishing Status */}
+                <div className="bg-purple-50 rounded-xl p-4 flex items-center justify-between mb-5">
+                  <div>
+                    <p className="text-sm font-bold text-[#8D4087]">Publishing Status</p>
+                    <p className="text-xs text-gray-500">Set the opportunity visibility immediately after posting.</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-[#8D4087]">
+                      {publishOpen ? "Open for applications" : "Draft (hidden)"}
+                    </span>
+                    <button onClick={() => setPublishOpen(!publishOpen)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${publishOpen ? "bg-[#8D4087]" : "bg-gray-300"}`}>
+                      <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${publishOpen ? "translate-x-7" : "translate-x-1"}`} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <button onClick={() => setCurrentStep(3)}
+                    className="border border-gray-200 text-gray-600 px-5 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
+                    ← Edit details
+                  </button>
+                  <button onClick={handlePost} disabled={posting}
+                    className="bg-[#651F5F] text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-[#4a1647] transition-colors disabled:opacity-50 flex items-center gap-2">
+                    {posting ? "Posting..." : "Confirm & post ▶"}
                   </button>
                 </div>
               </div>
@@ -647,12 +475,8 @@ const CreateOpportunity = () => {
         </div>
       </div>
 
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
-      />
+      <Toast isOpen={toast.isOpen} message={toast.message} type={toast.type}
+        onClose={() => setToast({ isOpen: false, message: "", type: "success" })} />
     </div>
   );
 };
