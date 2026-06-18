@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import { useUser } from "../../context/UserContext";
+// import { useUser } from "../../context/UserContext";
 import Toast from "../../components/common/Toast";
 import { opportunities } from "../../services/api";
 import { combineDescription, createOpportunityLink } from "../../utils/descriptionUtils";
