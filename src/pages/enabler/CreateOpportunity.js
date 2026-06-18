@@ -29,7 +29,7 @@ const TipBox = ({ text }) => (
 
 const CreateOpportunity = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
+  // const { user } = useUser();
 
   useEffect(() => { document.title = "Create Opportunity - AfriVate"; }, []);
 
