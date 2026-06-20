@@ -5,22 +5,19 @@ import Toast from "../../components/common/Toast";
 import { opportunities } from "../../services/api";
 import { combineDescription, parseDescription, createOpportunityLink } from "../../utils/descriptionUtils";
 
+const inputCls = "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white";
+const textareaCls = inputCls + " resize-none";
+const labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
+
 const EditOpportunity = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    keyResponsibilities: "",
-    requirementsBenefits: "",
-    aboutCompany: "",
-    applicationInstructions: "",
-    workModel: "Hybrid",
-    location: "",
-    timeCommitment: "",
-    opportunityType: "volunteering",
+    title: "", description: "", keyResponsibilities: "", requirementsBenefits: "",
+    aboutCompany: "", applicationInstructions: "", workModel: "Hybrid",
+    location: "", timeCommitment: "", opportunityType: "volunteering",
   });
   const [customQuestions, setCustomQuestions] = useState([]);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
@@ -30,13 +27,11 @@ const EditOpportunity = () => {
 
   useEffect(() => {
     document.title = "Edit Opportunity - AfriVate";
-    
     const loadOpportunity = async () => {
       try {
         const data = await opportunities.get(id);
         if (data) {
           setOpportunityFound(true);
-          // Parse the combined description into separate sections
           const parsed = parseDescription(data.description || "");
           setFormData({
             title: data.title || "",
@@ -50,16 +45,10 @@ const EditOpportunity = () => {
             timeCommitment: parsed.timeCommitment || "",
             opportunityType: data.opportunity_type || "volunteering",
           });
-          
-          // Try to load custom questions from session storage
           try {
             const savedQuestions = sessionStorage.getItem(`opportunity_questions_${id}`);
-            if (savedQuestions) {
-              setCustomQuestions(JSON.parse(savedQuestions));
-            }
-          } catch (e) {
-            // no custom questions stored
-          }
+            if (savedQuestions) setCustomQuestions(JSON.parse(savedQuestions));
+          } catch (e) {}
         }
       } catch (err) {
         console.error("Error loading opportunity:", err);
@@ -68,7 +57,6 @@ const EditOpportunity = () => {
         setLoading(false);
       }
     };
-    
     loadOpportunity();
   }, [id]);
 
@@ -85,7 +73,7 @@ const EditOpportunity = () => {
       setShowAddQuestion(false);
     }
   };
-  
+
   const removeCustomQuestion = (qId) => {
     setCustomQuestions((prev) => prev.filter((x) => x.id !== qId));
   };
@@ -95,42 +83,19 @@ const EditOpportunity = () => {
       setToast({ isOpen: true, message: "Please fill in title and description.", type: "error" });
       return;
     }
-
     setSaving(true);
     try {
-      // Combine all sections into description field with markers
       const combinedDesc = combineDescription({
-        description: formData.description,
-        keyResponsibilities: formData.keyResponsibilities,
-        requirementsBenefits: formData.requirementsBenefits,
-        aboutCompany: formData.aboutCompany,
-        applicationInstructions: formData.applicationInstructions,
-        location: formData.location,
-        workModel: formData.workModel,
-        timeCommitment: formData.timeCommitment,
+        description: formData.description, keyResponsibilities: formData.keyResponsibilities,
+        requirementsBenefits: formData.requirementsBenefits, aboutCompany: formData.aboutCompany,
+        applicationInstructions: formData.applicationInstructions, location: formData.location,
+        workModel: formData.workModel, timeCommitment: formData.timeCommitment,
         customQuestions: customQuestions,
       });
-
       const link = createOpportunityLink(formData.title, formData.opportunityType);
-      if (!link.startsWith("https://")) {
-        throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
-      }
-
-      const updateData = {
-        title: formData.title,
-        description: combinedDesc,
-        opportunity_type: formData.opportunityType,
-        link,
-        is_open: true,
-      };
-
-      await opportunities.update(id, updateData);
-      
-      // Save custom questions to session storage
-      if (customQuestions.length > 0) {
-        sessionStorage.setItem(`opportunity_questions_${id}`, JSON.stringify(customQuestions));
-      }
-
+      if (!link.startsWith("https://")) throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
+      await opportunities.update(id, { title: formData.title, description: combinedDesc, opportunity_type: formData.opportunityType, link, is_open: true });
+      if (customQuestions.length > 0) sessionStorage.setItem(`opportunity_questions_${id}`, JSON.stringify(customQuestions));
       setToast({ isOpen: true, message: "Opportunity updated successfully!", type: "success" });
       setTimeout(() => navigate(`/enabler/opportunity/${id}`), 1200);
     } catch (err) {
@@ -140,14 +105,7 @@ const EditOpportunity = () => {
       if (body && typeof body === "object") {
         if (typeof body.detail === "string") msg = body.detail;
         else if (Array.isArray(body.detail)) msg = body.detail.join(". ");
-        else {
-          const parts = [];
-          for (const [k, v] of Object.entries(body)) {
-            if (Array.isArray(v)) parts.push(`${k}: ${v.join(", ")}`);
-            else if (typeof v === "string") parts.push(`${k}: ${v}`);
-          }
-          if (parts.length) msg = parts.join(". ");
-        }
+        else { const parts = []; for (const [k, v] of Object.entries(body)) { if (Array.isArray(v)) parts.push(`${k}: ${v.join(", ")}`); else if (typeof v === "string") parts.push(`${k}: ${v}`); } if (parts.length) msg = parts.join(". "); }
       }
       setToast({ isOpen: true, message: msg, type: "error" });
     } finally {
@@ -157,60 +115,48 @@ const EditOpportunity = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-sans">
+      <div className="min-h-screen bg-[#FAFAFA]">
         <EnablerNavbar />
-        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-auto text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
-            <p className="text-gray-500 mt-4">Loading...</p>
-          </div>
-        </div>
+        <div className="pt-20 flex justify-center"><div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" /></div>
       </div>
     );
   }
 
   if (!opportunityFound) {
     return (
-      <div className="min-h-screen bg-white font-sans">
+      <div className="min-h-screen bg-[#FAFAFA]">
         <EnablerNavbar />
-        <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-          <div className="max-w-4xl mx-auto text-center py-12">
-            <p className="text-gray-500">Opportunity not found.</p>
-            <button
-              onClick={() => navigate('/enabler/opportunities-posted')}
-              className="mt-4 text-[#6A00B1] font-semibold hover:underline"
-            >
-              Back to opportunities
-            </button>
-          </div>
+        <div className="pt-20 text-center">
+          <p className="text-gray-500 mb-4">Opportunity not found.</p>
+          <button onClick={() => navigate("/enabler/opportunities-posted")} className="text-[#8D4087] font-semibold hover:underline">Back to opportunities</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <button
-            onClick={() => navigate(`/enabler/opportunity/${id}`)}
-            className="mb-4 text-[#6A00B1] hover:text-[#5A0091] transition-colors"
-          >
-            <i className="fa fa-arrow-left text-xl"></i>
-          </button>
-          <h1 className="text-2xl md:text-3xl font-bold text-black mb-2">Edit Opportunity</h1>
-          <p className="text-gray-600 mb-6">Update the opportunity details below.</p>
+      <div className="pt-16">
+        {/* Purple Header */}
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+          <div className="max-w-3xl mx-auto">
+            <button onClick={() => navigate(`/enabler/opportunity/${id}`)}
+              className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-4 hover:bg-white/30 transition-colors">
+              ← Back
+            </button>
+            <h1 className="text-2xl font-bold text-white">Edit Opportunity</h1>
+            <p className="text-purple-200 text-sm mt-1">Update the opportunity details below.</p>
+          </div>
+        </div>
 
-          <div className="bg-white rounded-[30px] p-6 md:p-8 shadow-sm border border-gray-200 space-y-6">
+        <div className="max-w-3xl mx-auto px-8 py-8 space-y-4">
+          {/* Basic Info */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+            <h2 className="font-bold text-gray-900 mb-2">Basic Information</h2>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Opportunity Type</label>
-              <select
-                name="opportunityType"
-                value={formData.opportunityType}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
-              >
+              <label className={labelCls}>Opportunity Type</label>
+              <select name="opportunityType" value={formData.opportunityType} onChange={handleInputChange} className={inputCls}>
                 <option value="volunteering">Volunteering</option>
                 <option value="internship">Internship</option>
                 <option value="scholarship">Scholarship</option>
@@ -219,185 +165,104 @@ const EditOpportunity = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Opportunity Title</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="Enter opportunity title"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
-              />
+              <label className={labelCls}>Opportunity Title</label>
+              <input type="text" name="title" value={formData.title} onChange={handleInputChange} placeholder="Enter opportunity title" className={inputCls} />
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Enter opportunity description"
-                rows="5"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-              />
+              <label className={labelCls}>Description</label>
+              <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Enter opportunity description" rows={5} className={textareaCls} />
+            </div>
+          </div>
+
+          {/* Details */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+            <h2 className="font-bold text-gray-900 mb-2">Details</h2>
+            <div>
+              <label className={labelCls}>Key Responsibilities</label>
+              <textarea name="keyResponsibilities" value={formData.keyResponsibilities} onChange={handleInputChange} placeholder="Enter key responsibilities" rows={4} className={textareaCls} />
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Key Responsibilities</label>
-              <textarea
-                name="keyResponsibilities"
-                value={formData.keyResponsibilities}
-                onChange={handleInputChange}
-                placeholder="Enter key responsibilities for this opportunity"
-                rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-              />
+              <label className={labelCls}>Requirements & Benefits</label>
+              <textarea name="requirementsBenefits" value={formData.requirementsBenefits} onChange={handleInputChange} placeholder="Enter requirements and benefits" rows={4} className={textareaCls} />
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Requirements & Benefits</label>
-              <textarea
-                name="requirementsBenefits"
-                value={formData.requirementsBenefits}
-                onChange={handleInputChange}
-                placeholder="Enter requirements and benefits for this opportunity"
-                rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-              />
+              <label className={labelCls}>About the Organization</label>
+              <textarea name="aboutCompany" value={formData.aboutCompany} onChange={handleInputChange} placeholder="Tell applicants about your organization" rows={4} className={textareaCls} />
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">About the Organization</label>
-              <textarea
-                name="aboutCompany"
-                value={formData.aboutCompany}
-                onChange={handleInputChange}
-                placeholder="Tell applicants about your organization"
-                rows="4"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-              />
+              <label className={labelCls}>Application Instructions <span className="font-normal text-gray-400">(optional)</span></label>
+              <textarea name="applicationInstructions" value={formData.applicationInstructions} onChange={handleInputChange} placeholder="Provide any special instructions for applicants" rows={3} className={textareaCls} />
+            </div>
+          </div>
+
+          {/* Logistics */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+            <h2 className="font-bold text-gray-900 mb-2">Logistics</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>Work Mode</label>
+                <select name="workModel" value={formData.workModel} onChange={handleInputChange} className={inputCls}>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Remote">Remote</option>
+                  <option value="On-site">On-site</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Time Commitment</label>
+                <select name="timeCommitment" value={formData.timeCommitment} onChange={handleInputChange} className={inputCls}>
+                  <option value="">Select time commitment</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Flexible">Flexible</option>
+                  <option value="Project-based">Project-based</option>
+                </select>
+              </div>
             </div>
             <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Application Instructions</label>
-              <textarea
-                name="applicationInstructions"
-                value={formData.applicationInstructions}
-                onChange={handleInputChange}
-                placeholder="Provide any special instructions for applicants"
-                rows="3"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 resize-none text-sm md:text-base"
-              />
+              <label className={labelCls}>Location</label>
+              <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g., Lagos, Nigeria or Remote" className={inputCls} />
             </div>
-            <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Work Model</label>
-              <select
-                name="workModel"
-                value={formData.workModel}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
-              >
-                <option value="Hybrid">Hybrid</option>
-                <option value="Remote">Remote</option>
-                <option value="On-site">On-site</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Location</label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="e.g., Lagos, Nigeria or Remote"
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm md:text-base"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter any location - city, country, or "Remote" for remote positions
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Time Commitment</label>
-              <select
-                name="timeCommitment"
-                value={formData.timeCommitment}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 bg-white text-sm md:text-base"
-              >
-                <option value="">Select time commitment</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Flexible">Flexible</option>
-                <option value="Project-based">Project-based</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm md:text-base font-bold text-black mb-2">Custom Application Questions</label>
-              <p className="text-gray-600 text-xs mb-2">Add or remove questions applicants must answer</p>
-              {customQuestions.map((q) => (
-                <div key={q.id} className="flex items-center gap-2 mb-2">
-                  <span className="flex-1 text-sm text-gray-700">{q.question}</span>
-                  <button type="button" onClick={() => removeCustomQuestion(q.id)} className="text-red-500 hover:text-red-700 text-sm font-semibold">Remove</button>
+          </div>
+
+          {/* Custom Questions */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="font-bold text-gray-900 mb-1">Custom Application Questions</h2>
+            <p className="text-xs text-gray-400 mb-4">Add or remove questions applicants must answer</p>
+            <div className="space-y-2 mb-3">
+              {customQuestions.map((q, i) => (
+                <div key={q.id} className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-3">
+                  <span className="text-sm text-gray-700">Q{i + 1}: {q.question}</span>
+                  <button onClick={() => removeCustomQuestion(q.id)} className="text-red-400 hover:text-red-600 text-xs font-semibold">Remove</button>
                 </div>
               ))}
-              {showAddQuestion ? (
-                <div className="mt-2 p-3 border border-purple-200 rounded-lg bg-purple-50">
-                  <textarea
-                    value={newQuestion}
-                    onChange={(e) => setNewQuestion(e.target.value)}
-                    placeholder="Enter your question for applicants"
-                    rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
-                  />
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={addCustomQuestion}
-                      disabled={!newQuestion.trim()}
-                      className="px-3 py-1.5 bg-[#6A00B1] text-white text-sm rounded-lg hover:bg-[#5A0091] disabled:opacity-50"
-                    >
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }}
-                      className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-100"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+            </div>
+            {showAddQuestion ? (
+              <div className="border border-dashed border-purple-200 rounded-xl p-4 bg-purple-50/50">
+                <textarea value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} placeholder="Enter your question for applicants" rows={2} className={textareaCls + " mb-3"} />
+                <div className="flex gap-2">
+                  <button onClick={addCustomQuestion} disabled={!newQuestion.trim()} className="px-4 py-2 bg-[#8D4087] text-white text-sm rounded-xl font-semibold hover:bg-[#651F5F] disabled:opacity-50">Add</button>
+                  <button onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }} className="px-4 py-2 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-gray-50">Cancel</button>
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowAddQuestion(true)}
-                  className="mt-2 text-[#6A00B1] font-semibold text-sm hover:underline"
-                >
-                  + Add question
-                </button>
-              )}
-            </div>
-            <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={() => navigate(`/enabler/opportunity/${id}`)}
-                className="border-2 border-[#6A00B1] text-[#6A00B1] px-6 py-2.5 rounded-lg font-semibold hover:bg-purple-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : 'Save changes'}
-              </button>
-            </div>
+              </div>
+            ) : (
+              <button onClick={() => setShowAddQuestion(true)} className="text-[#8D4087] font-semibold text-sm hover:underline">+ Add question</button>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pb-4">
+            <button onClick={() => navigate(`/enabler/opportunity/${id}`)}
+              className="flex-1 border border-gray-200 text-gray-600 py-3.5 rounded-xl font-semibold text-sm hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+            <button onClick={handleSave} disabled={saving}
+              className="flex-1 bg-[#651F5F] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-[#4a1647] transition-colors disabled:opacity-50">
+              {saving ? "Saving..." : "Save changes"}
+            </button>
           </div>
         </div>
       </div>
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ isOpen: false, message: "", type: "success" })}
-      />
+      <Toast isOpen={toast.isOpen} message={toast.message} type={toast.type} onClose={() => setToast({ isOpen: false, message: "", type: "success" })} />
     </div>
   );
 };

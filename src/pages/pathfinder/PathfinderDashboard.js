@@ -1,285 +1,281 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
-import Volunteer from '../../Assets/img/pathf/8ea3ad24e25785accacd2be3a0b0dba93082dcd2.jpg';
 import { useUser } from "../../context/UserContext";
 import { opportunities, applications } from "../../services/api";
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 
+const TYPE_FILTERS = ["Internship", "Mentorship", "Volunteer", "Full-time"];
+
+const typeBadge = (type = "") => {
+  const t = type.toLowerCase();
+  if (t.includes("mentor")) return "bg-blue-100 text-blue-700";
+  if (t.includes("intern")) return "bg-purple-100 text-purple-700";
+  if (t.includes("volunteer")) return "bg-green-100 text-green-700";
+  if (t.includes("full")) return "bg-orange-100 text-orange-700";
+  return "bg-gray-100 text-gray-600";
+};
+
+const statusBadge = (status = "") => {
+  const s = status.toLowerCase();
+  if (s === "pending") return { label: "PENDING", cls: "bg-orange-100 text-orange-600" };
+  if (s === "shortlisted") return { label: "SHORTLISTED", cls: "bg-purple-100 text-purple-700" };
+  if (s === "rejected") return { label: "REJECTED", cls: "bg-red-100 text-red-600" };
+  if (s === "accepted") return { label: "ACCEPTED", cls: "bg-green-100 text-green-700" };
+  return { label: status.toUpperCase(), cls: "bg-gray-100 text-gray-500" };
+};
+
 const PathfinderDashboard = () => {
   const navigate = useNavigate();
-  const { user, loading, error, logout, clearError } = useUser();
+  const { user } = useUser();
   const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [activeApplicationsCount, setActiveApplicationsCount] = useState(0);
-  const [recommendedOpportunities, setRecommendedOpportunities] = useState([]);
-  const [opportunitiesLoading, setOpportunitiesLoading] = useState(true);
-  const [appliedMap, setAppliedMap] = useState({});
+  const [stats, setStats] = useState({ active: 0, saved: 18, total: 0 });
+  const [recommended, setRecommended] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loadingOpps, setLoadingOpps] = useState(true);
+  const [profileChecklist, setProfileChecklist] = useState([
+    { label: "Complete your profile", done: false },
+    { label: "Upload CV/Resume", done: false },
+    { label: "Complete skill assessment", done: false },
+    { label: "Apply for first opportunity", done: false },
+  ]);
 
   useEffect(() => {
     document.title = "Pathfinder Dashboard - AfriVate";
-    if (user && user.name) {
-      const first = user.name.split(" ")[0];
-      setDisplayName(first);
-    } else if (user && user.first_name) {
-      setDisplayName(user.first_name);
-    } else {
-      setDisplayName("");
+    if (user?.name) setDisplayName(user.name.split(" ")[0]);
+    else if (user?.first_name) setDisplayName(user.first_name);
+    if (user?.has_profile) {
+      setProfileChecklist((prev) => prev.map((item, i) => i === 0 ? { ...item, done: true } : item));
     }
   }, [user]);
 
-  // Load applications count and map from API
   useEffect(() => {
-    const loadApplications = async () => {
+    const load = async () => {
       try {
         const data = await applications.list();
-        const raw = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
-        const pending = raw.filter((app) => app.status === "pending").length;
-        setActiveApplicationsCount(pending);
-        const map = {};
-        raw.forEach((app) => {
-          const oppId = String(app.opportunity ?? app.opportunity_id ?? app.id);
-          if (oppId) map[oppId] = app;
-        });
-        setAppliedMap(map);
-      } catch (err) {
-        console.error("Error loading applications:", err);
-        setActiveApplicationsCount(0);
-        setAppliedMap({});
-      }
+        const raw = Array.isArray(data) ? data : data?.results || [];
+        const active = raw.filter((a) => a.status === "pending").length;
+        setStats((s) => ({ ...s, active, total: raw.length }));
+        const recent = raw.slice(0, 4).map((a) => ({
+          title: a.opportunity_title || "Opportunity",
+          company: a.company || "Organisation",
+          status: a.status || "pending",
+          time: a.updated_at || a.created_at || "",
+        }));
+        setRecentActivity(recent);
+        if (raw.length > 0) setProfileChecklist((prev) => prev.map((item, i) => i === 3 ? { ...item, done: true } : item));
+      } catch {}
     };
-    loadApplications();
+    load();
   }, []);
 
-  // Load opportunities from API
   useEffect(() => {
-    const loadOpportunities = async () => {
-      setOpportunitiesLoading(true);
+    const load = async () => {
+      setLoadingOpps(true);
       try {
         const data = await opportunities.list({ is_open: true });
-        const rawList = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : [];
-        
-        const mapped = rawList.slice(0, 5).map((o) => ({
-          id: o.id,
-          title: o.title || "Opportunity",
+        const raw = Array.isArray(data) ? data : data?.results || [];
+        setRecommended(raw.slice(0, 3).map((o) => ({
+          id: o.id, title: o.title || "Opportunity",
           type: o.opportunity_type || "Volunteer",
-          location: o.location || "",
-          company: getOrgName(o),
-          button: "Apply",
+          company: getOrgName(o), location: o.location || "",
+          description: (o.description || "").replace(/\s+/g, " ").slice(0, 160).trim(),
           _raw: o,
-        }));
-        setRecommendedOpportunities(mapped);
-      } catch (err) {
-        console.error("Error loading opportunities:", err);
-        setRecommendedOpportunities([]);
-      } finally {
-        setOpportunitiesLoading(false);
-      }
+        })));
+      } catch {}
+      setLoadingOpps(false);
     };
-    loadOpportunities();
+    load();
   }, []);
 
-  const filteredOpportunities = recommendedOpportunities.filter((item) => {
-    const q = search.toLowerCase().trim();
-    if (!q) return true;
-    return (
-      (item.title && item.title.toLowerCase().includes(q)) ||
-      (item.location && item.location.toLowerCase().includes(q)) ||
-      (item.type && item.type.toLowerCase().includes(q)) ||
-      (item.company && item.company.toLowerCase().includes(q))
-    );
-  });
+  const handleSearch = (e) => {
+    if (e.key === "Enter" && search.trim()) navigate("/pathfinder/opportunities");
+  };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
-        <NavBar />
-        <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !user) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
-        <NavBar />
-        <div className="pt-24 px-4 max-w-md mx-auto text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            type="button"
-            onClick={() => { clearError(); logout(); navigate('/login'); }}
-            className="bg-[#6A00B1] text-white px-5 py-2.5 rounded-lg font-medium hover:bg-[#5A0091]"
-          >
-            Log out and sign in again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const formatTime = (ts) => {
+    if (!ts) return "";
+    const d = new Date(ts);
+    const diff = Date.now() - d.getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days} days ago`;
+    return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
+  };
 
   return (
-    <div className="min-h-screen bg-white font-sans relative w-full">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <NavBar />
-      
-      {/* Main Content Container */}
-      <div className="w-full max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-14 pb-8">
-        
-        {/* Welcome Section */}
-        <div className="text-center mt-8 sm:mt-10 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#6A00B1] mb-1">
-            Welcome{displayName ? `, ${displayName}` : ""}!
-          </h1>
-          <p className="text-base text-[#7E7E7E] font-medium mb-4">
-            Let's Find your next opportunity
-          </p>
 
-          {/* Search Bar */}
-          <div className="relative w-full max-w-xl mx-auto">
-            <i className="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm z-10"></i>
-            <input
-              type="text"
-              placeholder="Search opportunities..."
-              className="w-full pl-9 pr-3 py-2.5 bg-[rgba(217,217,217,0.4)] border border-[#E9E9E9] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm relative z-20"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Active Volunteering Applications Card */}
-        <div className="bg-white border border-[#E9E9E9] rounded-2xl p-4 sm:p-5 mb-6 w-full mx-auto">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold text-[#6A00B1] mb-2">
-                Active Volunteering Applications
-              </h2>
-              <div className="flex items-baseline gap-2">
-                <p className="text-2xl sm:text-3xl font-black text-[#6A00B1]">{activeApplicationsCount}</p>
-                <p className="text-sm text-[#BDBDBD] font-medium">Active Applications</p>
-              </div>
+      <div className="pt-16">
+        {/* Purple Hero */}
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-10">
+          <div className="max-w-5xl mx-auto">
+            <h1 className="text-3xl font-bold text-white mb-1">
+              Welcome back{displayName ? `, ${displayName}` : ""}!
+            </h1>
+            <p className="text-purple-200 text-sm mb-6">
+              You're making great strides! There are exciting opportunities ready for your skills.
+            </p>
+            {/* Search */}
+            <div className="relative mb-4">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleSearch}
+                placeholder="Explore roles, skills, or organizations..."
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none"
+              />
             </div>
-            <button
-              onClick={() => navigate("/my-applications")}
-              className="bg-[#6A00B1] text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
-            >
-              View
-            </button>
-          </div>
-        </div>
-
-        {/* Discover your Path Section */}
-        <div className="mb-6">
-          <h2 className="text-lg font-black text-[#6A00B1] text-center mb-3">
-            Discover your Path
-          </h2>
-          
-          {/* Volunteering Image Card */}
-          <button
-            onClick={() => navigate("/available-opportunities")}
-            className="relative rounded-2xl overflow-hidden w-full mx-auto h-48 sm:h-56 border border-[#E9E9E9] block text-left"
-          >
-            <img src={Volunteer} alt="Volunteering" className="w-full h-full object-cover" />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-              <h3 className="text-lg sm:text-xl font-extrabold text-white mb-0.5">Volunteering</h3>
-              <p className="text-sm text-white/95">Explore volunteering Opportunities</p>
-            </div>
-          </button>
-        </div>
-
-        {/* Recommended just for you Section */}
-        <div>
-          <h2 className="text-lg font-black text-[#6A00B1] text-center mb-3">
-            Recommended just for you
-          </h2>
-
-          {/* Opportunity Cards */}
-          {opportunitiesLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3 w-full mx-auto">
-              {filteredOpportunities.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white border border-[#E7E7E7] rounded-xl p-4 flex items-center gap-3 hover:shadow-md transition-all cursor-pointer"
-                  onClick={async (e) => {
-                    if (e.target.closest('button')) return;
-                    const app = appliedMap[item.id];
-                    if (app) {
-                      navigate("/apply/" + item.id, {
-                        state: {
-                          job: item,
-                          existingApplication: app,
-                          isEdit: true,
-                          from: "/dashboard",
-                        },
-                      });
-                    } else {
-                      await navigateToVolunteerDetails(navigate, item.id, {
-                        fallbackJob: item,
-                      });
-                    }
-                  }}
-                >
-                  {/* Left - Circular Placeholder */}
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#D9D9D9] rounded-full flex-shrink-0"></div>
-
-                  {/* Center - Job Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-base sm:text-lg text-black mb-0.5">
-                      {item.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-2 items-center text-xs sm:text-sm">
-                      <span className="text-[#FF0000] font-bold">
-                        {item.type}
-                      </span>
-                      {item.location && (
-                        <span className="text-[#A7A1A1] font-medium">
-                          {item.location}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Right - Apply or View application */}
-                  <button
-                    onClick={() => {
-                      const app = appliedMap[item.id];
-                      if (app) {
-                        navigate("/apply/" + item.id, {
-                          state: {
-                            job: item,
-                            existingApplication: app,
-                            isEdit: true,
-                            from: "/dashboard",
-                          },
-                        });
-                      } else {
-                        navigateToVolunteerDetails(navigate, item.id, {
-                          existingApplication: appliedMap[item.id] || null,
-                          fallbackJob: item,
-                        });
-                      }
-                    }}
-                    className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] transition-colors flex-shrink-0 whitespace-nowrap"
-                  >
-                    {appliedMap[item.id] ? "View application" : "Apply"}
-                  </button>
-                </div>
+            {/* Filter chips */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button className="flex items-center gap-1.5 bg-white/20 text-white border border-white/30 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                Filters ▾
+              </button>
+              {TYPE_FILTERS.map((f) => (
+                <button key={f} onClick={() => setActiveFilter(activeFilter === f ? "" : f)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                    activeFilter === f ? "bg-white text-[#651F5F] border-white" : "border-white/40 text-white hover:bg-white/10"
+                  }`}>
+                  {f}
+                </button>
               ))}
             </div>
-          )}
+          </div>
+        </div>
 
-          {/* Empty State */}
-          {!opportunitiesLoading && filteredOpportunities.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No opportunities found...</p>
+        <div className="max-w-5xl mx-auto px-8 py-8">
+          {/* Stat Cards */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            {[
+              { icon: "🚀", label: "Active Applications", val: stats.active },
+              { icon: "🔖", label: "Saved Opportunities", val: stats.saved },
+              { icon: "✅", label: "Total Applications", val: stats.total },
+            ].map((s) => (
+              <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-xl mb-3">{s.icon}</div>
+                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{s.val}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: Recommended */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-gray-900">Recommended for you</h2>
+                <button onClick={() => navigate("/pathfinder/opportunities")}
+                  className="text-[#8D4087] text-sm font-semibold hover:underline flex items-center gap-1">
+                  Filters ▾
+                </button>
+              </div>
+
+              {loadingOpps ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#8D4087] border-t-transparent" />
+                </div>
+              ) : recommended.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+                  <p className="text-gray-400">No opportunities available right now.</p>
+                  <button onClick={() => navigate("/pathfinder/opportunities")}
+                    className="mt-3 text-[#8D4087] font-semibold text-sm hover:underline">Browse all →</button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recommended.map((opp) => (
+                    <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-xl shrink-0">
+                            {opp.type.toLowerCase().includes("mentor") ? "👥" : opp.type.toLowerCase().includes("intern") ? "💼" : "🌱"}
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-gray-900">{opp.title}</h3>
+                            <p className="text-xs text-gray-500">
+                              {opp.company}{opp.location && ` • ${opp.location}`}
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${typeBadge(opp.type)}`}>
+                          {opp.type.charAt(0).toUpperCase() + opp.type.slice(1)}
+                        </span>
+                      </div>
+                      {opp.description && (
+                        <p className="text-sm text-gray-600 mb-4 leading-relaxed line-clamp-2">{opp.description}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => navigateToVolunteerDetails(navigate, opp.id, { job: opp, _raw: opp._raw })}
+                          className="bg-[#651F5F] text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-[#4a1647] transition-colors">
+                          View &amp; Apply
+                        </button>
+                        <button className="text-gray-400 hover:text-[#8D4087] transition-colors text-xl">🔖</button>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={() => navigate("/pathfinder/opportunities")}
+                    className="w-full text-center text-[#8D4087] text-sm font-semibold hover:underline py-2">
+                    View all opportunities →
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Right column */}
+            <div className="space-y-4">
+              {/* Recent Activity */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <h3 className="font-bold text-gray-900 mb-4">Your recent activity</h3>
+                {recentActivity.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-4">No activity yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {recentActivity.map((item, i) => {
+                      const { label, cls } = statusBadge(item.status);
+                      return (
+                        <div key={i} className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-800 leading-tight">{item.title}</p>
+                            <p className="text-xs text-gray-400">
+                              {item.company}{item.time && ` • ${formatTime(item.time)}`}
+                            </p>
+                          </div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${cls}`}>{label}</span>
+                        </div>
+                      );
+                    })}
+                    <button onClick={() => navigate("/pathfinder/my-applications")}
+                      className="text-[#8D4087] text-xs font-semibold hover:underline w-full text-center pt-1">
+                      See all history
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Get Started */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <h3 className="font-bold text-gray-900 mb-4">Get started</h3>
+                <div className="space-y-3">
+                  {profileChecklist.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        item.done ? "bg-[#8D4087] border-[#8D4087]" : "border-gray-300"
+                      }`}>
+                        {item.done && <span className="text-white text-xs">✓</span>}
+                      </div>
+                      <p className={`text-sm ${item.done ? "line-through text-gray-400" : "text-gray-700"}`}>
+                        {item.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

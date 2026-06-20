@@ -361,7 +361,7 @@ const EditNewProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
-        <div className="pt-14 text-center">
+        <div className="pt-16 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
           <p className="text-gray-600 mt-4">Loading profile...</p>
         </div>
@@ -374,7 +374,7 @@ const EditNewProfile = () => {
       .filter(Boolean).join(" ") || "Pathfinder";
     const PreviewSection = ({ title, children }) => (
       <div className="mb-6">
-        <h2 className="text-base font-bold text-[#6A00B1] uppercase tracking-wide mb-3 pb-1 border-b border-gray-200">
+        <h2 className="text-base font-bold text-[#8D4087] uppercase tracking-wide mb-3 pb-1 border-b border-gray-200">
           {title}
         </h2>
         {children}
@@ -390,7 +390,7 @@ const EditNewProfile = () => {
     return (
       <div className="min-h-screen bg-white font-sans relative">
         <NavBar />
-        <div className="pt-14 px-4 md:px-6 pb-10">
+        <div className="pt-16 px-4 md:px-6 pb-10">
           <div className="max-w-4xl mx-auto">
 
             {successMessage && (
@@ -399,13 +399,13 @@ const EditNewProfile = () => {
               </div>
             )}
             {redirectCountdown !== null && redirectCountdown > 0 && (
-              <div className="bg-purple-50 border border-purple-200 text-[#6A00B1] px-4 py-3 rounded-lg mb-4 text-sm">
+              <div className="bg-purple-50 border border-purple-200 text-[#651F5F] px-4 py-3 rounded-xl mb-4 text-sm">
                 Redirecting to your dashboard in {redirectCountdown}s…
               </div>
             )}
 
             {/* Hero header */}
-            <div className="bg-[#6A00B1] rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="rounded-2xl p-6 md:p-8 mb-6 flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center">
                 {profilePhotoUrl ? (
                   <img src={profilePhotoUrl} alt={displayName} className="w-full h-full object-cover" />
@@ -421,7 +421,7 @@ const EditNewProfile = () => {
               <button
                 type="button"
                 onClick={() => setIsPreviewMode(false)}
-                className="flex-shrink-0 bg-white text-[#6A00B1] px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors"
+                className="flex-shrink-0 bg-white text-[#651F5F] px-5 py-2 rounded-xl text-sm font-bold hover:bg-purple-50 transition-colors"
               >
                 <i className="fa fa-edit mr-2" />Edit
               </button>
@@ -467,7 +467,7 @@ const EditNewProfile = () => {
                 <PreviewSection title="Skills">
                   <div className="flex flex-wrap gap-2">
                     {skills.map((s, i) => (
-                      <span key={i} className="bg-purple-100 text-[#6A00B1] px-3 py-1 rounded-full text-sm font-medium">{s}</span>
+                      <span key={i} className="bg-purple-100 text-[#8D4087] px-3 py-1 rounded-full text-sm font-medium">{s}</span>
                     ))}
                   </div>
                 </PreviewSection>
@@ -479,7 +479,7 @@ const EditNewProfile = () => {
                   <ul className="space-y-1">
                     {educations.map((e, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <i className="fa fa-graduation-cap text-[#6A00B1] mt-0.5 text-xs" />
+                        <i className="fa fa-graduation-cap text-[#8D4087] mt-0.5 text-xs" />
                         {e}
                       </li>
                     ))}
@@ -493,7 +493,7 @@ const EditNewProfile = () => {
                   <ul className="space-y-1">
                     {certifications.map((c, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <i className="fa fa-certificate text-[#6A00B1] mt-0.5 text-xs" />
+                        <i className="fa fa-certificate text-[#8D4087] mt-0.5 text-xs" />
                         {c}
                       </li>
                     ))}
@@ -511,7 +511,7 @@ const EditNewProfile = () => {
                         href={l.platform_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-purple-50 text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
+                        className="bg-purple-50 text-[#8D4087] px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-100 transition-colors"
                       >
                         {l.platform_name || l.platform_url}
                       </a>
@@ -530,7 +530,7 @@ const EditNewProfile = () => {
                         href={cred.document}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#6A00B1] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
+                        className="inline-flex items-center gap-2 bg-[#E0C6FF] text-[#8D4087] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#D0B6FF] transition-colors"
                       >
                         <i className="fa fa-file-o" />
                         {cred.document_name || cred.name || "Document"}
@@ -552,7 +552,7 @@ const EditNewProfile = () => {
       <NavBar />
 
       {/* Main Content Container */}
-      <div className="pt-14 px-4 md:px-6 pb-6">
+      <div className="pt-16 px-4 md:px-6 pb-6">
         <div className="max-w-4xl mx-auto">
           {/* Background Container */}
           <div className="bg-[#FAFAFA] rounded-2xl p-4 md:p-6">
@@ -575,10 +575,10 @@ const EditNewProfile = () => {
               <h1 className="text-2xl md:text-3xl font-extrabold text-black mb-1" style={{ fontFamily: 'Inter' }}>
                 Pathfinder Profile Setup
               </h1>
-              <p className="text-xs font-extrabold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-extrabold text-gray-400 mb-2" style={{ fontFamily: 'Inter' }}>
                 Complete your profile to get started on your volunteering journey
               </p>
-              <p className="text-xs font-extrabold text-[#A1A1A1]" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-extrabold text-gray-400" style={{ fontFamily: 'Inter' }}>
                 You can come back and update your profile anytime.
               </p>
             </div>
@@ -597,7 +597,7 @@ const EditNewProfile = () => {
                 <button
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
-                  className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-[#E4E4E4] relative border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#6A00B1]"
+                  className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden bg-[#E4E4E4] relative border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D4087]"
                 >
                   {profilePhotoUrl ? (
                     <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -624,7 +624,7 @@ const EditNewProfile = () => {
                     value={formData.first_name}
                     onChange={handleInputChange}
                     placeholder="First Name"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                     required
                   />
                 </div>
@@ -638,7 +638,7 @@ const EditNewProfile = () => {
                     value={formData.last_name}
                     onChange={handleInputChange}
                     placeholder="Last Name"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                     required
                   />
                 </div>
@@ -652,7 +652,7 @@ const EditNewProfile = () => {
                     value={formData.title}
                     onChange={handleInputChange}
                     placeholder="e.g. Software Engineer"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                   />
                 </div>
               </div>
@@ -674,7 +674,7 @@ const EditNewProfile = () => {
                     value={formData.contact_email}
                     onChange={handleInputChange}
                     placeholder="your@email.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                     required
                   />
                 </div>
@@ -688,7 +688,7 @@ const EditNewProfile = () => {
                     value={formData.phone_number}
                     onChange={handleInputChange}
                     placeholder="+234..."
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                   />
                 </div>
 
@@ -699,7 +699,7 @@ const EditNewProfile = () => {
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm bg-white"
                     required
                   >
                     <option value="">Select Country</option>
@@ -721,7 +721,7 @@ const EditNewProfile = () => {
                     value={formData.state}
                     onChange={handleInputChange}
                     placeholder="State"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                     required
                   />
                 </div>
@@ -735,7 +735,7 @@ const EditNewProfile = () => {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="Address"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                     required
                   />
                 </div>
@@ -749,7 +749,7 @@ const EditNewProfile = () => {
                     value={formData.website}
                     onChange={handleInputChange}
                     placeholder="https://portfolio.com"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
                   />
                 </div>
               </div>
@@ -760,7 +760,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 About
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-2" style={{ fontFamily: 'Inter' }}>
                 Share some details about yourself, your expertise, and what you offer.
               </p>
               <div className="border border-[#E0C6FF] rounded-[10px] p-2.5">
@@ -805,7 +805,7 @@ const EditNewProfile = () => {
                 value={formData.languages}
                 onChange={handleInputChange}
                 placeholder="e.g. English, French, Yoruba"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700 text-sm"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700 text-sm"
               />
             </div>
 
@@ -814,7 +814,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 Skills and Expertise
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-2" style={{ fontFamily: 'Inter' }}>
                 Attract relevant clients by sharing your strength and abilities
               </p>
               {skills.length > 0 && (
@@ -822,13 +822,13 @@ const EditNewProfile = () => {
                   {skills.map((skill, index) => (
                     <span
                       key={index}
-                      className="bg-purple-100 text-[#6A00B1] px-2 py-0.5 rounded-full text-xs flex items-center gap-1.5"
+                      className="bg-purple-100 text-[#8D4087] px-2 py-0.5 rounded-full text-xs flex items-center gap-1.5"
                     >
                       {typeof skill === "string" ? skill : skill?.name || ""}
                       <button
                         type="button"
                         onClick={() => removeSkill(index)}
-                        className="text-[#6A00B1] hover:text-red-500"
+                        className="text-[#8D4087] hover:text-red-500"
                       >
                         <i className="fa fa-times text-xs"></i>
                       </button>
@@ -843,7 +843,7 @@ const EditNewProfile = () => {
                   onChange={(e) => setNewSkill(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
                   placeholder="e.g. JavaScript, Project Management"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700"
                 />
                 <button
                   type="button"
@@ -851,8 +851,8 @@ const EditNewProfile = () => {
                   className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
                   style={{ fontFamily: 'Inter' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add skill</span>
+                  <span className="text-lg md:text-xl font-extrabold text-[#8D4087] leading-none">+</span>
+                  <span className="text-xs font-extrabold text-[#8D4087]">Add skill</span>
                 </button>
               </div>
             </div>
@@ -862,7 +862,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 Education
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-2" style={{ fontFamily: 'Inter' }}>
                 Add institutions or degrees (e.g. BSc Computer Science, University of Lagos)
               </p>
               {educations.length > 0 && (
@@ -891,7 +891,7 @@ const EditNewProfile = () => {
                   onChange={(e) => setNewEducation(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addEducation())}
                   placeholder="e.g. BSc Computer Science, University of Lagos"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700"
                 />
                 <button
                   type="button"
@@ -899,8 +899,8 @@ const EditNewProfile = () => {
                   className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
                   style={{ fontFamily: 'Inter' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add Education</span>
+                  <span className="text-lg md:text-xl font-extrabold text-[#8D4087] leading-none">+</span>
+                  <span className="text-xs font-extrabold text-[#8D4087]">Add Education</span>
                 </button>
               </div>
             </div>
@@ -910,7 +910,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 Certification
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-2" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-2" style={{ fontFamily: 'Inter' }}>
                 Add professional certifications (e.g. AWS Certified, PMP)
               </p>
               {certifications.length > 0 && (
@@ -939,7 +939,7 @@ const EditNewProfile = () => {
                   onChange={(e) => setNewCertification(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCertification())}
                   placeholder="e.g. AWS Certified Solutions Architect, PMP"
-                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                  className="flex-1 min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700"
                 />
                 <button
                   type="button"
@@ -947,8 +947,8 @@ const EditNewProfile = () => {
                   className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors"
                   style={{ fontFamily: 'Inter' }}
                 >
-                  <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                  <span className="text-xs font-extrabold text-[#6A00B1]">Add Certification</span>
+                  <span className="text-lg md:text-xl font-extrabold text-[#8D4087] leading-none">+</span>
+                  <span className="text-xs font-extrabold text-[#8D4087]">Add Certification</span>
                 </button>
               </div>
             </div>
@@ -958,7 +958,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 Social Links
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-3" style={{ fontFamily: 'Inter' }}>
                 Add your professional links (e.g. LinkedIn, GitHub, Portfolio)
               </p>
               {socialLinks.map((link, index) => (
@@ -971,14 +971,14 @@ const EditNewProfile = () => {
                     value={link.platform_name || ""}
                     onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
                     placeholder="Platform (e.g. LinkedIn)"
-                    className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                    className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700"
                   />
                   <input
                     type="url"
                     value={link.platform_url || ""}
                     onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
                     placeholder="https://..."
-                    className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#6A00B1] text-gray-700"
+                    className="flex-1 min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#8D4087] text-gray-700"
                   />
                   <button
                     type="button"
@@ -996,8 +996,8 @@ const EditNewProfile = () => {
                 className="border border-[#E0C6FF] rounded-[10px] px-2.5 py-1.5 flex items-center gap-1.5 hover:bg-purple-50 transition-colors mt-1"
                 style={{ fontFamily: 'Inter' }}
               >
-                <span className="text-lg md:text-xl font-extrabold text-[#6A00B1] leading-none">+</span>
-                <span className="text-xs font-extrabold text-[#6A00B1]">Add social link</span>
+                <span className="text-lg md:text-xl font-extrabold text-[#8D4087] leading-none">+</span>
+                <span className="text-xs font-extrabold text-[#8D4087]">Add social link</span>
               </button>
             </div>
 
@@ -1006,7 +1006,7 @@ const EditNewProfile = () => {
               <h2 className="text-xl md:text-2xl font-bold text-black mb-1.5" style={{ fontFamily: 'Inter' }}>
                 Documents
               </h2>
-              <p className="text-xs font-bold text-[#A1A1A1] mb-3" style={{ fontFamily: 'Inter' }}>
+              <p className="text-xs font-bold text-gray-400 mb-3" style={{ fontFamily: 'Inter' }}>
                 Upload your CV, certificates, or other credentials (PDF or image).
               </p>
 
@@ -1017,13 +1017,13 @@ const EditNewProfile = () => {
                   type="file"
                   accept=".pdf,.png,.jpeg,.jpg,.jfif,.webp"
                   onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
-                  className="text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#6A00B1] file:text-white file:cursor-pointer"
+                  className="text-sm text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-[#651F5F] file:text-white file:cursor-pointer"
                 />
                 <button
                   type="button"
                   onClick={handleDocumentUpload}
                   disabled={!documentFile || uploadingDoc}
-                  className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#5A0091] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-[#651F5F] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#4a1647] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {uploadingDoc ? "Uploading..." : "Upload"}
                 </button>
@@ -1063,7 +1063,7 @@ const EditNewProfile = () => {
                             href={cred.document}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#6A00B1] text-sm hover:underline"
+                            className="text-[#8D4087] text-sm hover:underline"
                           >
                             Open file
                           </a>
@@ -1087,7 +1087,7 @@ const EditNewProfile = () => {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-[#6A00B1] text-white px-6 md:px-12 py-2 md:py-2.5 rounded-[30px] font-semibold text-sm md:text-base hover:bg-[#5A0091] transition-colors disabled:opacity-50"
+                className="bg-[#651F5F] text-white px-6 md:px-12 py-2 md:py-2.5 rounded-[30px] font-semibold text-sm md:text-base hover:bg-[#4a1647] transition-colors disabled:opacity-50"
                 style={{ fontFamily: 'Montserrat' }}
               >
                 {saving ? 'Saving...' : 'Save'}

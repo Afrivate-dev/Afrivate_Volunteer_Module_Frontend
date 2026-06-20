@@ -2,51 +2,60 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { bookmarks } from "../../services/api";
-
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 
 function mapSavedToJob(s) {
-  const opp =
-    s.opportunity && typeof s.opportunity === "object" ? s.opportunity : {};
+  const opp = s.opportunity && typeof s.opportunity === "object" ? s.opportunity : {};
   const opportunityId =
     s.opportunity_id ??
-    (typeof s.opportunity === "number" || typeof s.opportunity === "string"
-      ? s.opportunity
-      : null) ??
-    opp.id ??
-    s.id;
+    (typeof s.opportunity === "number" || typeof s.opportunity === "string" ? s.opportunity : null) ??
+    opp.id ?? s.id;
   return {
     id: opportunityId,
+    bookmarkId: s.id,
     title: opp.title || s.title || "Opportunity",
     company: getOrgName(opp),
     type: opp.opportunity_type || s.opportunity_type || "Volunteering",
     location: opp.location || s.location || "",
-    created_by: opp.created_by,
-    link: opp.link,
+    workMode: opp.work_mode || "",
+    description: (opp.description || "").replace(/\s+/g, " ").slice(0, 200).trim(),
     _raw: Object.keys(opp).length ? opp : s,
   };
 }
 
+const typeChip = (t = "") => {
+  const lower = t.toLowerCase();
+  if (lower.includes("mentor")) return "bg-blue-100 text-blue-700";
+  if (lower.includes("intern")) return "bg-purple-100 text-purple-700";
+  if (lower.includes("volunteer")) return "bg-green-100 text-green-700";
+  return "bg-gray-100 text-gray-600";
+};
+
+const typeIcon = (type = "") => {
+  const t = type.toLowerCase();
+  if (t.includes("mentor")) return "💼";
+  if (t.includes("intern")) return "💻";
+  if (t.includes("volunteer")) return "🤝";
+  return "🏢";
+};
+
 const Bookmarks = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("Opportunities");
   const [bookmarkedJobs, setBookmarkedJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [bookmarkedOrgs, setBookmarkedOrgs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [orgsLoading, setOrgsLoading] = useState(true);
-  const [orgsError, setOrgsError] = useState(null);
+  const [removingId, setRemovingId] = useState(null);
 
   const loadBookmarks = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const data = await bookmarks.opportunitiesSavedList();
       const raw = Array.isArray(data) ? data : data?.results || [];
-      const arr = raw.map(mapSavedToJob).filter((j) => j.id != null);
-      setBookmarkedJobs(arr);
+      setBookmarkedJobs(raw.map(mapSavedToJob).filter((j) => j.id != null));
     } catch (err) {
       console.error("Error loading bookmarks:", err);
-      setError(err.message || "Failed to load bookmarks");
       setBookmarkedJobs([]);
     } finally {
       setLoading(false);
@@ -55,232 +64,174 @@ const Bookmarks = () => {
 
   const loadOrgBookmarks = useCallback(async () => {
     setOrgsLoading(true);
-    setOrgsError(null);
     try {
       const data = await bookmarks.enablersSavedList();
       const raw = Array.isArray(data) ? data : data?.results || [];
-      const arr = raw.map((row) => {
+      setBookmarkedOrgs(raw.map((row) => {
         const details = row.enabler_details || {};
         const baseDetails = details.base_details || {};
-        const name =
-          details.name ||
-          details.organization_name ||
-          details.company_name ||
-          "Organisation";
-        const location = [baseDetails.state, baseDetails.country]
-          .filter(Boolean)
-          .join(", ");
-        // enabler_user_id is the Django auth user ID needed for navigation and DELETE;
-        // the fallback chain handles older API response shapes.
+        const name = details.name || details.organization_name || "Organisation";
+        const location = [baseDetails.state, baseDetails.country].filter(Boolean).join(", ");
         const enablerUserId = row.enabler_user_id ?? row.enabler_id ?? row.enabler ?? null;
-        return { enablerUserId, name, location };
-      }).filter((o) => o.enablerUserId != null);
-      setBookmarkedOrgs(arr);
+        return { enablerUserId, bookmarkId: row.id, name, location };
+      }).filter((o) => o.enablerUserId != null));
     } catch (err) {
       console.error("Error loading org bookmarks:", err);
-      setOrgsError(err.message || "Failed to load organisation bookmarks");
       setBookmarkedOrgs([]);
     } finally {
       setOrgsLoading(false);
     }
   }, []);
 
-  const handleRemoveOrgBookmark = async (enablerUserId) => {
-    try {
-      await bookmarks.enablersSavedDelete(enablerUserId);
-      setBookmarkedOrgs((prev) =>
-        prev.filter((o) => String(o.enablerUserId) !== String(enablerUserId))
-      );
-    } catch (err) {
-      console.error("Error removing org bookmark:", err);
-    }
-  };
-
   useEffect(() => {
-    document.title = "Bookmarks - AfriVate";
-  }, []);
-
-  useEffect(() => {
+    document.title = "Saved - AfriVate";
     loadBookmarks();
     loadOrgBookmarks();
-    // Reload on window focus so bookmarks stay in sync when the user returns
-    // from another tab where they may have added or removed a bookmark.
-    const handleFocus = () => { loadBookmarks(); loadOrgBookmarks(); };
-    window.addEventListener('focus', handleFocus);
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
   }, [loadBookmarks, loadOrgBookmarks]);
 
-  const handleRemoveBookmark = async (job) => {
-    if (job.id == null) return;
+  const handleRemoveOpportunity = async (job) => {
+    setRemovingId(job.id);
     try {
-      await bookmarks.opportunitiesSavedDelete(job.id);
+      await bookmarks.opportunitiesSavedDelete(Number(job.id));
       setBookmarkedJobs((prev) => prev.filter((j) => j.id !== job.id));
     } catch (err) {
       console.error("Error removing bookmark:", err);
+    } finally {
+      setRemovingId(null);
     }
   };
 
-  const handleViewDetails = async (job) => {
-    await navigateToVolunteerDetails(navigate, job.id, {
-      fallbackJob: job,
-    });
+  const handleRemoveOrg = async (org) => {
+    setRemovingId(org.enablerUserId);
+    try {
+      await bookmarks.enablersSavedDelete(org.enablerUserId);
+      setBookmarkedOrgs((prev) => prev.filter((o) => o.enablerUserId !== org.enablerUserId));
+    } catch (err) {
+      console.error("Error removing org bookmark:", err);
+    } finally {
+      setRemovingId(null);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <NavBar />
-      
-      {/* Main Content */}
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-3xl mx-auto">
-          {/* Page Title */}
-          <div className="mb-6 mt-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-black mb-1">
-              Bookmarks
-            </h1>
-            <p className="text-gray-600 text-sm md:text-base">
-              View and manage your saved volunteering opportunities
-            </p>
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-              {error}
-            </div>
-          )}
-
-          {/* Bookmarked Jobs List */}
-          {loading ? (
-            <div className="text-center py-12 text-gray-500">Loading bookmarks...</div>
-          ) : bookmarkedJobs.length === 0 ? (
-            <div className="text-center py-12">
-              <i className="fa fa-bookmark-o text-gray-300 text-4xl mb-4"></i>
-              <p className="text-gray-500 text-lg mb-2">No bookmarked opportunities yet</p>
-              <p className="text-gray-400 text-sm">
-                Start bookmarking opportunities to see them here
-              </p>
-              <button
-                onClick={() => navigate('/available-opportunities')}
-                className="mt-6 bg-[#6A00B1] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#5A0091] transition-colors"
-              >
-                Browse Opportunities
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {bookmarkedJobs.map((job) => (
-                <div
-                  key={String(job.id)}
-                  className="bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-sm transition-all cursor-pointer"
-                  onClick={(e) => {
-                    if (e.target.closest('button')) return;
-                    handleViewDetails(job);
-                  }}
-                >
-                  {/* Left - Circular Placeholder */}
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0"></div>
-
-                  {/* Center - Job Info */}
-                  <div className="flex-1 min-w-0">
-                    <h2 className="font-bold text-gray-900 text-sm mb-0.5">
-                      {job.title}
-                    </h2>
-                    <p className="text-xs text-gray-500">
-                      {job.company}{job.type ? ` - ${job.type}` : ''}
-                    </p>
-                    {job.location && (
-                      <p className="text-xs text-gray-500">
-                        {job.location}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Right - Actions */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleViewDetails(job)}
-                      className="bg-[#6A00B1] text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => handleRemoveBookmark(job)}
-                      className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
-                      title="Remove bookmark"
-                    >
-                      <i className="fa fa-times text-lg"></i>
-                    </button>
-                  </div>
-                </div>
+      <div className="pt-16">
+        {/* Purple Header */}
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl font-bold text-white mb-1">Saved</h1>
+            <p className="text-purple-200 text-sm mb-5">Manage your bookmarked opportunities and organizations.</p>
+            {/* Tabs */}
+            <div className="flex items-center gap-0">
+              {["Opportunities", "Organisations"].map((tab) => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className={`px-5 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                    activeTab === tab ? "bg-white text-[#651F5F]" : "text-purple-200 hover:text-white"
+                  }`}>
+                  {tab}
+                </button>
               ))}
             </div>
-          )}
+          </div>
+        </div>
 
-          {/* Bookmarked Organisations */}
-          <div className="mt-10">
-            <h2 className="text-xl md:text-2xl font-bold text-black mb-1">
-              Saved Organisations
-            </h2>
-            <p className="text-gray-600 text-sm md:text-base mb-4">
-              Organisations you have bookmarked
-            </p>
-
-            {orgsError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                {orgsError}
+        <div className="max-w-4xl mx-auto px-8 py-6">
+          {/* Opportunities Tab */}
+          {activeTab === "Opportunities" && (
+            loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
               </div>
-            )}
-
-            {orgsLoading ? (
-              <div className="text-center py-8 text-gray-500">Loading organisations...</div>
-            ) : bookmarkedOrgs.length === 0 ? (
-              <div className="text-center py-8">
-                <i className="fa fa-building text-gray-300 text-4xl mb-4"></i>
-                <p className="text-gray-500 text-base mb-1">No saved organisations yet</p>
-                <p className="text-gray-400 text-sm">
-                  Bookmark organisations from their profile pages to see them here
-                </p>
+            ) : bookmarkedJobs.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+                <p className="text-3xl mb-3">🔖</p>
+                <p className="font-bold text-gray-800 mb-1">No saved opportunities yet</p>
+                <p className="text-sm text-gray-400 mb-4">Save opportunities to find them easily later.</p>
+                <button onClick={() => navigate("/available-opportunities")}
+                  className="bg-[#8D4087] text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#651F5F] transition-colors">
+                  Browse opportunities
+                </button>
               </div>
             ) : (
-              <div className="flex flex-col gap-3">
-                {bookmarkedOrgs.map((org) => (
-                  <div
-                    key={String(org.enablerUserId)}
-                    className="bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-sm transition-all"
-                  >
-                    <div className="w-12 h-12 bg-gray-200 rounded-full flex-shrink-0 flex items-center justify-center">
-                      <i className="fa fa-building text-gray-400 text-lg"></i>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h2 className="font-bold text-gray-900 text-sm mb-0.5">{org.name}</h2>
-                      {org.location && (
-                        <p className="text-xs text-gray-500">{org.location}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => navigate(`/organization/${org.enablerUserId}`)}
-                        className="bg-[#6A00B1] text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors whitespace-nowrap"
-                      >
-                        View Profile
-                      </button>
-                      <button
-                        onClick={() => handleRemoveOrgBookmark(org.enablerUserId)}
-                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
-                        title="Remove bookmark"
-                      >
-                        <i className="fa fa-times text-lg"></i>
+              <div className="space-y-3">
+                {bookmarkedJobs.map((job) => (
+                  <div key={job.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-xl shrink-0">
+                        {typeIcon(job.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 mb-0.5 cursor-pointer hover:text-[#8D4087]"
+                          onClick={() => navigateToVolunteerDetails(navigate, job.id, { job, _raw: job._raw })}>
+                          {job.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {job.company}{job.location && ` • ${job.location}`}
+                        </p>
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          {job.type && (
+                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${typeChip(job.type)}`}>
+                              {job.type}
+                            </span>
+                          )}
+                          {job.workMode && (
+                            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-full">{job.workMode}</span>
+                          )}
+                        </div>
+                        {job.description && (
+                          <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{job.description}</p>
+                        )}
+                      </div>
+                      <button onClick={() => handleRemoveOpportunity(job)}
+                        disabled={removingId === job.id}
+                        className="text-gray-300 hover:text-red-500 transition-colors text-xl shrink-0 disabled:opacity-50">
+                        🗑️
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            )
+          )}
 
+          {/* Organisations Tab */}
+          {activeTab === "Organisations" && (
+            orgsLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
+              </div>
+            ) : bookmarkedOrgs.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
+                <p className="text-3xl mb-3">🏢</p>
+                <p className="font-bold text-gray-800 mb-1">No saved organisations yet</p>
+                <p className="text-sm text-gray-400">Follow organisations to stay updated on their opportunities.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {bookmarkedOrgs.map((org) => (
+                  <div key={org.enablerUserId}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-xl shrink-0">
+                      🏢
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-gray-900 cursor-pointer hover:text-[#8D4087]"
+                        onClick={() => navigate(`/enabler-profile/${org.enablerUserId}`)}>
+                        {org.name}
+                      </h3>
+                      {org.location && <p className="text-xs text-gray-400">{org.location}</p>}
+                    </div>
+                    <button onClick={() => handleRemoveOrg(org)}
+                      disabled={removingId === org.enablerUserId}
+                      className="text-gray-300 hover:text-red-500 transition-colors text-xl shrink-0 disabled:opacity-50">
+                      🗑️
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
