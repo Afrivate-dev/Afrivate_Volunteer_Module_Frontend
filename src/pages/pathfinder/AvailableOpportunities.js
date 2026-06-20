@@ -1,9 +1,13 @@
+/* eslint-disable no-unused-vars */
+
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Toast from "../../components/common/Toast";
 import Pagination from "../../components/common/Pagination";
-import { opportunities, bookmarks, applications } from "../../services/api";
+import { opportunities, bookmarks } from "../../services/api";
+// import {application } from "../../services/api";
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 import { parseDescription } from "../../utils/descriptionUtils";
 
@@ -31,11 +35,11 @@ function mapOpp(item) {
   };
 }
 
-const statusStyle = (s = "") => {
-  if (s === "Currently Active") return "bg-green-100 text-green-700";
-  if (s === "Closing Soon") return "bg-red-100 text-red-600";
-  return "text-gray-500 text-xs";
-};
+// const statusStyle = (s = "") => {
+//   if (s === "Currently Active") return "bg-green-100 text-green-700";
+//   if (s === "Closing Soon") return "bg-red-100 text-red-600";
+//   return "text-gray-500 text-xs";
+// };
 
 const formatPosted = (ts) => {
   if (!ts) return "";
@@ -75,7 +79,8 @@ const AvailableOpportunities = () => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savedIds, setSavedIds] = useState(new Set());
-  const [saveBusy, setSaveBusy] = useState({});
+  const [setSaveBusy] = useState({});
+  // const [saveBusy] = useState({});
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "error" });
 
   const loadOpportunities = useCallback(async () => {
