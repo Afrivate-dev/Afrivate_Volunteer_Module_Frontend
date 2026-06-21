@@ -71,7 +71,6 @@ const Login = () => {
     rememberMe: false
   });
 
-  const [userType, setUserType] = useState("freelancer");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState('');
@@ -345,57 +344,6 @@ const Login = () => {
                 className="w-full px-4 py-3 bg-white border rounded-xl text-sm text-gray-800 placeholder-[#BEB5BC] outline-none focus:ring-1 focus:ring-[#843A7F] focus:border-[#843A7F] transition-all"
               />
               {errors.email && <p className="text-red-500 text-xs mt-1 pl-1">{errors.email}</p>}
-            </div>
-
-            {/* Role toggle container styled with rectangular rounded corners [INDEX] */}
-            <div 
-              style={{ 
-                position: "relative", 
-                display: "flex", 
-                width: "100%", 
-                backgroundColor: "#FFFFFF", 
-                border: "1px solid #E5E2E5", 
-                borderRadius: "0.75rem", 
-                padding: "4px" 
-              }}
-            >
-              {/* Inner sliding backdrop */}
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute", top: 4, bottom: 4,
-                  width: "calc(50% - 4px)",
-                  borderRadius: "0.5rem", 
-                  background: BRAND_PURPLE,
-                  boxShadow: "0 2px 8px rgba(132,58,127,0.35)",
-                  transform: userType === "freelancer" ? "translateX(0)" : "translateX(calc(100% + 4px))",
-                  transition: "transform 0.3s ease-in-out",
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setUserType("freelancer")}
-                style={{ position: "relative", flex: 1, zIndex: 1, borderRadius: "0.5rem" }}
-                className={`py-2.5 text-[10px] font-bold flex items-center justify-center gap-1.5 transition-colors duration-200 focus:outline-none ${userType === "freelancer" ? "text-white" : LIGHT_ACCENT}`}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block" }}>
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                AS FREELANCER
-              </button>
-              <button
-                type="button"
-                onClick={() => setUserType("enabler")}
-                style={{ position: "relative", flex: 1, zIndex: 1, borderRadius: "0.5rem" }}
-                className={`py-2.5 text-[10px] font-bold flex items-center justify-center gap-1.5 transition-colors duration-200 focus:outline-none ${userType === "enabler" ? "text-white" : LIGHT_ACCENT}`}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "inline-block" }}>
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                AS ENABLER
-              </button>
             </div>
 
             {/* Password */}

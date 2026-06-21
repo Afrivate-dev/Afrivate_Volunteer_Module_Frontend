@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const Input = ({
   label,
@@ -17,7 +17,7 @@ const Input = ({
       {label && (
         <label 
           htmlFor={name}
-          className="block text-[#6A00B1] font-medium mb-2"
+          className="block text-[#8D4087] font-medium mb-2"
         >
           {label}
         </label>
@@ -33,7 +33,7 @@ const Input = ({
         className={`
           w-full px-4 py-3 rounded-lg bg-white
           border ${error ? 'border-red-500' : 'border-0'}
-          focus:outline-none focus:ring-2 focus:ring-[#6A00B1]
+          focus:outline-none focus:ring-2 focus:ring-[#8D4087]
           placeholder-gray-400
         `}
         {...props}

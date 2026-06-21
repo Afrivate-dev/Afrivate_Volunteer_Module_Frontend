@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { profile, notifications } from '../../services/api';
@@ -67,7 +67,7 @@ const EnablerNavbar = () => {
         </div>
 
         <div className="flex items-center">
-          <Link to="/notifications" className="text-gray-800 hover:text-[#6A00B1] relative">
+          <Link to="/notifications" className="text-gray-800 hover:text-[#8D4087] relative">
             <i className="fa-regular fa-bell text-xl" role="img" aria-label="Notifications"></i>
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
@@ -90,13 +90,13 @@ const EnablerNavbar = () => {
             className="px-4 py-6 flex items-center gap-3 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
           >
             {profilePic ? (
-              <img src={profilePic} alt="Profile" className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 object-cover" />
+              <img src={profilePic} alt="Profile" className="w-12 h-12 border-2 border-[#8D4087] rounded-full flex-shrink-0 object-cover" />
             ) : (
-              <div className="w-12 h-12 border-2 border-[#6A00B1] rounded-full flex-shrink-0 flex items-center justify-center bg-gray-200">
-                <i className="fa-solid fa-user text-[#6A00B1]"></i>
+              <div className="w-12 h-12 border-2 border-[#8D4087] rounded-full flex-shrink-0 flex items-center justify-center bg-gray-200">
+                <i className="fa-solid fa-user text-[#8D4087]"></i>
               </div>
             )}
-            <p className="font-sans text-lg font-bold text-[#6A00B1]">{getDisplayName()}</p>
+            <p className="font-sans text-lg font-bold text-[#8D4087]">{getDisplayName()}</p>
           </Link>
 
           <ul className="flex-1 px-3 space-y-2">
@@ -168,7 +168,7 @@ const EnablerNavbar = () => {
             <Link
               to="/create-opportunity"
               onClick={() => setIsOpen(false)}
-              className="block w-full bg-[#6A00B1] text-white font-bold py-3 rounded-lg hover:bg-[#5A0091] transition-colors shadow-md text-center"
+              className="block w-full bg-[#8D4087] text-white font-bold py-3 rounded-lg hover:bg-[#5A0091] transition-colors shadow-md text-center"
             >
               Post an opportunity
             </Link>
@@ -187,3 +187,4 @@ const EnablerNavbar = () => {
 };
 
 export default EnablerNavbar;
+

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import { bookmarks } from "../../services/api"
+import { bookmarks } from "../../services/api";
 
 const avatarBg = (name = "") => {
   const colors = ["bg-purple-100 text-purple-700", "bg-blue-100 text-blue-700", "bg-green-100 text-green-700", "bg-orange-100 text-orange-700"];
@@ -55,7 +55,6 @@ const EnablerPathfinderBookmarks = () => {
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
       <div className="pt-16">
-        {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-white mb-1">Bookmarked Pathfinders</h1>
@@ -101,12 +100,6 @@ const EnablerPathfinderBookmarks = () => {
                     <button onClick={() => handleRemoveBookmark(pf.pathfinderUserId)}
                       className="text-gray-400 hover:text-red-500 text-xl transition-colors" title="Remove from bookmarks">
                       🗑️
-            title="Remove from bookmarks"
-                    >
-                      <i className="fa fa-bookmark"></i> Remove
-           title="Remove from bookmarks"
-                    >
-                      <i className="fa fa-bookmark"></i> Remove
                     </button>
                   </div>
                 </div>

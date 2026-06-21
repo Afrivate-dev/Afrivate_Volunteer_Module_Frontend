@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 const Button = ({
   children,
@@ -11,9 +11,9 @@ const Button = ({
 }) => {
   const baseStyles = 'px-6 py-3 rounded-full font-medium transition duration-300';
   const variantStyles = {
-    primary: 'bg-[#6A00B1] text-white hover:opacity-90 ',
-    secondary: 'border-2 border-[#6A00B1] text-[#6A00B1] hover:bg-purple-50',
-    link: 'text-[#6A00B1] hover:text-[#6A00B1] bg-transparent'
+    primary: 'bg-[#8D4087] text-white hover:opacity-90 ',
+    secondary: 'border-2 border-[#8D4087] text-[#8D4087] hover:bg-purple-50',
+    link: 'text-[#8D4087] hover:text-[#8D4087] bg-transparent'
   };
 
   return (

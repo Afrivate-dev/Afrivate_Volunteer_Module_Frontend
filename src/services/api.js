@@ -6,7 +6,7 @@
  */
 
 const BASE_URL = (
-  process.env.REACT_APP_API_BASE_URL || "https://afrivate-backend-production.up.railway.app"
+  process.env.REACT_APP_API_BASE_URL || "https://afrivate-backend.onrender.com"
 ).replace(/\/$/, "");
 
 const API_PREFIX = process.env.REACT_APP_API_PREFIX ?? "/api";

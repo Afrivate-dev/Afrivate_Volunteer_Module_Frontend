@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../Assets/afrivate-logo.jpeg';
 import vector from '../Assets/Vector (8).png';
@@ -12,7 +12,7 @@ export default function PrivacyPolicy() {
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img src={logoImg} alt="Afrivate" className="h-8 w-auto object-contain" />
           </Link>
-          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#6A00B1] font-semibold text-xs sm:text-sm">
+          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#8D4087] font-semibold text-xs sm:text-sm">
             <Link to="/" className="hover:underline whitespace-nowrap">Home</Link>
             <Link to="/opportunity" className="hover:underline whitespace-nowrap">Volunteering</Link>
             <Link to="/contact" className="hover:underline whitespace-nowrap">Contact Us</Link>
@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-[#6A00B1] mb-2">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#8D4087] mb-2">
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-600 mb-8">
@@ -36,7 +36,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">1. Types of Information Collected</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">1. Types of Information Collected</h2>
           <p className="text-gray-700 mb-2">We collect the following types of information:</p>
           <ul className="list-disc pl-6 space-y-2 text-gray-700">
             <li><strong>Account and profile data:</strong> Name, email address, and information you provide when creating a pathfinder or enabler profile (e.g., title, location, skills, aspirations).</li>
@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">2. How Information is Collected</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">2. How Information is Collected</h2>
           <ul className="list-disc pl-6 space-y-2 text-gray-700">
             <li><strong>Direct input:</strong> Forms for signup, profile creation, contact, and opportunity applications.</li>
             <li><strong>Automatic collection:</strong> Cookies, local storage, and similar technologies (see Cookies section below).</li>
@@ -57,7 +57,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">3. How Information is Used</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">3. How Information is Used</h2>
           <p className="text-gray-700 mb-2">We use your information to:</p>
           <ul className="list-disc pl-6 space-y-2 text-gray-700">
             <li>Provide and operate the Afrivate platform (connecting pathfinders with enablers and volunteering opportunities).</li>
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">4. Data Sharing and Third Parties</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">4. Data Sharing and Third Parties</h2>
           <p className="text-gray-700 mb-2">We may share your data with:</p>
           <ul className="list-disc pl-6 space-y-2 text-gray-700">
             <li><strong>Google Analytics:</strong> To measure site usage and improve our service. Google may collect and process data according to its own privacy policy.</li>
@@ -84,7 +84,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">5. Cookies and Tracking</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">5. Cookies and Tracking</h2>
           <p className="text-gray-700 mb-4">
             We use cookies and similar technologies to provide and improve our services. Our cookie consent banner on first visit allows you to manage preferences. The categories are:
           </p>
@@ -99,7 +99,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">6. Your Rights</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">6. Your Rights</h2>
           <p className="text-gray-700 mb-2">Depending on where you live, you may have the right to:</p>
           <ul className="list-disc pl-6 space-y-2 text-gray-700">
             <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
@@ -114,41 +114,41 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">7. Security Measures</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">7. Security Measures</h2>
           <p className="text-gray-700">
             We implement technical and organizational measures to protect your data, including secure transmission (HTTPS), access controls, and secure storage practices. While we strive to protect your information, no method of transmission or storage over the internet is completely secure. We also uphold confidentiality and NDA obligations as described in our Volunteer Code of Conduct and operational guidelines. If you experience harassment or unsafe conditions, you may report via our Safe-Channel communication channel.
           </p>
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">8. Children&apos;s Privacy</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">8. Children&apos;s Privacy</h2>
           <p className="text-gray-700">
             Our services are not directed at children under 13 (or 16 in some jurisdictions). We do not knowingly collect personal information from children. If you believe we have collected such information, please contact us immediately so we can delete it.
           </p>
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">9. International Users</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">9. International Users</h2>
           <p className="text-gray-700">
             Afrivate operates primarily in Africa and may process data in various jurisdictions. If you access our platform from outside your country, your data may be transferred to and processed in those locations. We take steps to ensure adequate protection in line with applicable laws (e.g., GDPR, CCPA, PIPEDA).
           </p>
         </section>
 
         <section className="mb-10">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">10. Changes to This Policy</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">10. Changes to This Policy</h2>
           <p className="text-gray-700">
             We may update this Privacy Policy from time to time. We will post the updated version on this page and update the effective date. Continued use of our services after changes constitutes acceptance of the updated policy. We encourage you to review this page periodically.
           </p>
         </section>
 
         <section className="mb-12">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">11. Contact Us</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">11. Contact Us</h2>
           <p className="text-gray-700 mb-2">
             For questions about this Privacy Policy or your personal data:
           </p>
           <p className="text-gray-700">
             <strong>Afrivate Technologies Limited</strong><br />
-            Email: <a href="mailto:contact@afrivate.org" className="text-[#6A00B1] font-semibold hover:underline">contact@afrivate.org</a>
+            Email: <a href="mailto:contact@afrivate.org" className="text-[#8D4087] font-semibold hover:underline">contact@afrivate.org</a>
           </p>
         </section>
       </main>
@@ -158,14 +158,15 @@ export default function PrivacyPolicy() {
         <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#6A00B1] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
           </div>
-          <nav className="flex gap-4 text-[#6A00B1] text-xs font-extrabold">
+          <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
           </nav>
-          <p className="text-[10px] md:text-xs text-[#6A00B1] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
         </div>
       </footer>
     </div>
   );
 }
+

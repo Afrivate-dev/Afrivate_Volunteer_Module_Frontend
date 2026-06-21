@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../Assets/afrivate-logo.jpeg';
 import vector from '../Assets/Vector (8).png';
@@ -20,7 +20,7 @@ export default function ContactUs() {
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img src={logoImg} alt="Afrivate" className="h-8 w-auto object-contain" />
           </Link>
-          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#6A00B1] font-semibold text-xs sm:text-sm">
+          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#8D4087] font-semibold text-xs sm:text-sm">
             <Link to="/" className="hover:underline whitespace-nowrap">Home</Link>
             <Link to="/opportunity" className="hover:underline whitespace-nowrap">Volunteering</Link>
             <Link to="/about" className="hover:underline whitespace-nowrap">About Us</Link>
@@ -30,7 +30,7 @@ export default function ContactUs() {
 
       <main className="max-w-2xl mx-auto px-4 py-16">
         <section className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#6A00B1] mb-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#8D4087] mb-4">
             Get in Touch
           </h1>
           <p className="text-lg text-gray-700">
@@ -42,14 +42,14 @@ export default function ContactUs() {
         </section>
 
         <section className="bg-white rounded-2xl p-8 border border-[#E9E9E9] shadow-sm mb-8">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-4">Email Us</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-4">Email Us</h2>
           <p className="text-gray-600 mb-4">
             For direct inquiries, partnerships, or support, reach out via email.
           </p>
-          <p className="text-[#6A00B1] font-semibold mb-4 break-all">{CONTACT_EMAIL}</p>
+          <p className="text-[#8D4087] font-semibold mb-4 break-all">{CONTACT_EMAIL}</p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="inline-flex items-center gap-2 bg-[#6A00B1] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#5A0091] transition"
+            className="inline-flex items-center gap-2 bg-[#8D4087] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#5A0091] transition"
           >
             <i className="fa-solid fa-envelope"></i>
             Send Email
@@ -57,7 +57,7 @@ export default function ContactUs() {
         </section>
 
         <section className="bg-white rounded-2xl p-8 border border-[#E9E9E9] shadow-sm mb-12">
-          <h2 className="text-xl font-bold text-[#6A00B1] mb-6">Connect With Us</h2>
+          <h2 className="text-xl font-bold text-[#8D4087] mb-6">Connect With Us</h2>
           <p className="text-gray-600 mb-6">
             Follow us on social media for the latest opportunities, success stories, and updates from the Afrivate community.
           </p>
@@ -67,7 +67,7 @@ export default function ContactUs() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X (Twitter)"
-              className="w-12 h-12 rounded-full bg-[#6A00B11A] flex items-center justify-center text-[#6A00B1] hover:bg-[#6A00B1] hover:text-white transition"
+              className="w-12 h-12 rounded-full bg-[#8D40871A] flex items-center justify-center text-[#8D4087] hover:bg-[#8D4087] hover:text-white transition"
             >
               <i className="fa-brands fa-x-twitter text-xl"></i>
             </a>
@@ -76,7 +76,7 @@ export default function ContactUs() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="w-12 h-12 rounded-full bg-[#6A00B11A] flex items-center justify-center text-[#6A00B1] hover:bg-[#6A00B1] hover:text-white transition"
+              className="w-12 h-12 rounded-full bg-[#8D40871A] flex items-center justify-center text-[#8D4087] hover:bg-[#8D4087] hover:text-white transition"
             >
               <i className="fa-brands fa-linkedin-in text-xl"></i>
             </a>
@@ -85,17 +85,17 @@ export default function ContactUs() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="w-12 h-12 rounded-full bg-[#6A00B11A] flex items-center justify-center text-[#6A00B1] hover:bg-[#6A00B1] hover:text-white transition"
+              className="w-12 h-12 rounded-full bg-[#8D40871A] flex items-center justify-center text-[#8D4087] hover:bg-[#8D4087] hover:text-white transition"
             >
               <i className="fa-brands fa-instagram text-xl"></i>
             </a>
           </div>
         </section>
 
-        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#6A00B1]/10 via-[#8500DE]/10 to-[#6A00B1]/10 border border-[#6A00B1]/20 p-6 mb-12">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#6A00B1]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#8D4087]/10 via-[#8500DE]/10 to-[#8D4087]/10 border border-[#8D4087]/20 p-6 mb-12">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#8D4087]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8500DE]/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <p className="text-center text-[#6A00B1] font-semibold relative z-10">
+          <p className="text-center text-[#8D4087] font-semibold relative z-10">
             We typically respond within 24–48 hours. For urgent matters, reach out on our social channels.
           </p>
         </section>
@@ -106,14 +106,15 @@ export default function ContactUs() {
         <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#6A00B1] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
           </div>
-          <nav className="flex gap-4 text-[#6A00B1] text-xs font-extrabold">
+          <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
           </nav>
-          <p className="text-[10px] md:text-xs text-[#6A00B1] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
         </div>
       </footer>
     </div>
   );
 }
+

@@ -238,12 +238,14 @@ const EditProfile = () => {
               <div className="space-y-2">
                 {socialLinks.map((link, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm">🔗</span>
+                    <input value={link.platform_name || ""} onChange={(e) => updateSocialLink(i, "platform_name", e.target.value)}
+                      placeholder="Platform (e.g. LinkedIn)"
+                      className="w-36 border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#8D4087] shrink-0" />
                     <input value={link.platform_url || ""} onChange={(e) => updateSocialLink(i, "platform_url", e.target.value)}
-                      placeholder={link.platform_name || "LinkedIn Profile"}
+                      placeholder="https://linkedin.com/in/..."
                       className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#8D4087]" />
                     <button type="button" onClick={() => removeSocialLink(i)}
-                      className="text-red-400 hover:text-red-600 text-lg">🗑️</button>
+                      className="text-red-400 hover:text-red-600 text-lg shrink-0">🗑️</button>
                   </div>
                 ))}
               </div>
