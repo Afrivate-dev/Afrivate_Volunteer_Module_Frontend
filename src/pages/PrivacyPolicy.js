@@ -1,4 +1,4 @@
-﻿import React from 'react';
+mport React from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../Assets/afrivate-logo.jpeg';
 import vector from '../Assets/Vector (8).png';
