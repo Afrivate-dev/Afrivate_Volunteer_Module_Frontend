@@ -1,8 +1,8 @@
-mport React from 'react';
-import iconGroup from '../Assets/img/icons/Group.png'
-import icon1 from '../Assets/img/icons/Vector (1).png'
-import icon2 from '../Assets/img/icons/Vector (2).png'
-import icon3 from '../Assets/img/icons/Vector (3).png'
+import React from 'react';
+import iconGroup from '../Assets/img/icons/Group.png';
+import icon1 from '../Assets/img/icons/Vector (1).png';
+import icon2 from '../Assets/img/icons/Vector (2).png';
+import icon3 from '../Assets/img/icons/Vector (3).png';
 import NavBar from '../components/auth/Navbar';
 
 export default function Roadmap() {
