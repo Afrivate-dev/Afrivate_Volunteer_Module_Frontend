@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const OTPInput = ({ length = 4, onComplete, disabled = false }) => {
   const [otp, setOtp] = useState(new Array(length).fill(''));

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, Component } from 'react';
+import React, { useEffect, Component } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import CookieConsent from './components/CookieConsent';
 import { getConsent } from './utils/cookieConsent';
