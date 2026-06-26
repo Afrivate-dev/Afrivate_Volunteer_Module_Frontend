@@ -185,9 +185,9 @@ const EnablerDashboard = () => {
 
         {/* Stat Cards */}
         <div className="mx-4 sm:mx-6 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard icon={null} label="Open opportunities" value={openCount} />
-          <StatCard icon={null} label="Total applications" value={totalApplications} />
-          <StatCard icon={null} label="Opportunities posted" value={opportunitiesList.length} />
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>} label="Open opportunities" value={openCount} />
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>} label="Total applications" value={totalApplications} />
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>} label="Opportunities posted" value={opportunitiesList.length} />
         </div>
 
         {/* Main Grid */}
