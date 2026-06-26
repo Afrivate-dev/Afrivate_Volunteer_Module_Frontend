@@ -86,7 +86,7 @@ const EnablerProfile = () => {
   const base = profileData?.base_details || {};
   const socialLinks = profileData?.social_links || [];
 
-  const docIcons = ["📄", "🛡️", "🏛️", "🔒"];
+  const docIcons = ["", "", "", ""];
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
@@ -95,13 +95,13 @@ const EnablerProfile = () => {
       <div className="pt-16">
         {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
-          className="px-8 py-8">
+          className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-5xl mx-auto flex items-center gap-6">
             <div className="w-20 h-20 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {base.profile_pic ? (
                 <img src={base.profile_pic} alt="Logo" className="w-full h-full object-cover rounded-xl" />
               ) : (
-                <span className="text-3xl">🏢</span>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>
               )}
             </div>
             <div className="flex-1">
@@ -112,22 +112,22 @@ const EnablerProfile = () => {
               onClick={() => navigate("/enabler/edit-profile")}
               className="border border-white text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#651F5F] transition-colors flex items-center gap-2"
             >
-              ✏️ Edit Profile
+              Edit Profile
             </button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="max-w-5xl mx-auto px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="space-y-4">
             {/* Reach Out */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">📋 Reach Out</h2>
+              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">Reach Out</h2>
               <div className="space-y-3">
                 {base.contact_email && (
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-sm">✉️</div>
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                     <div>
                       <p className="text-xs text-gray-400">Email Address</p>
                       <p className="text-sm text-gray-800">{base.contact_email}</p>
@@ -136,7 +136,7 @@ const EnablerProfile = () => {
                 )}
                 {base.phone_number && (
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-sm">📞</div>
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.45 2 2 0 0 1 3.57 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
                     <div>
                       <p className="text-xs text-gray-400">Phone Number</p>
                       <p className="text-sm text-gray-800">{base.phone_number}</p>
@@ -145,7 +145,7 @@ const EnablerProfile = () => {
                 )}
                 {base.website && (
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-sm">🌐</div>
+                    <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
                     <div>
                       <p className="text-xs text-gray-400">Website</p>
                       <a href={base.website} target="_blank" rel="noopener noreferrer"
@@ -160,7 +160,7 @@ const EnablerProfile = () => {
 
             {/* About Company */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">📍 About the Company</h2>
+              <h2 className="font-bold text-gray-900 mb-4">About the Company</h2>
               <div className="space-y-3">
                 {(base.address || base.state) && (
                   <div>
@@ -200,9 +200,9 @@ const EnablerProfile = () => {
             {/* Corporate Documents */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-gray-900 flex items-center gap-2">🛡️ Corporate Documents</h2>
+                <h2 className="font-bold text-gray-900 flex items-center gap-2">Corporate Documents</h2>
                 <label className="bg-[#8D4087] text-white px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-[#651F5F] transition-colors flex items-center gap-1.5">
-                  ⬆️ {uploading ? "Uploading..." : "Upload Documents"}
+                  {uploading ? "Uploading..." : "Upload Documents"}
                   <input type="file" accept=".pdf,.png,.jpeg,.jpg,.webp" onChange={handleDocumentUpload}
                     disabled={uploading} className="hidden" />
                 </label>

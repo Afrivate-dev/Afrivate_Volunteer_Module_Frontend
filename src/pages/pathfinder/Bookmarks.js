@@ -33,10 +33,10 @@ const typeChip = (t = "") => {
 
 const typeIcon = (type = "") => {
   const t = type.toLowerCase();
-  if (t.includes("mentor")) return "💼";
-  if (t.includes("intern")) return "💻";
-  if (t.includes("volunteer")) return "🤝";
-  return "🏢";
+  if (t.includes("mentor")) return "M";
+  if (t.includes("intern")) return "I";
+  if (t.includes("volunteer")) return "V";
+  return "O";
 };
 
 const Bookmarks = () => {
@@ -118,7 +118,7 @@ const Bookmarks = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-4xl font-bold text-white mb-1">Saved</h1>
             <p className="text-purple-200 text-sm mb-5">Manage your bookmarked opportunities and organizations.</p>
@@ -136,7 +136,7 @@ const Bookmarks = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-8 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6">
           {/* Opportunities Tab */}
           {activeTab === "Opportunities" && (
             loading ? (
@@ -145,7 +145,9 @@ const Bookmarks = () => {
               </div>
             ) : bookmarkedJobs.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
-                <p className="text-3xl mb-3">🔖</p>
+                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                </div>
                 <p className="font-bold text-gray-800 mb-1">No saved opportunities yet</p>
                 <p className="text-sm text-gray-400 mb-4">Save opportunities to find them easily later.</p>
                 <button onClick={() => navigate("/available-opportunities")}
@@ -185,8 +187,8 @@ const Bookmarks = () => {
                       </div>
                       <button onClick={() => handleRemoveOpportunity(job)}
                         disabled={removingId === job.id}
-                        className="text-gray-300 hover:text-red-500 transition-colors text-xl shrink-0 disabled:opacity-50">
-                        🗑️
+                        className="text-gray-300 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                       </button>
                     </div>
                   </div>
@@ -203,7 +205,9 @@ const Bookmarks = () => {
               </div>
             ) : bookmarkedOrgs.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center">
-                <p className="text-3xl mb-3">🏢</p>
+                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>
+                </div>
                 <p className="font-bold text-gray-800 mb-1">No saved organisations yet</p>
                 <p className="text-sm text-gray-400">Follow organisations to stay updated on their opportunities.</p>
               </div>
@@ -212,8 +216,8 @@ const Bookmarks = () => {
                 {bookmarkedOrgs.map((org) => (
                   <div key={org.enablerUserId}
                     className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-xl shrink-0">
-                      🏢
+                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-gray-900 cursor-pointer hover:text-[#8D4087]"
@@ -224,8 +228,8 @@ const Bookmarks = () => {
                     </div>
                     <button onClick={() => handleRemoveOrg(org)}
                       disabled={removingId === org.enablerUserId}
-                      className="text-gray-300 hover:text-red-500 transition-colors text-xl shrink-0 disabled:opacity-50">
-                      🗑️
+                      className="text-gray-300 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                     </button>
                   </div>
                 ))}

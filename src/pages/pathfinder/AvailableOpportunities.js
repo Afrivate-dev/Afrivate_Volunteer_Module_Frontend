@@ -55,10 +55,10 @@ const formatPosted = (ts) => {
 
 const typeIcon = (type = "") => {
   const t = type.toLowerCase();
-  if (t.includes("mentor")) return "💼";
-  if (t.includes("intern")) return "💻";
-  if (t.includes("volunteer")) return "🤝";
-  return "📋";
+  if (t.includes("mentor")) return "B";
+  if (t.includes("intern")) return "I";
+  if (t.includes("volunteer")) return "V";
+  return "O";
 };
 
 const typeColor = (type = "") => {
@@ -151,7 +151,7 @@ const AvailableOpportunities = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-5xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-5 hover:bg-white/30 transition-colors">
@@ -162,16 +162,16 @@ const AvailableOpportunities = () => {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-8 py-8 flex gap-6 items-start">
-          {/* Sidebar Filters */}
-          <div className="w-52 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 self-start">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row gap-6 items-start">
+          {/* Sidebar Filters — desktop only */}
+          <div className="hidden sm:block w-52 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 self-start">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-gray-900">Filters</h3>
               <button onClick={() => { setFilterType("All"); setFilterMode("All"); }}
-                className="text-xs text-[#8D4087] font-semibold hover:underline">Clear all filters</button>
+                className="text-xs text-[#8D4087] font-semibold hover:underline">Clear all</button>
             </div>
             <div className="mb-5">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">TYPE OF OPPORTUNITY</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">TYPE</p>
               <div className="space-y-2">
                 {OPP_TYPES.map((t) => (
                   <label key={t} className="flex items-center gap-2 cursor-pointer">
@@ -185,7 +185,7 @@ const AvailableOpportunities = () => {
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">WORKING ARRANGEMENT</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ARRANGEMENT</p>
               <div className="space-y-2">
                 {WORK_MODES.map((m) => (
                   <label key={m} className="flex items-center gap-2 cursor-pointer">
@@ -200,11 +200,31 @@ const AvailableOpportunities = () => {
             </div>
           </div>
 
+          {/* Mobile filter chips */}
+          <div className="sm:hidden flex gap-2 overflow-x-auto pb-1 w-full">
+            {OPP_TYPES.filter((t) => t !== "All").map((t) => (
+              <button key={t} onClick={() => setFilterType(filterType === t ? "All" : t)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                  filterType === t ? "bg-[#8D4087] text-white border-[#8D4087]" : "bg-white text-gray-600 border-gray-200"
+                }`}>
+                {t}
+              </button>
+            ))}
+            {WORK_MODES.filter((m) => m !== "All").map((m) => (
+              <button key={m} onClick={() => setFilterMode(filterMode === m ? "All" : m)}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                  filterMode === m ? "bg-[#8D4087] text-white border-[#8D4087]" : "bg-white text-gray-600 border-gray-200"
+                }`}>
+                {m}
+              </button>
+            ))}
+          </div>
+
           {/* Main Content */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 w-full">
             {/* Search + Sort */}
             <div className="relative mb-4">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
               <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Search by job title, company name, or keywords..."
                 className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#8D4087]" />
@@ -236,31 +256,34 @@ const AvailableOpportunities = () => {
             ) : (
               <div className="space-y-3">
                 {paginated.map((opp) => (
-                  <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${typeColor(opp.type)} flex items-center justify-center text-xl shrink-0`}>
-                      {typeIcon(opp.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 mb-0.5">{opp.title}</h3>
-                      <p className="text-xs text-gray-500 mb-2">{opp.company}{opp.location && ` • ${opp.location}`}</p>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {opp.type && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{opp.type}</span>}
-                        {opp.workMode && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.workMode}</span>}
-                        {opp.timeCommitment && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.timeCommitment}</span>}
+                  <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-11 h-11 rounded-xl ${typeColor(opp.type)} flex items-center justify-center font-bold text-[#8D4087] text-base shrink-0`}>
+                        {typeIcon(opp.type)}
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2 shrink-0">
-                      {opp.status === "Currently Active" ? (
-                        <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Currently Active</span>
-                      ) : opp.status === "Closing Soon" ? (
-                        <span className="text-xs font-semibold bg-red-100 text-red-600 px-2.5 py-1 rounded-full">Closing Soon</span>
-                      ) : opp.postedAt ? (
-                        <span className="text-xs text-gray-400">{formatPosted(opp.postedAt)}</span>
-                      ) : null}
-                      <button onClick={() => navigateToVolunteerDetails(navigate, opp.id, { job: opp, _raw: opp._raw })}
-                        className="bg-[#651F5F] text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-[#4a1647] transition-colors">
-                        See More Details
-                      </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-bold text-gray-900 text-sm leading-snug">{opp.title}</h3>
+                          {opp.status === "Currently Active" ? (
+                            <span className="text-xs font-semibold bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0">Active</span>
+                          ) : opp.status === "Closing Soon" ? (
+                            <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full shrink-0">Closing Soon</span>
+                          ) : null}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5 mb-2">{opp.company}{opp.location && ` • ${opp.location}`}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap mb-3">
+                          {opp.type && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{opp.type}</span>}
+                          {opp.workMode && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.workMode}</span>}
+                          {opp.timeCommitment && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.timeCommitment}</span>}
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          {opp.postedAt && <span className="text-xs text-gray-400">{formatPosted(opp.postedAt)}</span>}
+                          <button onClick={() => navigateToVolunteerDetails(navigate, opp.id, { job: opp, _raw: opp._raw })}
+                            className="ml-auto bg-[#651F5F] text-white px-4 py-1.5 rounded-xl text-xs font-semibold hover:bg-[#4a1647] transition-colors">
+                            See Details
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}

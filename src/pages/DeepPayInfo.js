@@ -5,22 +5,22 @@ const DeepPayInfo = () => {
     {
       number: 1,
       title: 'Freelancer defines a minimum DeepPay balance while creating an Agreement.',
-      icon: '💼'
+      icon: null
     },
     {
       number: 2,
       title: 'Employer fund DeepPay according to the Payment terms in the Agreement.',
-      icon: '💰'
+      icon: null
     },
     {
       number: 3,
       title: 'Freelancer begins to deliver work according to the expectations set in the Agreement.',
-      icon: '🎯'
+      icon: null
     },
     {
       number: 4,
       title: 'Employer can use the funds in DeepPay to make payments after reviewing the submitted work.',
-      icon: '✅'
+      icon: null
     }
   ];
 

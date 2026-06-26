@@ -55,21 +55,23 @@ const EnablerPathfinderBookmarks = () => {
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
       <div className="pt-16">
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-white mb-1">Bookmarked Pathfinders</h1>
             <p className="text-purple-200 text-sm">Pathfinders you have saved. View their profiles or contact them.</p>
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
           {loading ? (
             <div className="flex justify-center py-16">
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
             </div>
           ) : pathfinders.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-              <p className="text-3xl mb-4">🔖</p>
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </div>
               <p className="font-bold text-gray-800 mb-1">No bookmarked pathfinders yet</p>
               <p className="text-sm text-gray-400 mb-5">Go to Recommendations and bookmark pathfinders to see them here.</p>
               <button onClick={() => navigate("/enabler/recommendations")}
@@ -98,8 +100,8 @@ const EnablerPathfinderBookmarks = () => {
                       Contact
                     </button>
                     <button onClick={() => handleRemoveBookmark(pf.pathfinderUserId)}
-                      className="text-gray-400 hover:text-red-500 text-xl transition-colors" title="Remove from bookmarks">
-                      🗑️
+                      className="text-gray-400 hover:text-red-500 transition-colors" title="Remove from bookmarks">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                     </button>
                   </div>
                 </div>

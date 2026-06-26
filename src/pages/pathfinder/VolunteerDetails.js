@@ -9,10 +9,10 @@ import { parseDescription } from "../../utils/descriptionUtils";
 
 const typeIcon = (type = "") => {
   const t = type.toLowerCase();
-  if (t.includes("mentor")) return "💼";
-  if (t.includes("intern")) return "💻";
-  if (t.includes("volunteer")) return "🤝";
-  return "📋";
+  if (t.includes("mentor")) return "B";
+  if (t.includes("intern")) return "I";
+  if (t.includes("volunteer")) return "V";
+  return "O";
 };
 
 const VolunteerDetails = () => {
@@ -193,7 +193,7 @@ const VolunteerDetails = () => {
       <div className="min-h-screen bg-[#FAFAFA] font-sans">
         <NavBar />
         <div className="pt-20 px-4 py-20 text-center">
-          <p className="text-5xl mb-4">🔍</p>
+          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
           <p className="text-xl font-bold text-gray-800 mb-2">This opportunity has been removed</p>
           <p className="text-gray-500 mb-6">The opportunity you're looking for no longer exists.</p>
           <button onClick={() => navigate("/available-opportunities")}
@@ -221,7 +221,7 @@ const VolunteerDetails = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-5xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-4 hover:bg-white/30 transition-colors">
@@ -237,22 +237,22 @@ const VolunteerDetails = () => {
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">{jobData.title}</h1>
             <div className="flex items-center gap-4 text-purple-200 text-sm flex-wrap">
-              {displayLocation && <span className="flex items-center gap-1">📍 {displayLocation}</span>}
+              {displayLocation && <span className="flex items-center gap-1">{displayLocation}</span>}
               {jobData._raw?.created_at && (
                 <span className="flex items-center gap-1">
-                  📅 Posted {new Date(jobData._raw.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                  Posted {new Date(jobData._raw.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-8 py-8 flex gap-6 items-start">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 items-start">
           {/* Left Main Content */}
-          <div className="flex-1 min-w-0 space-y-4">
+          <div className="flex-1 min-w-0 space-y-4 w-full">
             {/* About this role */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">📄 About this role</h2>
+              <h2 className="font-bold text-gray-900 mb-4">About this role</h2>
               <div className="text-sm text-gray-700 leading-relaxed">
                 {parsedDescription.description ? (
                   <FormattedText text={parsedDescription.description} />
@@ -265,11 +265,11 @@ const VolunteerDetails = () => {
             {/* Key Responsibilities */}
             {parsedDescription.keyResponsibilities && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">✅ Key Responsibilities</h2>
+                <h2 className="font-bold text-gray-900 mb-4">Key Responsibilities</h2>
                 <div className="text-sm text-gray-700 leading-relaxed space-y-2">
                   {parsedDescription.keyResponsibilities.split("\n").filter(Boolean).map((line, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <span className="text-green-500 shrink-0 mt-0.5">✅</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 shrink-0 inline-block"></span>
                       <span>{line.replace(/^[-•*]\s*/, "")}</span>
                     </div>
                   ))}
@@ -280,7 +280,7 @@ const VolunteerDetails = () => {
             {/* Requirements & Benefits */}
             {parsedDescription.requirementsBenefits && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">📋 Requirements</h2>
+                <h2 className="font-bold text-gray-900 mb-4">Requirements</h2>
                 <div className="text-sm text-gray-700 leading-relaxed">
                   <FormattedText text={parsedDescription.requirementsBenefits} />
                 </div>
@@ -290,13 +290,13 @@ const VolunteerDetails = () => {
             {/* About the Organization */}
             {(parsedDescription.aboutCompany || orgProfile) && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">🏢 About the Organisation</h2>
+                <h2 className="font-bold text-gray-900 mb-4">About the Organisation</h2>
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center overflow-hidden shrink-0">
                     {orgProfile?.base_details?.profile_pic ? (
                       <img src={orgProfile.base_details.profile_pic} alt={jobData.company} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl">🏢</span>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>
                     )}
                   </div>
                   <div>
@@ -322,7 +322,7 @@ const VolunteerDetails = () => {
             {/* Application Instructions */}
             {parsedDescription.applicationInstructions && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="font-bold text-gray-900 mb-4">📌 Application Instructions</h2>
+                <h2 className="font-bold text-gray-900 mb-4">Application Instructions</h2>
                 <div className="text-sm text-gray-700 leading-relaxed">
                   <FormattedText text={parsedDescription.applicationInstructions} />
                 </div>
@@ -353,14 +353,14 @@ const VolunteerDetails = () => {
           </div>
 
           {/* Right Sidebar */}
-          <div className="w-72 shrink-0 space-y-4">
+          <div className="w-full lg:w-72 lg:shrink-0 space-y-4">
             {/* Summary Card */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-bold text-gray-900 mb-4">Opportunity details</h3>
               <div className="space-y-3">
                 {jobData.type && (
                   <div className="flex items-start gap-3">
-                    <span className="text-[#8D4087] text-base">💼</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
                     <div>
                       <p className="text-xs text-gray-400 mb-0.5">Type</p>
                       <p className="text-sm font-semibold text-gray-800">{jobData.type}</p>
@@ -369,7 +369,7 @@ const VolunteerDetails = () => {
                 )}
                 {displayTimeCommitment && (
                   <div className="flex items-start gap-3">
-                    <span className="text-[#8D4087] text-base">⏱️</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <div>
                       <p className="text-xs text-gray-400 mb-0.5">Time Commitment</p>
                       <p className="text-sm font-semibold text-gray-800">{displayTimeCommitment}</p>
@@ -378,7 +378,7 @@ const VolunteerDetails = () => {
                 )}
                 {displayWorkModel && (
                   <div className="flex items-start gap-3">
-                    <span className="text-[#8D4087] text-base">🏠</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                     <div>
                       <p className="text-xs text-gray-400 mb-0.5">Work Mode</p>
                       <p className="text-sm font-semibold text-gray-800">{displayWorkModel}</p>
@@ -387,7 +387,7 @@ const VolunteerDetails = () => {
                 )}
                 {displayLocation && (
                   <div className="flex items-start gap-3">
-                    <span className="text-[#8D4087] text-base">📍</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     <div>
                       <p className="text-xs text-gray-400 mb-0.5">Location</p>
                       <p className="text-sm font-semibold text-gray-800">{displayLocation}</p>
@@ -396,7 +396,7 @@ const VolunteerDetails = () => {
                 )}
                 {displayDeadline && (
                   <div className="flex items-start gap-3">
-                    <span className="text-[#8D4087] text-base">📅</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <div>
                       <p className="text-xs text-gray-400 mb-0.5">Deadline</p>
                       <p className="text-sm font-semibold text-gray-800">
@@ -431,7 +431,8 @@ const VolunteerDetails = () => {
                 className={`flex-1 flex items-center justify-center gap-2 border py-3 rounded-xl text-sm font-semibold transition-colors ${
                   isBookmarked ? "border-[#8D4087] text-[#8D4087] bg-purple-50" : "border-gray-200 text-gray-600 hover:border-[#8D4087] hover:text-[#8D4087]"
                 } disabled:opacity-50`}>
-                🔖 {isBookmarked ? "Saved" : "Save"}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                {isBookmarked ? "Saved" : "Save"}
               </button>
               <button onClick={async () => {
                   const shareData = { title: jobData.title, text: `Check out this opportunity: ${jobData.title}`, url: window.location.href };
@@ -447,7 +448,7 @@ const VolunteerDetails = () => {
                   }
                 }}
                 className="flex-1 flex items-center justify-center gap-2 border border-gray-200 text-gray-600 py-3 rounded-xl text-sm font-semibold hover:border-[#8D4087] hover:text-[#8D4087] transition-colors">
-                📤 Share
+                Share
               </button>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FileText, Paperclip } from "lucide-react";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Toast from "../../components/common/Toast";
 import { profile, getApiErrorMessage } from "../../services/api";
@@ -195,7 +196,7 @@ const EnablerProfileSetup = () => {
 
       {/* Purple gradient header */}
       <div className="pt-16">
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-2xl mx-auto">
             <h1 className="text-2xl font-bold text-white mb-1">Enabler Profile Setup</h1>
             <p className="text-purple-200 text-sm">Complete your profile to connect with pathfinders</p>
@@ -365,13 +366,17 @@ const EnablerProfileSetup = () => {
                 <label htmlFor="document-upload" className="cursor-pointer">
                   {formData.document ? (
                     <div>
-                      <p className="text-2xl mb-1">📄</p>
+                      <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mx-auto mb-2">
+                        <FileText size={20} className="text-[#8D4087]" />
+                      </div>
                       <p className="text-xs text-gray-600 font-medium">{formData.document.name}</p>
                       <p className="text-xs text-[#8D4087] mt-1">Click to change</p>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-2xl mb-2">📎</p>
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                        <Paperclip size={20} className="text-gray-400" />
+                      </div>
                       <p className="text-sm font-semibold text-gray-700 mb-0.5">Upload ID or Business Document</p>
                       <p className="text-xs text-gray-400">PDF, MS Word, PNG, JPEG, SVG</p>
                     </div>

@@ -139,7 +139,7 @@ const EditOpportunity = () => {
       <EnablerNavbar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-3xl mx-auto">
             <button onClick={() => navigate(`/enabler/opportunity/${id}`)}
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-4 hover:bg-white/30 transition-colors">
@@ -150,7 +150,7 @@ const EditOpportunity = () => {
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto px-8 py-8 space-y-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-4">
           {/* Basic Info */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
             <h2 className="font-bold text-gray-900 mb-2">Basic Information</h2>

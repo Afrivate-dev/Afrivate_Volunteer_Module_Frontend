@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { User, Camera, Edit2, BookOpen, Award, FileText } from "lucide-react";
 import NavBar from "../../components/auth/Navbar";
 import { useUser } from "../../context/UserContext";
 import { profile, getApiErrorMessage } from "../../services/api";
@@ -409,7 +410,7 @@ const EditNewProfile = () => {
           )}
 
           {/* Purple gradient header */}
-          <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+          <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
             <div className="max-w-4xl mx-auto flex items-start gap-6">
               <div className="w-20 h-20 rounded-full overflow-hidden bg-white/20 flex-shrink-0 flex items-center justify-center border-2 border-white/30">
                 {profilePhotoUrl ? (
@@ -428,13 +429,13 @@ const EditNewProfile = () => {
                 onClick={() => setIsPreviewMode(false)}
                 className="shrink-0 bg-white text-[#651F5F] px-5 py-2 rounded-xl text-sm font-bold hover:bg-purple-50 transition-colors"
               >
-                ✏️ Edit profile
+                <Edit2 size={14} className="inline mr-1" />Edit profile
               </button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="max-w-4xl mx-auto px-8 py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-6">
 
               {(formData.contact_email || formData.phone_number || formData.website) && (
@@ -482,7 +483,7 @@ const EditNewProfile = () => {
                   <ul className="space-y-1.5">
                     {educations.map((e, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <span className="text-[#8D4087] mt-0.5">🎓</span> {e}
+                        <BookOpen size={14} className="text-[#8D4087] mt-0.5 shrink-0" /> {e}
                       </li>
                     ))}
                   </ul>
@@ -494,7 +495,7 @@ const EditNewProfile = () => {
                   <ul className="space-y-1.5">
                     {certifications.map((c, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                        <span className="text-[#8D4087] mt-0.5">📜</span> {c}
+                        <Award size={14} className="text-[#8D4087] mt-0.5 shrink-0" /> {c}
                       </li>
                     ))}
                   </ul>
@@ -520,7 +521,7 @@ const EditNewProfile = () => {
                     {credentials.filter(c => c.document).map((cred) => (
                       <a key={cred.id} href={cred.document} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-purple-100 text-[#651F5F] px-4 py-2 rounded-xl text-sm font-semibold hover:bg-purple-200 transition-colors">
-                        📋 {cred.document_name || cred.name || "Document"}
+                        <FileText size={14} className="shrink-0" /> {cred.document_name || cred.name || "Document"}
                       </a>
                     ))}
                   </div>
@@ -543,7 +544,7 @@ const EditNewProfile = () => {
 
       <div className="pt-16">
         {/* Purple header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl font-bold text-white mb-0.5">Pathfinder Profile Setup</h1>
             <p className="text-purple-200 text-sm">Complete your profile to get started on your volunteering journey.</p>
@@ -573,9 +574,9 @@ const EditNewProfile = () => {
                     {profilePhotoUrl ? (
                       <img src={profilePhotoUrl} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-3xl text-gray-400">👤</span>
+                      <User size={32} className="text-gray-400" />
                     )}
-                    <span className="absolute bottom-0 right-0 w-6 h-6 bg-[#8D4087] rounded-full flex items-center justify-center text-white text-xs">📷</span>
+                    <span className="absolute bottom-0 right-0 w-6 h-6 bg-[#8D4087] rounded-full flex items-center justify-center text-white"><Camera size={12} /></span>
                   </button>
                   {photoUploadError && <p className="text-red-500 text-xs mt-1">{photoUploadError}</p>}
                 </div>

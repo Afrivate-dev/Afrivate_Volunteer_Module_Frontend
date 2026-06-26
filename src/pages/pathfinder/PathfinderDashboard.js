@@ -25,13 +25,24 @@ const statusBadge = (status = "") => {
   return { label: status.toUpperCase(), cls: "bg-gray-100 text-gray-500" };
 };
 
+const cleanDescription = (raw = "") => {
+  if (!raw) return "";
+  // If the field uses [SECTION] labels, extract only the [DESCRIPTION] value
+  if (raw.includes("[DESCRIPTION]")) {
+    const after = raw.split("[DESCRIPTION]")[1] || "";
+    const beforeNext = after.split(/\[[A-Z_]+\]/)[0];
+    return beforeNext.replace(/\s+/g, " ").trim();
+  }
+  return raw.replace(/\s+/g, " ").trim();
+};
+
 const PathfinderDashboard = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [stats, setStats] = useState({ active: 0, saved: 18, total: 0 });
+  const [stats, setStats] = useState({ active: 0, saved: 0, total: 0 });
   const [recommended, setRecommended] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loadingOpps, setLoadingOpps] = useState(true);
@@ -81,7 +92,7 @@ const PathfinderDashboard = () => {
           id: o.id, title: o.title || "Opportunity",
           type: o.opportunity_type || "Volunteer",
           company: getOrgName(o), location: o.location || "",
-          description: (o.description || "").replace(/\s+/g, " ").slice(0, 160).trim(),
+          description: cleanDescription(o.description || "").slice(0, 160),
           _raw: o,
         })));
       } catch {}
@@ -91,8 +102,9 @@ const PathfinderDashboard = () => {
   }, []);
 
   const handleSearch = (e) => {
-    if (e.key === "Enter" && search.trim()) navigate("/pathfinder/opportunities");
+    if (e.key === "Enter" && search.trim()) navigate("/available-opportunities");
   };
+
 
   const formatTime = (ts) => {
     if (!ts) return "";
@@ -111,7 +123,7 @@ const PathfinderDashboard = () => {
 
       <div className="pt-16">
         {/* Purple Hero */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-10">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-7 sm:py-10">
           <div className="max-w-5xl mx-auto">
             <h1 className="text-3xl font-bold text-white mb-1">
               Welcome back{displayName ? `, ${displayName}` : ""}!
@@ -121,7 +133,7 @@ const PathfinderDashboard = () => {
             </p>
             {/* Search */}
             <div className="relative mb-4">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -147,13 +159,13 @@ const PathfinderDashboard = () => {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-8 py-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
           {/* Stat Cards */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {[
-              { icon: "🚀", label: "Active Applications", val: stats.active },
-              { icon: "🔖", label: "Saved Opportunities", val: stats.saved },
-              { icon: "✅", label: "Total Applications", val: stats.total },
+              { icon: null, label: "Active Applications", val: stats.active },
+              { icon: null, label: "Saved Opportunities", val: stats.saved },
+              { icon: null, label: "Total Applications", val: stats.total },
             ].map((s) => (
               <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-xl mb-3">{s.icon}</div>
@@ -168,7 +180,7 @@ const PathfinderDashboard = () => {
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-gray-900">Recommended for you</h2>
-                <button onClick={() => navigate("/pathfinder/opportunities")}
+                <button onClick={() => navigate("/available-opportunities")}
                   className="text-[#8D4087] text-sm font-semibold hover:underline flex items-center gap-1">
                   Filters ▾
                 </button>
@@ -181,7 +193,7 @@ const PathfinderDashboard = () => {
               ) : recommended.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
                   <p className="text-gray-400">No opportunities available right now.</p>
-                  <button onClick={() => navigate("/pathfinder/opportunities")}
+                  <button onClick={() => navigate("/available-opportunities")}
                     className="mt-3 text-[#8D4087] font-semibold text-sm hover:underline">Browse all →</button>
                 </div>
               ) : (
@@ -190,8 +202,8 @@ const PathfinderDashboard = () => {
                     <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-xl shrink-0">
-                            {opp.type.toLowerCase().includes("mentor") ? "👥" : opp.type.toLowerCase().includes("intern") ? "💼" : "🌱"}
+                          <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center shrink-0 text-[#8D4087] font-bold text-lg">
+                            {opp.type.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <h3 className="font-bold text-gray-900">{opp.title}</h3>
@@ -213,11 +225,13 @@ const PathfinderDashboard = () => {
                           className="bg-[#651F5F] text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-[#4a1647] transition-colors">
                           View &amp; Apply
                         </button>
-                        <button className="text-gray-400 hover:text-[#8D4087] transition-colors text-xl">🔖</button>
+                        <button className="text-gray-400 hover:text-[#8D4087] transition-colors">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        </button>
                       </div>
                     </div>
                   ))}
-                  <button onClick={() => navigate("/pathfinder/opportunities")}
+                  <button onClick={() => navigate("/available-opportunities")}
                     className="w-full text-center text-[#8D4087] text-sm font-semibold hover:underline py-2">
                     View all opportunities →
                   </button>
@@ -248,7 +262,7 @@ const PathfinderDashboard = () => {
                         </div>
                       );
                     })}
-                    <button onClick={() => navigate("/pathfinder/my-applications")}
+                    <button onClick={() => navigate("/my-applications")}
                       className="text-[#8D4087] text-xs font-semibold hover:underline w-full text-center pt-1">
                       See all history
                     </button>

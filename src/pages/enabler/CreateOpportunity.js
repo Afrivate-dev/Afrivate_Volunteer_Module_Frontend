@@ -22,7 +22,7 @@ const textareaCls = inputCls + " resize-none";
 
 const TipBox = ({ text }) => (
   <div className="bg-purple-50 border-l-4 border-[#8D4087] rounded-r-xl p-4 mb-5 flex items-start gap-2">
-    <span className="text-[#8D4087] mt-0.5">💡</span>
+    <span className="w-2 h-2 rounded-full bg-[#8D4087] mt-1.5 shrink-0 inline-block"></span>
     <p className="text-sm text-purple-900">{text}</p>
   </div>
 );
@@ -122,7 +122,7 @@ const CreateOpportunity = () => {
             <hr className="border-gray-100 mb-6" />
             <p className="text-xs text-gray-400 uppercase tracking-wider mb-4">SHARE THIS OPPORTUNITY</p>
             <div className="flex items-center justify-center gap-3">
-              {["🔗","✉️","📤"].map((icon, i) => (
+              {["Link","Email","Share"].map((icon, i) => (
                 <button key={i} className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
                   {icon}
                 </button>
@@ -131,7 +131,7 @@ const CreateOpportunity = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mb-4 text-xl">📣</div>
+              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mb-4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
               <h3 className="font-bold text-gray-900 mb-1">Boost Visibility</h3>
               <p className="text-sm text-gray-500">Promote this posting to reach 5x more qualified Pathfinders in your region.</p>
             </div>
@@ -164,7 +164,7 @@ const CreateOpportunity = () => {
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
                     active ? "bg-[#8D4087] text-white" : done ? "bg-purple-100 text-[#8D4087]" : "bg-gray-100 text-gray-400"
                   }`}>
-                  {done ? "✓" : step.num === 1 ? "📄" : step.num === 2 ? "📋" : step.num === 3 ? "🕐" : "✅"}
+                  {done ? "✓" : step.num}
                 </button>
                 {i < STEPS.length - 1 && (
                   <div className={`w-0.5 h-6 mt-1 ${done ? "bg-[#8D4087]" : "bg-gray-200"}`} />
@@ -435,7 +435,7 @@ const CreateOpportunity = () => {
                       <p className="text-xs text-gray-400 font-semibold uppercase">{key}</p>
                       <button onClick={() => setCurrentStep(step)}
                         className="text-xs text-[#8D4087] font-semibold hover:underline flex items-center gap-1">
-                        ✏️ Edit
+                        Edit
                       </button>
                     </div>
                     <p className="text-sm text-gray-800 whitespace-pre-wrap">{val || <span className="text-gray-400 italic">Not provided</span>}</p>

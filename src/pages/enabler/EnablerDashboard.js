@@ -154,12 +154,12 @@ const EnablerDashboard = () => {
       <div className="pt-16">
         {/* Hero Banner */}
         <div
-          className="mx-6 mt-8 rounded-2xl px-12 py-10"
+          className="mx-4 sm:mx-6 mt-6 sm:mt-8 rounded-2xl px-5 sm:px-12 py-7 sm:py-10"
           style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">
+              <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2">
                 Welcome back{welcomeName ? `, ${welcomeName}` : ""}!
               </h1>
               <p className="text-purple-200 text-base">
@@ -184,14 +184,14 @@ const EnablerDashboard = () => {
         </div>
 
         {/* Stat Cards */}
-        <div className="mx-6 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard icon="🚀" label="Open opportunities" value={openCount} />
-          <StatCard icon="👥" label="Total applications" value={totalApplications} />
-          <StatCard icon="📋" label="Opportunities posted" value={opportunitiesList.length} />
+        <div className="mx-4 sm:mx-6 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard icon={null} label="Open opportunities" value={openCount} />
+          <StatCard icon={null} label="Total applications" value={totalApplications} />
+          <StatCard icon={null} label="Opportunities posted" value={opportunitiesList.length} />
         </div>
 
         {/* Main Grid */}
-        <div className="mx-6 mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+        <div className="mx-4 sm:mx-6 mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
           {/* Current Opportunities */}
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -243,9 +243,9 @@ const EnablerDashboard = () => {
                       </div>
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span>👥 {appCount} applicant{appCount !== 1 ? "s" : ""} applied</span>
+                          <span>{appCount} applicant{appCount !== 1 ? "s" : ""} applied</span>
                           {opp.created_at && (
-                            <span>📅 {timeAgo(opp.created_at)}</span>
+                            <span>{timeAgo(opp.created_at)}</span>
                           )}
                         </div>
                         <span className="text-[#8D4087] text-lg">→</span>
@@ -319,7 +319,7 @@ const EnablerDashboard = () => {
               style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-purple-200">💡</span>
+                
                 <span className="text-purple-200 text-sm font-semibold">Enabler Tip</span>
               </div>
               <p className="text-white text-sm leading-relaxed mb-4">

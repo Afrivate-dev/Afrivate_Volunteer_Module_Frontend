@@ -106,7 +106,7 @@ const OpportunityDetails = () => {
 
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-5xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors mb-4">
@@ -125,11 +125,11 @@ const OpportunityDetails = () => {
               <div className="flex gap-3 shrink-0">
                 <button onClick={() => navigate(`/enabler/applicants/${opportunity.id}`)}
                   className="border border-white text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#651F5F] transition-colors flex items-center gap-2">
-                  👥 Applicants
+                  Applicants
                 </button>
                 <button onClick={() => navigate(`/enabler/edit-opportunity/${opportunity.id}`)}
                   className="bg-white text-[#651F5F] px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-50 transition-colors flex items-center gap-2">
-                  ✏️ Edit
+                  Edit
                 </button>
               </div>
             </div>
@@ -137,12 +137,12 @@ const OpportunityDetails = () => {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-5xl mx-auto px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-4">
             {/* Description */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-3">📄 Description</h2>
+              <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-3">Description</h2>
               {parsedDescription.description ? (
                 <div className="text-sm text-gray-700 leading-relaxed">
                   <FormattedText text={parsedDescription.description} />
@@ -155,11 +155,11 @@ const OpportunityDetails = () => {
             {/* Key Responsibilities */}
             {parsedDescription.keyResponsibilities && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-3">✅ Key Responsibilities</h2>
+                <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-3">Key Responsibilities</h2>
                 <div className="text-sm text-gray-700 space-y-2">
                   {parsedDescription.keyResponsibilities.split("\n").filter(Boolean).map((line, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <span className="text-[#8D4087] mt-0.5">✅</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#8D4087] mt-1.5 shrink-0 inline-block"></span>
                       <p>{line.replace(/^[-•]\s*/, "")}</p>
                     </div>
                   ))}
@@ -169,7 +169,7 @@ const OpportunityDetails = () => {
 
             {/* Requirements */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-4">✅ Requirements</h2>
+              <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-4">Requirements</h2>
               {parsedDescription.requirementsBenefits ? (
                 <div className="text-sm text-gray-700">
                   <FormattedText text={parsedDescription.requirementsBenefits} />
@@ -189,7 +189,7 @@ const OpportunityDetails = () => {
             {/* About Org */}
             {parsedDescription.aboutCompany && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h2 className="text-lg font-bold text-[#8D4087] flex items-center gap-2 mb-3">🏢 About the Organisation</h2>
+                <h2 className="text-lg font-bold text-[#8D4087] mb-3">About the Organisation</h2>
                 <div className="text-sm text-gray-700">
                   <FormattedText text={parsedDescription.aboutCompany} />
                 </div>
@@ -203,10 +203,10 @@ const OpportunityDetails = () => {
               <h3 className="font-bold text-gray-900 mb-4">Summary</h3>
               <div className="space-y-3">
                 {[
-                  { icon: "💼", label: "TYPE", val: opportunity.type || "Internship Opportunity" },
-                  { icon: "📍", label: "LOCATION", val: opportunity.location || parsedDescription.location || "Not specified" },
-                  { icon: "🏠", label: "WORK MODE", val: opportunity.workMode || parsedDescription.workMode || "Not specified" },
-                  { icon: "🕐", label: "TIME COMMITMENT", val: opportunity.timeCommitment || parsedDescription.timeCommitment || "Not specified" },
+                  { icon: null, label: "TYPE", val: opportunity.type || "Internship Opportunity" },
+                  { icon: null, label: "LOCATION", val: opportunity.location || parsedDescription.location || "Not specified" },
+                  { icon: null, label: "WORK MODE", val: opportunity.workMode || parsedDescription.workMode || "Not specified" },
+                  { icon: null, label: "TIME COMMITMENT", val: opportunity.timeCommitment || parsedDescription.timeCommitment || "Not specified" },
                 ].map(({ icon, label, val }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-sm shrink-0">{icon}</div>
@@ -236,7 +236,7 @@ const OpportunityDetails = () => {
 
               <button onClick={() => { navigator.clipboard?.writeText(window.location.href); }}
                 className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
-                📤 Share Opportunity
+                Share Opportunity
               </button>
             </div>
           </div>

@@ -124,7 +124,7 @@ const PathfinderProfile = () => {
       <EnablerNavbar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-5 hover:bg-white/30 transition-colors">
@@ -149,7 +149,7 @@ const PathfinderProfile = () => {
                   className={`w-10 h-10 flex items-center justify-center rounded-xl border-2 transition-colors ${
                     isBookmarked ? "bg-white border-white text-[#8D4087]" : "bg-transparent border-white/50 text-white hover:border-white"
                   }`}>
-                  🔖
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                 </button>
                 <button onClick={() => navigate(`/enabler/contact/${id}`)}
                   className="bg-white text-[#651F5F] px-5 py-2 rounded-xl text-sm font-bold hover:bg-purple-50 transition-colors">
@@ -160,7 +160,7 @@ const PathfinderProfile = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             {(pathfinder.contactEmail || pathfinder.phone || pathfinder.website) && (
               <Section title="Contact Information">
@@ -203,7 +203,7 @@ const PathfinderProfile = () => {
                 <ul className="space-y-1">
                   {pathfinder.educations.map((e, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                      <span className="text-[#8D4087] mt-0.5">🎓</span> {e}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2" class="mt-0.5 shrink-0"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> {e}
                     </li>
                   ))}
                 </ul>
@@ -214,7 +214,7 @@ const PathfinderProfile = () => {
                 <ul className="space-y-1">
                   {pathfinder.certifications.map((c, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-800">
-                      <span className="text-[#8D4087] mt-0.5">📜</span> {c}
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2" class="mt-0.5 shrink-0"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg> {c}
                     </li>
                   ))}
                 </ul>
@@ -238,7 +238,7 @@ const PathfinderProfile = () => {
                   {pathfinder.documents.map((doc, i) => (
                     <a key={doc.id ?? i} href={doc.document || doc.url} target="_blank" rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 bg-purple-100 text-[#651F5F] px-4 py-2 rounded-xl text-sm font-semibold hover:bg-purple-200 transition-colors">
-                      📋 {doc.document_name || doc.name || "Document"}
+                      {doc.document_name || doc.name || "Document"}
                     </a>
                   ))}
                 </div>

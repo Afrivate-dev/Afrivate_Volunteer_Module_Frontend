@@ -92,7 +92,7 @@ const MyApplications = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-4 hover:bg-white/30 transition-colors">
@@ -103,7 +103,7 @@ const MyApplications = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-8 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6">
           {/* Filter Tabs */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 px-2">
             <div className="flex items-center gap-1 overflow-x-auto">
@@ -147,43 +147,42 @@ const MyApplications = () => {
                 const bgColor = bgColors[i % bgColors.length];
 
                 return (
-                  <div key={app.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                    {/* Initials avatar */}
-                    <div className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center font-bold text-gray-700 text-sm shrink-0`}>
-                      {initials(company) || initials(title)}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 truncate">{title}</h3>
-                      <p className="text-xs text-gray-500 mb-2">
-                        {company}{location && ` • ${location}`}
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${cls}`}>{label}</span>
-                        {date && (
-                          <span className="text-xs text-gray-400 flex items-center gap-1">
-                            📅 Applied {formatDate(date)}
-                          </span>
-                        )}
+                  <div key={app.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      {/* Initials avatar */}
+                      <div className={`w-11 h-11 rounded-xl ${bgColor} flex items-center justify-center font-bold text-gray-700 text-sm shrink-0`}>
+                        {initials(company) || initials(title)}
                       </div>
-                    </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button onClick={() => handleViewOpportunity(app)}
-                        className="border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
-                        View role
-                      </button>
-                      <button onClick={() => handleViewApplication(app)}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                          app.status === "rejected" || app.status === "closed"
-                            ? "border border-gray-200 text-gray-400 cursor-not-allowed"
-                            : "bg-[#651F5F] text-white hover:bg-[#4a1647]"
-                        }`}
-                        disabled={app.status === "rejected" || app.status === "closed"}>
-                        View application
-                      </button>
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 truncate text-sm">{title}</h3>
+                        <p className="text-xs text-gray-500 mb-2">
+                          {company}{location && ` • ${location}`}
+                        </p>
+                        <div className="flex items-center gap-2 flex-wrap mb-3">
+                          <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${cls}`}>{label}</span>
+                          {date && (
+                            <span className="text-xs text-gray-400">Applied {formatDate(date)}</span>
+                          )}
+                        </div>
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <button onClick={() => handleViewOpportunity(app)}
+                            className="border border-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
+                            View role
+                          </button>
+                          <button onClick={() => handleViewApplication(app)}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                              app.status === "rejected" || app.status === "closed"
+                                ? "border border-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-[#651F5F] text-white hover:bg-[#4a1647]"
+                            }`}
+                            disabled={app.status === "rejected" || app.status === "closed"}>
+                            View application
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );

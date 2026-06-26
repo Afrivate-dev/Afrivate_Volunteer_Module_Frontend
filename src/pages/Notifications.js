@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Bell } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { notifications } from "../services/api";
 import Navbar from "../components/auth/Navbar";
@@ -76,8 +77,8 @@ const Notifications = () => {
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <NavbarComponent />
       <div className="pt-16">
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h1 className="text-2xl font-bold text-white mb-0.5">Notifications</h1>
               <p className="text-purple-200 text-sm">
@@ -98,7 +99,7 @@ const Notifications = () => {
             </div>
           </div>
         </div>
-        <div className="max-w-4xl mx-auto px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">
@@ -112,7 +113,9 @@ const Notifications = () => {
             </div>
           ) : items.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-              <p className="text-4xl mb-3">🔔</p>
+              <div className="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-3">
+                <Bell size={26} className="text-[#8D4087]" />
+              </div>
               <p className="font-bold text-gray-800 mb-1">No notifications yet</p>
               <p className="text-gray-400 text-sm">Notifications from AfriVate and system updates will appear here.</p>
             </div>

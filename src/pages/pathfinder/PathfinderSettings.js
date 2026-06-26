@@ -111,14 +111,14 @@ const PathfinderSettings = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-3xl font-bold text-white mb-1">Settings</h1>
             <p className="text-purple-200 text-sm">Manage your account settings and preferences</p>
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto px-8 py-8 space-y-4">
+        <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-4">
           {/* Profile summary */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl overflow-hidden bg-purple-100 flex items-center justify-center shrink-0">

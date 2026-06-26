@@ -31,10 +31,10 @@ function mapApiOpportunity(item) {
 
 const typeIcon = (type = "") => {
   const t = type.toLowerCase();
-  if (t.includes("mentor")) return "💼";
-  if (t.includes("intern")) return "💻";
-  if (t.includes("volunteer")) return "🤝";
-  return "📋";
+  if (t.includes("mentor")) return "B";
+  if (t.includes("intern")) return "I";
+  if (t.includes("volunteer")) return "V";
+  return "O";
 };
 
 const OpportunitiesPosted = () => {
@@ -116,7 +116,7 @@ const OpportunitiesPosted = () => {
       <EnablerNavbar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto flex items-end justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-1">Opportunities Posted</h1>
@@ -129,7 +129,7 @@ const OpportunitiesPosted = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">{error}</div>
           )}
@@ -140,7 +140,7 @@ const OpportunitiesPosted = () => {
             </div>
           ) : opportunitiesList.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-              <p className="text-4xl mb-4">📋</p>
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></div>
               <p className="font-bold text-gray-800 mb-1">No opportunities posted yet</p>
               <p className="text-sm text-gray-400 mb-5">Create your first opportunity to start receiving applications.</p>
               <button onClick={() => navigate("/create-opportunity")}

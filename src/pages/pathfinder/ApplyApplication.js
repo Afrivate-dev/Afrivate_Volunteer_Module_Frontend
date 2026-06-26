@@ -230,7 +230,7 @@ const ApplyApplication = () => {
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto px-4 py-8 space-y-4">
           {/* Your Details */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-5">👤 Your details</h2>
+            <h2 className="font-bold text-gray-900 mb-5">Your details</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1.5">Full Name</label>
@@ -259,10 +259,10 @@ const ApplyApplication = () => {
 
           {/* CV / Résumé */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-4">📄 CV / Résumé</h2>
+            <h2 className="font-bold text-gray-900 mb-4">CV / Résumé</h2>
             {!cvFile && !profileCvUrl ? (
               <label className="block border-2 border-dashed border-purple-200 rounded-xl p-8 text-center cursor-pointer hover:border-[#8D4087] transition-colors">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3 text-2xl">📄</div>
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
                 <p className="font-semibold text-gray-700 mb-1">Upload your file or drag it here</p>
                 <p className="text-xs text-gray-400">Accepted formats: PDF, DOCX (max 10MB)</p>
                 <input type="file" accept=".pdf,.doc,.docx" ref={fileInputRef}
@@ -278,7 +278,7 @@ const ApplyApplication = () => {
                 {(cvFile || profileCvUrl) && (
                   <div className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-[#8D4087] text-xl">📋</span>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
                       <div>
                         <p className="text-sm font-semibold text-gray-800">
                           {cvFile ? cvFile.name : profileCvName || "CV"}
@@ -303,7 +303,7 @@ const ApplyApplication = () => {
           {/* Additional Questions */}
           {customQuestions.length > 0 && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-5">📝 Additional questions</h2>
+              <h2 className="font-bold text-gray-900 mb-5">Additional questions</h2>
               <div className="space-y-4">
                 {customQuestions.map((q) => (
                   <div key={q.id}>

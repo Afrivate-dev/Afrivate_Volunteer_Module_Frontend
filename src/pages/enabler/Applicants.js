@@ -156,7 +156,7 @@ const Applicants = () => {
 
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-3xl mx-auto">
             <button onClick={() => navigate(-1)}
               className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors mb-3">
@@ -245,13 +245,13 @@ const Applicants = () => {
                             {app.cvUrl && (
                               <a href={app.cvUrl} target="_blank" rel="noopener noreferrer"
                                 className="flex items-center gap-1.5 border border-purple-200 bg-purple-50 text-[#8D4087] px-3 py-2 rounded-xl text-xs font-semibold hover:bg-purple-100 transition-colors">
-                                📄 View CV
+                                View CV
                               </a>
                             )}
                             {app.userId && (
                               <button onClick={() => navigate(`/enabler/pathfinder-profile/${app.userId}`)}
                                 className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
-                                👤 View profile
+                                View profile
                               </button>
                             )}
                             <button

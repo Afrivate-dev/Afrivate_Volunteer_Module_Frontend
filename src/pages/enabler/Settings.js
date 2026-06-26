@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Camera, Lock, User, FileText, Trash2, Upload } from "lucide-react";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
@@ -210,7 +211,7 @@ const Settings = () => {
           </div>
           <button onClick={handleSave}
             className="border border-white text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#651F5F] transition-colors flex items-center gap-2">
-            💾 Save changes
+            Save changes
           </button>
         </div>
 
@@ -223,11 +224,11 @@ const Settings = () => {
                 <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center">
                   {profilePhotoUrl
                     ? <img src={profilePhotoUrl} alt="Logo" className="w-full h-full object-cover" />
-                    : <span className="text-2xl">🏢</span>}
+                    : <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>}
                 </div>
                 <button type="button" onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#8D4087] rounded-full flex items-center justify-center text-white text-xs">
-                  📷
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#8D4087] rounded-full flex items-center justify-center text-white">
+                  <Camera size={12} />
                 </button>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
               </div>
@@ -263,8 +264,8 @@ const Settings = () => {
 
           {/* Security & Privacy */}
           <div className={cardCls}>
-            <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-4">🔒 Security &amp; Privacy</h2>
-            <div className="grid grid-cols-3 gap-4">
+            <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-4"><Lock size={16} className="text-[#8D4087]" /> Security &amp; Privacy</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs text-gray-500 mb-1.5">Current Password</label>
                 <input type="password" name="currentPassword" value={formData.currentPassword} onChange={handleInputChange}
@@ -290,7 +291,7 @@ const Settings = () => {
           {/* Legacy Authentication */}
           <div className="border-2 border-dashed border-purple-200 rounded-2xl p-4 flex items-center justify-between bg-purple-50/40">
             <div className="flex items-center gap-3">
-              <span className="text-xl">👤</span>
+              <User size={20} className="text-[#8D4087]" />
               <div>
                 <p className="text-sm font-semibold text-gray-800">Legacy Authentication</p>
                 <p className="text-xs text-gray-500">Need to set a dedicated password for third-party integrations?</p>
@@ -305,9 +306,9 @@ const Settings = () => {
           {/* Organization Documents */}
           <div className={cardCls}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-bold text-gray-900 flex items-center gap-2">📄 Organization Documents</h2>
+              <h2 className="font-bold text-gray-900 flex items-center gap-2"><FileText size={16} className="text-[#8D4087]" /> Organization Documents</h2>
               <label className="border border-[#8D4087] text-[#8D4087] px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-purple-50 flex items-center gap-1.5">
-                ⬆️ Upload new
+                <Upload size={13} /> Upload new
                 <input ref={documentInputRef} type="file" accept=".pdf,.png,.jpeg,.jpg,.webp"
                   onChange={(e) => setDocumentFile(e.target.files?.[0] || null)} className="hidden" />
               </label>
@@ -332,7 +333,7 @@ const Settings = () => {
                   return (
                     <div key={cred.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center text-lg">📄</div>
+                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center"><FileText size={18} className="text-[#8D4087]" /></div>
                         <div>
                           <p className="text-sm font-semibold text-gray-800">{cred.document_name}</p>
                           {cred.uploaded_at && (
@@ -345,7 +346,7 @@ const Settings = () => {
                           ? <span className="text-xs font-semibold bg-orange-100 text-orange-600 px-2.5 py-1 rounded-full">Expiring soon</span>
                           : <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Verified</span>}
                         <button onClick={() => handleDeleteCredential(cred.id)}
-                          className="text-gray-400 hover:text-red-500 transition-colors">🗑️</button>
+                          className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
                       </div>
                     </div>
                   );
@@ -360,7 +361,7 @@ const Settings = () => {
             <p className="text-sm text-gray-500 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
             <button onClick={() => setDeleteModal({ isOpen: true })}
               className="bg-red-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors flex items-center gap-2">
-              🗑️ Delete Account
+              <Trash2 size={15} /> Delete Account
             </button>
           </div>
 

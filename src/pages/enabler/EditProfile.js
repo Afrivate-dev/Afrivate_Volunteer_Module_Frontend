@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Camera, Trash2 } from "lucide-react";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import { useUser } from "../../context/UserContext";
 import Toast from "../../components/common/Toast";
@@ -153,11 +154,11 @@ const EditProfile = () => {
                 <div className="w-20 h-20 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
                   {profilePhotoUrl
                     ? <img src={profilePhotoUrl} alt="Logo" className="w-full h-full object-cover" />
-                    : <span className="text-3xl">🏢</span>}
+                    : <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>}
                 </div>
                 <button type="button" onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 w-7 h-7 bg-[#8D4087] rounded-full flex items-center justify-center text-white text-xs hover:bg-[#651F5F]">
-                  📷
+                  className="absolute bottom-0 right-0 w-7 h-7 bg-[#8D4087] rounded-full flex items-center justify-center text-white hover:bg-[#651F5F]">
+                  <Camera size={13} />
                 </button>
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={handlePhotoChange} className="hidden" />
               </div>
@@ -245,7 +246,7 @@ const EditProfile = () => {
                       placeholder="https://linkedin.com/in/..."
                       className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#8D4087]" />
                     <button type="button" onClick={() => removeSocialLink(i)}
-                      className="text-red-400 hover:text-red-600 text-lg shrink-0">🗑️</button>
+                      className="text-red-400 hover:text-red-600 shrink-0"><Trash2 size={16} /></button>
                   </div>
                 ))}
               </div>
