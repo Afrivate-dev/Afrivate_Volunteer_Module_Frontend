@@ -65,7 +65,7 @@ const CookieConsent = () => {
                   id="cookie-essential"
                   checked
                   disabled
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#6A00B1]"
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#8D4087]"
                 />
                 <label htmlFor="cookie-essential" className="text-sm text-gray-700">
                   <span className="font-semibold">Essential</span> – Required for the site to work (login, profile, bookmarks).
@@ -77,7 +77,7 @@ const CookieConsent = () => {
                   id="cookie-analytics"
                   checked
                   disabled
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#6A00B1]"
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#8D4087]"
                 />
                 <label htmlFor="cookie-analytics" className="text-sm text-gray-700">
                   <span className="font-semibold">Google Analytics</span> – Required to measure site usage and improve our service.
@@ -89,7 +89,7 @@ const CookieConsent = () => {
                   id="cookie-preferences"
                   checked={preferences}
                   onChange={(e) => setPreferences(e.target.checked)}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#6A00B1] focus:ring-[#6A00B1]"
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#8D4087] focus:ring-[#8D4087]"
                 />
                 <label htmlFor="cookie-preferences" className="text-sm text-gray-700">
                   <span className="font-semibold">Preferences</span> – Saves your search and form preferences.
@@ -102,7 +102,7 @@ const CookieConsent = () => {
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="px-4 py-2.5 bg-[#6A00B1] text-white text-sm font-semibold rounded-xl hover:bg-[#5A0091] transition-colors"
+              className="px-4 py-2.5 bg-[#8D4087] text-white text-sm font-semibold rounded-xl hover:bg-[#5A0091] transition-colors"
             >
               Accept all
             </button>
@@ -111,7 +111,7 @@ const CookieConsent = () => {
                 <button
                   type="button"
                   onClick={handleAcceptSelection}
-                  className="px-4 py-2.5 bg-[#6A00B1] text-white text-sm font-semibold rounded-xl hover:bg-[#5A0091] transition-colors"
+                  className="px-4 py-2.5 bg-[#8D4087] text-white text-sm font-semibold rounded-xl hover:bg-[#5A0091] transition-colors"
                 >
                   Save preferences
                 </button>
@@ -140,3 +140,4 @@ const CookieConsent = () => {
 };
 
 export default CookieConsent;
+

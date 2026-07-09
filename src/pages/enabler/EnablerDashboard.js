@@ -4,95 +4,125 @@ import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import { useUser } from "../../context/UserContext";
 import { opportunities, applications } from "../../services/api";
 
+const statusConfig = (status = "") => {
+  const s = status.toLowerCase();
+  if (s === "open" || s === "active" || s === "published")
+    return { label: "Currently open", cls: "bg-green-100 text-green-700" };
+  if (s === "pending" || s === "draft")
+    return { label: "Application pending", cls: "bg-orange-100 text-orange-600" };
+  return { label: "Position closed", cls: "bg-gray-100 text-gray-500" };
+};
+
+const applicantStatusConfig = (status = "") => {
+  const s = status.toLowerCase();
+  if (s === "shortlisted")
+    return { label: "Shortlisted candidates", cls: "bg-purple-100 text-purple-700" };
+  if (s === "accepted")
+    return { label: "Accepted", cls: "bg-green-100 text-green-700" };
+  if (s === "rejected")
+    return { label: "Rejected", cls: "bg-red-100 text-red-600" };
+  if (s === "under_review" || s === "review")
+    return { label: "Under review", cls: "bg-gray-100 text-gray-600" };
+  return { label: "New applicant", cls: "bg-blue-100 text-blue-700" };
+};
+
+const timeAgo = (dateStr) => {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day ago";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+  return `${Math.floor(weeks / 4)} month(s) ago`;
+};
+
+const StatCard = ({ icon, label, value }) => (
+  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-lg">
+        {icon}
+      </div>
+      <span className="text-sm text-gray-500">{label}</span>
+    </div>
+    <p className="text-4xl font-bold text-gray-900">{value}</p>
+  </div>
+);
+
 const EnablerDashboard = () => {
   const navigate = useNavigate();
   const { user, loading, error, logout, clearError } = useUser();
   const [opportunitiesList, setOpportunitiesList] = useState([]);
   const [welcomeName, setWelcomeName] = useState("");
   const [opportunitiesLoading, setOpportunitiesLoading] = useState(true);
-  const [applicants, setApplicants] = useState([]);
+  const [recentApplicants, setRecentApplicants] = useState([]);
+  const [totalApplications, setTotalApplications] = useState(0);
+  const [appCountByOpp, setAppCountByOpp] = useState({});
 
   useEffect(() => {
     document.title = "Enabler Dashboard - AfriVate";
   }, []);
 
   useEffect(() => {
-    if (user && user.name) {
-      setWelcomeName(user.name);
-    } else if (user && user.first_name) {
-      setWelcomeName(user.first_name);
-    }
+    if (user?.name) setWelcomeName(user.name);
+    else if (user?.first_name) setWelcomeName(user.first_name);
   }, [user]);
 
-  // Load opportunities from API
   useEffect(() => {
-    const loadOpportunities = async () => {
+    const load = async () => {
       setOpportunitiesLoading(true);
       try {
         const data = await opportunities.mine();
-        const list = Array.isArray(data) ? data : [];
-        setOpportunitiesList(list);
-      } catch (err) {
-        console.error("Error loading opportunities:", err);
+        setOpportunitiesList(Array.isArray(data) ? data : []);
+      } catch {
         setOpportunitiesList([]);
       } finally {
         setOpportunitiesLoading(false);
       }
     };
-    loadOpportunities();
+    load();
   }, []);
 
-  // Load applications from API
   useEffect(() => {
-    const loadApplications = async () => {
+    const load = async () => {
       try {
         const data = await applications.list();
-        if (Array.isArray(data)) {
-          const byOpp = {};
-          data.forEach((a) => {
-            const oid = String(a.opportunity || "");
-            if (!oid) return;
-            if (!byOpp[oid]) {
-              byOpp[oid] = { 
-                opportunityId: oid, 
-                jobTitle: a.opportunity_title || "Opportunity", 
-                count: 0,
-                status: a.status || "pending"
-              };
-            }
-            byOpp[oid].count += 1;
-          });
-          
-          setApplicants(
-            Object.values(byOpp).map((o) => ({
-              opportunityId: o.opportunityId,
-              jobTitle: o.jobTitle,
-              applications: o.count,
-              status: o.status === "pending" ? "Pending" : o.status === "accepted" ? "Accepted" : o.status === "rejected" ? "Rejected" : "New",
-              statusColor: o.status === "pending" ? "bg-yellow-100 text-yellow-800" : o.status === "accepted" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800",
-            }))
-          );
-        }
-      } catch (err) {
-        console.error("Error loading applications:", err);
-        setApplicants([]);
+        if (!Array.isArray(data)) return;
+        setTotalApplications(data.length);
+
+        // count per opportunity
+        const counts = {};
+        data.forEach((a) => {
+          const oid = String(a.opportunity || "");
+          if (oid) counts[oid] = (counts[oid] || 0) + 1;
+        });
+        setAppCountByOpp(counts);
+
+        // recent applicants — latest 4
+        const sorted = [...data].sort(
+          (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+        );
+        setRecentApplicants(sorted.slice(0, 4));
+      } catch {
+        setRecentApplicants([]);
       }
     };
-    loadApplications();
+    load();
   }, []);
 
-  const analytics = [
-    { label: "Views", value: "—", change: "", trend: "up", period: "Coming soon" },
-    { label: "Completed Applications", value: applicants.length, change: "", trend: "up", period: "Total applications" },
-    { label: "Qualified Candidates", value: "—", change: "", trend: "up", period: "Coming soon" },
-  ];
+  const openCount = opportunitiesList.filter((o) => {
+    const s = (o.status || "").toLowerCase();
+    return s === "open" || s === "active" || s === "published";
+  }).length;
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
         <EnablerNavbar />
         <div className="pt-14 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#8D4087] border-t-transparent mx-auto mb-4" />
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
@@ -101,14 +131,14 @@ const EnablerDashboard = () => {
 
   if (error && !user) {
     return (
-      <div className="min-h-screen bg-white font-sans">
+      <div className="min-h-screen bg-[#FAFAFA]">
         <EnablerNavbar />
         <div className="pt-24 px-4 max-w-md mx-auto text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <button
             type="button"
-            onClick={() => { clearError(); logout(); navigate('/login'); }}
-            className="bg-[#6A00B1] text-white px-5 py-2.5 rounded-lg font-medium hover:bg-[#5A0091]"
+            onClick={() => { clearError(); logout(); navigate("/login"); }}
+            className="bg-[#8D4087] text-white px-5 py-2.5 rounded-lg font-medium hover:bg-[#651F5F]"
           >
             Log out and sign in again
           </button>
@@ -118,217 +148,191 @@ const EnablerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
-      
-      {/* Main Content */}
-      <div className="pt-16 sm:pt-14 px-4 sm:px-6 pb-8">
-        <div className="max-w-3xl lg:max-w-4xl mx-auto">
-          
-          {/* Welcome Section */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 gap-4">
+
+      <div className="pt-16">
+        {/* Hero Banner */}
+        <div
+          className="mx-4 sm:mx-6 mt-6 sm:mt-8 rounded-2xl px-5 sm:px-12 py-7 sm:py-10"
+          style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#6A00B1]">
-                Enabler Dashboard
+              <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2">
+                Welcome back{welcomeName ? `, ${welcomeName}` : ""}!
               </h1>
-              <p className="text-gray-600 text-sm md:text-base mt-1">
-                {welcomeName ? `Welcome, ${welcomeName}! ` : ""}Manage your opportunities and track your impact
+              <p className="text-purple-200 text-base">
+                Manage your opportunities and connect with the right Pathfinders.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="flex gap-3 shrink-0">
               <button
-                onClick={() => navigate('/create-opportunity')}
-                className="bg-[#6A00B1] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
+                onClick={() => navigate("/create-opportunity")}
+                className="flex items-center gap-2 border border-white text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-white hover:text-[#651F5F] transition-colors"
               >
-                Post
+                + Add opportunity
               </button>
               <button
-                onClick={() => navigate('/enabler/profile')}
-                className="border-2 border-[#6A00B1] text-[#6A00B1] px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-semibold hover:bg-purple-50 transition-colors whitespace-nowrap"
+                onClick={() => navigate("/enabler/profile")}
+                className="border border-white text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-white hover:text-[#651F5F] transition-colors"
               >
-                View Profile
+                View your profile
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Your opportunities from API */}
-          {!opportunitiesLoading && opportunitiesList.length > 0 && (
-            <div className="mb-6 md:mb-8">
-              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
-                Your Opportunities
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {opportunitiesList.slice(0, 4).map((opp) => (
-                  <div
-                    key={opp.id}
-                    className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}
-                  >
-                    <p className="font-semibold text-gray-900 text-sm md:text-base truncate">{opp.title}</p>
-                    <p className="text-gray-600 text-xs md:text-sm mt-1">{opp.opportunity_type || 'Volunteering'} · {opp.location || 'Remote'}</p>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/enabler/opportunity/${opp.id}`); }}
-                      className="mt-2 text-[#6A00B1] text-xs font-semibold hover:underline"
-                    >
-                      View details →
-                    </button>
-                  </div>
-                ))}
-              </div>
-              {opportunitiesList.length > 4 && (
-                <button
-                  onClick={() => navigate('/enabler/opportunities-posted')}
-                  className="mt-3 text-[#6A00B1] text-sm font-semibold hover:underline"
-                >
-                  View all ({opportunitiesList.length}) opportunities
-                </button>
-              )}
+        {/* Stat Cards */}
+        <div className="mx-4 sm:mx-6 mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>} label="Open opportunities" value={openCount} />
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>} label="Total applications" value={totalApplications} />
+          <StatCard icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>} label="Opportunities posted" value={opportunitiesList.length} />
+        </div>
+
+        {/* Main Grid */}
+        <div className="mx-4 sm:mx-6 mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
+          {/* Current Opportunities */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Your current opportunities</h2>
+              <button
+                onClick={() => navigate("/enabler/opportunities-posted")}
+                className="text-sm font-semibold text-[#8D4087] hover:underline"
+              >
+                See more
+              </button>
             </div>
-          )}
 
-          {/* Empty State for Opportunities */}
-          {!opportunitiesLoading && opportunitiesList.length === 0 && (
-            <div className="mb-6 md:mb-8">
-              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
-                Your Opportunities
-              </h2>
-              <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-                <p className="text-gray-500 mb-4">You haven't posted any opportunities yet.</p>
+            {opportunitiesLoading ? (
+              <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#8D4087] border-t-transparent" />
+              </div>
+            ) : opportunitiesList.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+                <p className="text-gray-500 mb-4">No opportunities posted yet.</p>
                 <button
-                  onClick={() => navigate('/create-opportunity')}
-                  className="bg-[#6A00B1] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
+                  onClick={() => navigate("/create-opportunity")}
+                  className="bg-[#8D4087] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#651F5F] transition-colors"
                 >
                   Post Your First Opportunity
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* Analytics Summary */}
-          <div className="mb-6 md:mb-8">
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
-              Analytics Summary
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {analytics.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white border border-gray-200 rounded-lg p-4 md:p-5 shadow-sm"
-                >
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">{item.label}</p>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <p className="text-xl sm:text-2xl font-bold text-black">
-                      {item.value}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      {item.trend === "up" ? (
-                        <i className="fa fa-arrow-up text-green-500 text-xs"></i>
-                      ) : (
-                        <i className="fa fa-arrow-down text-red-500 text-xs"></i>
-                      )}
-                      <span className={`text-xs font-medium ${
-                        item.trend === "up" ? "text-green-500" : "text-red-500"
-                      }`}>
-                        {item.change}
-                      </span>
+            ) : (
+              <div className="space-y-3">
+                {opportunitiesList.slice(0, 3).map((opp) => {
+                  const { label, cls } = statusConfig(opp.status);
+                  const appCount = appCountByOpp[String(opp.id)] || 0;
+                  return (
+                    <div
+                      key={opp.id}
+                      onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}
+                      className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 cursor-pointer hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-gray-900 text-base truncate">{opp.title}</p>
+                          <p className="text-gray-500 text-sm mt-0.5">
+                            {opp.organization_name || opp.company || "Your organization"} •{" "}
+                            {opp.location || "Remote"}
+                          </p>
+                        </div>
+                        <span className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>
+                          {label}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <span>{appCount} applicant{appCount !== 1 ? "s" : ""} applied</span>
+                          {opp.created_at && (
+                            <span>{timeAgo(opp.created_at)}</span>
+                          )}
+                        </div>
+                        <span className="text-[#8D4087] text-lg">→</span>
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-xs text-gray-500">{item.period}</p>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Applicants Section */}
+          {/* Recent Applicants + Tip */}
           <div>
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-black mb-3 md:mb-4">
-              Applicants
-            </h2>
-            {/* Desktop Table View */}
-            <div className="hidden md:block bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-              {/* Table Header */}
-              <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 grid grid-cols-12 gap-4">
-                <div className="col-span-4">
-                  <p className="font-semibold text-gray-700 text-sm">Job Title</p>
-                </div>
-                <div className="col-span-3">
-                  <p className="font-semibold text-gray-700 text-sm">Applications</p>
-                </div>
-                <div className="col-span-3">
-                  <p className="font-semibold text-gray-700 text-sm">Status</p>
-                </div>
-                <div className="col-span-2"></div>
-              </div>
-
-              {/* Table Rows */}
-              <div className="divide-y divide-gray-200">
-                {applicants.length === 0 && (
-                  <p className="px-4 py-8 text-center text-gray-500 text-sm">No applicant data yet.</p>
-                )}
-                {applicants.map((applicant, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-4 grid grid-cols-12 gap-4 items-center hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="col-span-4">
-                      <p className="font-medium text-gray-900 text-sm">
-                        {applicant.jobTitle}
-                      </p>
-                    </div>
-                    <div className="col-span-3">
-                      <p className="text-gray-700 text-sm">
-                        {applicant.applications} Applications
-                      </p>
-                    </div>
-                    <div className="col-span-3">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${applicant.statusColor}`}>
-                        {applicant.status}
-                      </span>
-                    </div>
-                    <div className="col-span-2 flex justify-end">
-                      <button
-                        onClick={() => navigate(`/enabler/applicants/${applicant.opportunityId}`)}
-                        className="bg-[#6A00B1] text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors"
-                      >
-                        View
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Recent applicants</h2>
+              <button
+                onClick={() => navigate("/enabler/applicants")}
+                className="text-sm font-semibold text-[#8D4087] hover:underline"
+              >
+                See more
+              </button>
             </div>
 
-            {/* Mobile Card View */}
-            <div className="md:hidden space-y-3">
-              {applicants.length === 0 && (
-                <p className="py-4 text-center text-gray-500 text-sm">No applicant data yet.</p>
-              )}
-              {applicants.map((applicant, index) => (
-                <div
-                  key={index}
-                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-                >
-                  <div className="flex flex-col gap-3">
-                    <div>
-                      <p className="font-medium text-gray-900 text-sm mb-1">
-                        {applicant.jobTitle}
-                      </p>
-                      <p className="text-gray-700 text-xs mb-2">
-                        {applicant.applications} Applications
-                      </p>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${applicant.statusColor}`}>
-                        {applicant.status}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-100">
+              {recentApplicants.length === 0 ? (
+                <p className="text-center text-gray-500 text-sm py-10">No applicants yet.</p>
+              ) : (
+                recentApplicants.map((applicant, i) => {
+                  const name =
+                    applicant.applicant_name ||
+                    applicant.pathfinder_name ||
+                    (applicant.pathfinder?.first_name
+                      ? `${applicant.pathfinder.first_name} ${applicant.pathfinder.last_name || ""}`.trim()
+                      : `Applicant ${i + 1}`);
+                  const role =
+                    applicant.opportunity_title ||
+                    applicant.role ||
+                    "Opportunity applicant";
+                  const avatar =
+                    applicant.applicant_photo ||
+                    applicant.pathfinder?.profile_photo ||
+                    null;
+                  const { label, cls } = applicantStatusConfig(applicant.status);
+                  return (
+                    <div key={i} className="flex items-center justify-between px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        {avatar ? (
+                          <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-sm">
+                            {name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-gray-900 text-sm">{name}</p>
+                          <p className="text-gray-500 text-xs">{role}</p>
+                        </div>
+                      </div>
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>
+                        {label}
                       </span>
                     </div>
-                    <button
-                      onClick={() => navigate(`/enabler/applicants/${applicant.opportunityId}`)}
-                      className="bg-[#6A00B1] text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-[#5A0091] transition-colors w-full"
-                    >
-                      View
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              )}
+            </div>
+
+            {/* Enabler Tip */}
+            <div
+              className="mt-4 rounded-2xl p-6"
+              style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                
+                <span className="text-purple-200 text-sm font-semibold">Enabler Tip</span>
+              </div>
+              <p className="text-white text-sm leading-relaxed mb-4">
+                You have {totalApplications} application{totalApplications !== 1 ? "s" : ""} across
+                your opportunities. Review them to find the best Pathfinder matches and shortlist
+                top candidates to speed up your process.
+              </p>
+              <button
+                onClick={() => navigate("/enabler/applicants")}
+                className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+              >
+                View matches
+              </button>
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import iconGroup from '../Assets/img/icons/Group.png'
-import icon1 from '../Assets/img/icons/Vector (1).png'
-import icon2 from '../Assets/img/icons/Vector (2).png'
-import icon3 from '../Assets/img/icons/Vector (3).png'
+import iconGroup from '../Assets/img/icons/Group.png';
+import icon1 from '../Assets/img/icons/Vector (1).png';
+import icon2 from '../Assets/img/icons/Vector (2).png';
+import icon3 from '../Assets/img/icons/Vector (3).png';
 import NavBar from '../components/auth/Navbar';
 
 export default function Roadmap() {
@@ -80,7 +80,7 @@ export default function Roadmap() {
                           <h3 className="text-sm font-extrabold">{it.h}</h3>
                           <p className="mt-0.5 text-xs text-black/60">{it.p}</p>
                         </div>
-                        <button className="rounded-full bg-[#6A00B1] text-white w-8 h-8 grid place-items-center hover:bg-[color:rgba(106,0,177,0.08)] text-[color:var(--af-purple)] transition af-icon-btn">
+                        <button className="rounded-full bg-[#8D4087] text-white w-8 h-8 grid place-items-center hover:bg-[color:rgba(106,0,177,0.08)] text-[color:var(--af-purple)] transition af-icon-btn">
                           <svg viewBox="0 0 24 24" className="w-5 h-5"><path d="M8 12h8M12 8l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         </button>
                       </article>
@@ -95,5 +95,6 @@ export default function Roadmap() {
     </div>
   )
 }
+
 
 

@@ -59,7 +59,7 @@ const LandingPathfinder = () => {
         <img src={bgImg} alt="Background placeholder" className="absolute inset-0 w-full md:h-[700px] h-[625px] object-cover" />
       </div>
 
-      <div className="fixed top-0 left-[4%] z-30 w-[92%] bg-[#6A00B1] text-white text-center py-2 text-xs font-montserrat rounded-t-full">
+      <div className="fixed top-0 left-[4%] z-30 w-[92%] bg-[#8D4087] text-white text-center py-2 text-xs font-montserrat rounded-t-full">
         Afrivate is elevating Life in Africa - Watch out!
       </div>
 
@@ -122,7 +122,7 @@ const LandingPathfinder = () => {
 
 
       <div
-        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#6A00B11A] backdrop-blur-xl border border-white/20 shadow-2xl z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#8D40871A] backdrop-blur-xl border border-white/20 shadow-2xl z-50 transform transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -144,13 +144,13 @@ const LandingPathfinder = () => {
                 </li>
               </Link>
               <Link to="/contact">
-                <li className="bg-[#6A00B11A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
+                <li className="bg-[#8D40871A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
                   <i className="fa-solid fa-phone pr-4 pl-2 m-2"></i>
                   Contact Us
                 </li>
               </Link>
               <Link to="/about">
-                <li className="bg-[#6A00B11A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
+                <li className="bg-[#8D40871A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
                   <i className="fas fa-users pr-4 pl-2 m-2"></i>
                   About Us
                 </li>
@@ -206,18 +206,18 @@ const LandingPathfinder = () => {
         </div>
       </main>
 
-      <div className='mt-[150px]'><p className='font-extrabold md:text-3xl text-xl font-montserrat text-[#6A00B1] ml-[4%] md:ml-[8%]'>Volunteer for: </p></div>
+      <div className='mt-[150px]'><p className='font-extrabold md:text-3xl text-xl font-montserrat text-[#8D4087] ml-[4%] md:ml-[8%]'>Volunteer for: </p></div>
 
       <div className="w-full max-w-full overflow-x-scroll mt-[10px] no-scrollbar">
         <div ref={sliderRef} onMouseDown={handleUserStart} onMouseUp={handleUserEnd} onTouchStart={handleUserStart} onTouchEnd={handleUserEnd} className="flex md:gap-4 gap-3 overflow-x-scroll whitespace-nowrap scroll-smooth no-scrollbar cursor-grab active:cursor-grabbing">
           {[...volunteerRoles, ...volunteerRoles].map((role, index) => (
-            <div key={index} className="flex items-center justify-center font-montserrat md:px-6 px-5 md:py-7 py-4 rounded-xl border border-[#E0C6FF] text-[#6A00B1] font-medium bg-white flex-shrink-0 md:text-base text-xs">{role}</div>
+            <div key={index} className="flex items-center justify-center font-montserrat md:px-6 px-5 md:py-7 py-4 rounded-xl border border-[#E0C6FF] text-[#8D4087] font-medium bg-white flex-shrink-0 md:text-base text-xs">{role}</div>
           ))}
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-12 font-montserrat mt-10">
-        <h2 className="text-[#6A00B1] font-extrabold text-2xl md:text-3xl mb-12 text-start md:text-left md:ml-[4%]">What Africans Stand to Benefit From Volunteering on Afrivate</h2>
+        <h2 className="text-[#8D4087] font-extrabold text-2xl md:text-3xl mb-12 text-start md:text-left md:ml-[4%]">What Africans Stand to Benefit From Volunteering on Afrivate</h2>
         <div className="space-y-12">
           {sections.map((section, index) => (
             <div key={index} className={`flex flex-col md:flex-row items-center gap-8 md:gap-12 ${index % 2 !== 0 ? "md:flex-row-reverse" : ""}`}>
@@ -236,10 +236,10 @@ const LandingPathfinder = () => {
       <div className='relative  md:h-[550px] h-[400px] w-[100%] md:mt-10 mt-[60px] font-montserrat p-6 no-scrollbar overflow-hidden'>
         <img alt='blob1' src={blob2} className='absolute right-0 top-0 md:w-auto w-[100%] max-w-none'/>
         <img alt='blob1' src={blob1}  className='absolute left-0 bottom-0 md:w-auto w-[100%] max-w-none'/>
-        <div className=" relative h-100 bg-[#6A00B11A] backdrop-blur-md border border-white/20 rounded-[40PX] md:w-[64%] w-[95%] ml-[2.5%]  md:ml-[18%] mt-10   font-montserrat md:p-14 p-5 text-center">
+        <div className=" relative h-100 bg-[#8D40871A] backdrop-blur-md border border-white/20 rounded-[40PX] md:w-[64%] w-[95%] ml-[2.5%]  md:ml-[18%] mt-10   font-montserrat md:p-14 p-5 text-center">
           <p className='text-2xl sm:text-3xl font-extrabold  bg-gradient-to-b from-[#200035] via-[#620C9B] to-[#200035] bg-clip-text text-transparent'>Ready to Start Your Journey?</p>
           <p className='md:text-2xl text-xs font-base text-black md:mt-4 mt-5'>Join a Growing community of change-makers<br className='hidden md:block'/>and innovators across Africa. Your next<br className='hidden md:block'/>opportunity is just a click away. </p>
-          <button className="md:px-[90px] px-10 md:mt-10 mt-5 py-3 font-montserrat rounded-full border-[2px] border-white text-[#6A00B1] text-2xl font-bold  bg-white/50 backdrop-blur-xl border border-white/40  transition">Get Started</button>
+          <button className="md:px-[90px] px-10 md:mt-10 mt-5 py-3 font-montserrat rounded-full border-[2px] border-white text-[#8D4087] text-2xl font-bold  bg-white/50 backdrop-blur-xl border border-white/40  transition">Get Started</button>
         </div>
       </div>
 
@@ -247,13 +247,13 @@ const LandingPathfinder = () => {
 
 
       <div className='relative font-sans '>
-          <p className='md:text-[55px] text-[40px] text-[#6A00B1] font-medium italic font-sans p-3 md:p-3 md:ml-[25%] md:mt-[250px] mt-[150px]'>
+          <p className='md:text-[55px] text-[40px] text-[#8D4087] font-medium italic font-sans p-3 md:p-3 md:ml-[25%] md:mt-[250px] mt-[150px]'>
           
           What Our People Have<br className='hidden md:block'/>To Say…
           
           </p>
 
-                <div className=" absolute md:top-[-100px] top-[-95px] max-w-xl py-7 p-6 md:py-10 rounded-3xl text-[#6A00B1] font-semibold
+                <div className=" absolute md:top-[-100px] top-[-95px] max-w-xl py-7 p-6 md:py-10 rounded-3xl text-[#8D4087] font-semibold
               bg-white/20 backdrop-blur-sm
               shadow-[0_8px_30px_rgb(0,0,0,0.12)]
               bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[53%] ml-[3%] m-5 md:m-0
@@ -266,7 +266,7 @@ const LandingPathfinder = () => {
               </p>
             </div>
 
-            <div className=" absolute md:top-[140px] top-[90px] max-w-xl p-6 py-10 rounded-3xl text-[#6A00B1] font-semibold
+            <div className=" absolute md:top-[140px] top-[90px] max-w-xl p-6 py-10 rounded-3xl text-[#8D4087] font-semibold
               bg-white/20 backdrop-blur-sm
               shadow-[0_8px_30px_rgb(0,0,0,0.12)]
               bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[20%] ml-[3%] m-5 md:m-0 
@@ -289,8 +289,8 @@ const LandingPathfinder = () => {
 
 
       <div className="w-full flex justify-center md:justify-end md:px-[300px] gap-8 md:gap-16 md:mt-[170px] mt-[150px] font-sans">
-        <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#6A00B1]">10,000+</h2><p className="text-[#191919] md:text-base text-[10px]">Happy Clients</p></div>
-        <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#6A00B1]">1200+</h2><p className="text-[#191919] md:text-base text-[10px]">Reviews</p></div>
+        <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#8D4087]">10,000+</h2><p className="text-[#191919] md:text-base text-[10px]">Happy Clients</p></div>
+        <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#8D4087]">1200+</h2><p className="text-[#191919] md:text-base text-[10px]">Reviews</p></div>
       </div>
 
 
@@ -299,9 +299,9 @@ const LandingPathfinder = () => {
         <div className="flex items-center justify-between lg:flex-row flex-col gap-3 md:gap-6">
           <div className="flex items-center justify-start gap-2">
             <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#6A00B1] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
           </div>
-          <nav className="flex md:gap-8 gap-4 text-[#6A00B1] text-xs md:text-sm font-extrabold">
+          <nav className="flex md:gap-8 gap-4 text-[#8D4087] text-xs md:text-sm font-extrabold">
             <Link to="/" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Home</p></Link>
             <Link to="/about" className="hover:underline whitespace-nowrap text-ellipsis"> <p>About Us</p></Link>
             <Link to="/contact" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Contact Us</p></Link>
@@ -309,8 +309,8 @@ const LandingPathfinder = () => {
           </nav>
         </div>
         <div className="flex items-center justify-between md:mt-20 mt-4 lg:flex-row flex-col gap-3 md:gap-6 text-center">
-          <p className="text-[10px] md:text-xs text-[#6A00B1] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
-          <div className="flex items-center gap-4 md:gap-7 text-[#6A00B1] text-base md:text-2xl">
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
+          <div className="flex items-center gap-4 md:gap-7 text-[#8D4087] text-base md:text-2xl">
             <a href="https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09" target="_blank" rel="noopener noreferrer" aria-label="X"><i className="fa-brands fa-x-twitter"></i></a>
             <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
             <a href="https://www.instagram.com/afrivate_tech?igsh=MzJtMTg3anhoeXZ5" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i className="fa-brands fa-instagram"></i></a>
@@ -322,3 +322,4 @@ const LandingPathfinder = () => {
 };
 
 export default LandingPathfinder;
+

@@ -88,7 +88,7 @@ const Landingenabler = () => {
 
 
       <div
-        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#6A00B11A] backdrop-blur-xl border border-white/20 shadow-2xl z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-[270px] rounded-tr-3xl rounded-br-3xl bg-[#8D40871A] backdrop-blur-xl border border-white/20 shadow-2xl z-50 transform transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -110,13 +110,13 @@ const Landingenabler = () => {
                 </li>
               </Link>
               <Link to="/contact">
-                <li className="bg-[#6A00B11A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
+                <li className="bg-[#8D40871A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
                   <i className="fa-solid fa-phone pr-4 pl-2 m-2"></i>
                   Contact Us
                 </li>
               </Link>
               <Link to="/about">
-                <li className="bg-[#6A00B11A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
+                <li className="bg-[#8D40871A] backdrop-blur-xl border border-white/20 w-[100%] py-2 pr-4 pl-1 rounded-xl hover:bg-gray-300 mt-5 block lg:hidden">
                   <i className="fas fa-users pr-4 pl-2 m-2"></i>
                   About Us
                 </li>
@@ -171,13 +171,13 @@ const Landingenabler = () => {
       <div className='relative  md:h-[550px] h-[1150px] w-[100%] md:mt-[170px] mt-[130px] font-montserrat p-6 no-scrollbar overflow-hidden '>
         <img alt='blob1' src={blob2} className='absolute right-0 top-0 md:w-auto w-[150%] max-w-none'/>
         <img alt='blob1' src={blob1}  className='absolute left-0 bottom-0 md:w-auto w-[170%] max-w-none'/>
-        <h2 className="md:relative relative text-[#6A00B1] font-montserrat font-extrabold md:text-3xl text-2xl top-0 md:mt-[0px] md:top-0 ml-[2%]">Who is this for?</h2>
-        <h2 className="relative md:relative text-[#6A00B1] font-montserrat md:text-md text-sm  ml-[2%] top-0 md:mt-[0px] hidden md:block  ">Designed especially for organizations making a real different in their communities.</h2>
+        <h2 className="md:relative relative text-[#8D4087] font-montserrat font-extrabold md:text-3xl text-2xl top-0 md:mt-[0px] md:top-0 ml-[2%]">Who is this for?</h2>
+        <h2 className="relative md:relative text-[#8D4087] font-montserrat md:text-md text-sm  ml-[2%] top-0 md:mt-[0px] hidden md:block  ">Designed especially for organizations making a real different in their communities.</h2>
         <div className='md:flex gap-14 md:mt-[100px] mt-[30px] ml-[3%]'>
-          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#6A00B11A] backdrop-blur-md border border-white/20 flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>NGOs</p><p className='text-black md:text-sm text-sm font-montserrat'>Registered non-profits looking for consistent volunteer support.</p></div></div>
-          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#6A00B11A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Community  Orgs</p><p className='text-black md:text-sm text-sm font-montserrat'>Local grassroots groups driving neighborhood change.</p></div></div>
-          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#6A00B11A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Social Enterprise</p><p className='text-black md:text-sm text-sm font-montserrat'>Businesses with the core missions to improve society.</p></div></div>
-          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#6A00B11A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Youth Programs</p><p className='text-black md:text-sm text-sm font-montserrat'>Development programs offerings mentorships and growth.</p></div></div>
+          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#8D40871A] backdrop-blur-md border border-white/20 flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>NGOs</p><p className='text-black md:text-sm text-sm font-montserrat'>Registered non-profits looking for consistent volunteer support.</p></div></div>
+          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#8D40871A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Community  Orgs</p><p className='text-black md:text-sm text-sm font-montserrat'>Local grassroots groups driving neighborhood change.</p></div></div>
+          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#8D40871A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Social Enterprise</p><p className='text-black md:text-sm text-sm font-montserrat'>Businesses with the core missions to improve society.</p></div></div>
+          <div className='md:w-[21%] w-[90%] md:ml-0 ml-[5%] md:h-[230px] h-[230px] rounded-2xl bg-[#8D40871A] backdrop-blur-md border border-white/20 md:mt-0 mt-[30px] flex justify-center items-center'><div className=' px-2'><p className='text-black font-sans font-bold md:text-lg sm:text-xl text-center'>Youth Programs</p><p className='text-black md:text-sm text-sm font-montserrat'>Development programs offerings mentorships and growth.</p></div></div>
         </div>
       </div>
 
@@ -196,45 +196,45 @@ const Landingenabler = () => {
             </div>
           ))}
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#6A00B1] mb-8 text-center">Why Partners choose Afrivate</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#8D4087] mb-8 text-center">Why Partners choose Afrivate</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-14 max-w-6xl">
           <div className="flex gap-4">
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#6A00B1] flex items-center justify-center text-white"><img className='p-2' src={ppl2} alt=' '/></div>
-              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#6A00B1] via-[#8500DE] to-[#2D004B]  mt-4" />
+              <div className="w-12 h-12 rounded-full bg-[#8D4087] flex items-center justify-center text-white"><img className='p-2' src={ppl2} alt=' '/></div>
+              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#8D4087] via-[#8500DE] to-[#2D004B]  mt-4" />
             </div>
-            <div><h4 className="font-semibold text-[#6A00B1] mb-2">Access to Youth</h4><p className="text-sm text-gray-600 leading-relaxed">Connect directly with a motivated demographic eager to gain experience and contribute to social causes.</p></div>
+            <div><h4 className="font-semibold text-[#8D4087] mb-2">Access to Youth</h4><p className="text-sm text-gray-600 leading-relaxed">Connect directly with a motivated demographic eager to gain experience and contribute to social causes.</p></div>
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#6A00B1] flex items-center justify-center text-white"><img className='p-2' src={health} alt=' '/></div>
-              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#6A00B1] via-[#8500DE] to-[#2D004B]  mt-4" />
+              <div className="w-12 h-12 rounded-full bg-[#8D4087] flex items-center justify-center text-white"><img className='p-2' src={health} alt=' '/></div>
+              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#8D4087] via-[#8500DE] to-[#2D004B]  mt-4" />
             </div>
-            <div><h4 className="font-semibold text-[#6A00B1] mb-2">Clear Structure</h4><p className="text-sm text-gray-600 leading-relaxed">Our standard format ensures clear experience expectations, reducing drop-off rates and improving volunteer quality.</p></div>
+            <div><h4 className="font-semibold text-[#8D4087] mb-2">Clear Structure</h4><p className="text-sm text-gray-600 leading-relaxed">Our standard format ensures clear experience expectations, reducing drop-off rates and improving volunteer quality.</p></div>
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#6A00B1] flex items-center justify-center text-white"><img className='p-2' src={shield} alt=' '/></div>
-              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#6A00B1] via-[#8500DE] to-[#2D004B]  mt-4" />
+              <div className="w-12 h-12 rounded-full bg-[#8D4087] flex items-center justify-center text-white"><img className='p-2' src={shield} alt=' '/></div>
+              <div className="w-[10px] rounded-full flex-1 bg-gradient-to-br from-[#2D004B] via-[#8D4087] via-[#8500DE] to-[#2D004B]  mt-4" />
             </div>
-            <div><h4 className="font-semibold text-[#6A00B1] mb-2">Reliable Platform</h4><p className="text-sm text-gray-600 leading-relaxed">A verified ecosystem that prioritizes safety, Data Privacy, and ethical volunteering standards.</p></div>
+            <div><h4 className="font-semibold text-[#8D4087] mb-2">Reliable Platform</h4><p className="text-sm text-gray-600 leading-relaxed">A verified ecosystem that prioritizes safety, Data Privacy, and ethical volunteering standards.</p></div>
           </div>
         </div>
       </section>
 
-      <div className=" relative h-100 bg-gradient-to-br from-[#8500DE] via-[#1F0133] via-[#6A00B1] to-[#000000] rounded-[40PX] md:w-[54%] w-[95%] ml-[2.5%]  md:ml-[23%] mt-20   font-montserrat md:p-14 p-5 text-center">
+      <div className=" relative h-100 bg-gradient-to-br from-[#8500DE] via-[#1F0133] via-[#8D4087] to-[#000000] rounded-[40PX] md:w-[54%] w-[95%] ml-[2.5%]  md:ml-[23%] mt-20   font-montserrat md:p-14 p-5 text-center">
         <p className='text-2xl sm:text-3xl font-extrabold text-white'>Ready to Make an Impact?</p>
         <p className='md:text-xl text-xs font-base text-white md:mt-4 mt-5'>Join Hundreds of Organizations in<br className='hidden md:block'/> finding their next generation of<br className='hidden md:block'/> leaders on Afrivate </p>
-        <Link to="/create-opportunity"><button className="md:px-[100px] px-4 md:mt-10 mt-5 py-3 font-montserrat rounded-2xl border-[2px] border-white text-[#6A00B1] text-lg sm:text-xl font-extrabold bg-white   font-bold  transition">Post an Opportunity</button></Link>
+        <Link to="/create-opportunity"><button className="md:px-[100px] px-4 md:mt-10 mt-5 py-3 font-montserrat rounded-2xl border-[2px] border-white text-[#8D4087] text-lg sm:text-xl font-extrabold bg-white   font-bold  transition">Post an Opportunity</button></Link>
       </div>
 
       <footer className="w-full bg-[#f3f3f3] px-4 md:px-10 lg:px-[100px] py-4 md:py-6 mt-[200px] md:mt-16">
         <div className="flex items-center justify-between lg:flex-row flex-col gap-3 md:gap-6">
           <div className="flex items-center justify-start gap-2">
             <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#6A00B1] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
           </div>
-          <nav className="flex md:gap-8 gap-4 text-[#6A00B1] text-xs md:text-sm font-extrabold">
+          <nav className="flex md:gap-8 gap-4 text-[#8D4087] text-xs md:text-sm font-extrabold">
             <Link to="/" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Home</p></Link>
             <Link to="/about" className="hover:underline whitespace-nowrap text-ellipsis"> <p>About Us</p></Link>
             <Link to="/contact" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Contact Us</p></Link>
@@ -242,8 +242,8 @@ const Landingenabler = () => {
           </nav>
         </div>
         <div className="flex items-center justify-between md:mt-20 mt-4 lg:flex-row flex-col gap-3 md:gap-6 text-center">
-          <p className="text-[10px] md:text-xs text-[#6A00B1] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
-          <div className="flex items-center gap-4 md:gap-7 text-[#6A00B1] text-base md:text-2xl">
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
+          <div className="flex items-center gap-4 md:gap-7 text-[#8D4087] text-base md:text-2xl">
             <a href="https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09" target="_blank" rel="noopener noreferrer" aria-label="X"><i className="fa-brands fa-x-twitter"></i></a>
             <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
             <a href="https://www.instagram.com/afrivate_tech?igsh=MzJtMTg3anhoeXZ5" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i className="fa-brands fa-instagram"></i></a>
@@ -255,3 +255,4 @@ const Landingenabler = () => {
 };
 
 export default Landingenabler;
+

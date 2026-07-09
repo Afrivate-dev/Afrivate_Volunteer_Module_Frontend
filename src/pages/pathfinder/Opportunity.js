@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { opportunities, bookmarks, applications } from "../../services/api";
@@ -199,7 +199,7 @@ const Opportunity = () => {
                         navigate("/volunteer-details", { state: { job: item } });
                       }
                     }}
-                    className="bg-[#6A00B1] text-white px-4 py-1 rounded"
+                    className="bg-[#8D4087] text-white px-4 py-1 rounded"
                   >
                     {appliedMap[item.id] ? "View application" : "Apply"}
                   </button>
@@ -214,3 +214,4 @@ const Opportunity = () => {
 };
 
 export default Opportunity;
+

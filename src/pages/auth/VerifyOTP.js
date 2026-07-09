@@ -8,13 +8,6 @@ const REG_EMAIL_KEY = "registrationEmail";
 const REG_ROLE_KEY = "registrationRole";
 const FORGOT_EMAIL_KEY = "forgotPasswordEmail";
 
-/**
- * Two flows (query ?flow=):
- * - registration — POST /auth/register/ then POST /auth/verify-otp/; resend via POST /auth/resend-otp/
- * - password_reset — POST /auth/forgot-password/ then POST /auth/verify-password-reset-otp/; resend via forgot-password again
- *
- * If `flow` is omitted: password_reset when forgot email exists in session, else registration when registration email exists.
- */
 const VerifyOTP = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -61,10 +54,7 @@ const VerifyOTP = () => {
     setError("");
     try {
       if (flow === "registration") {
-        const data = await api.auth.verifyOtp({
-          email,
-          otp: String(otp),
-        });
+        const data = await api.auth.verifyOtp({ email, otp: String(otp) });
         if (data?.access) {
           api.setTokens(data.access, data.refresh);
           const roleFromApi =
@@ -91,22 +81,10 @@ const VerifyOTP = () => {
         return;
       }
 
-      const data = await api.auth.verifyPasswordResetOtp({
-        email,
-        otp: String(otp),
-      });
-      const uid =
-        data?.uid ??
-        data?.user_uid ??
-        data?.reset_uid ??
-        data?.id ??
-        null;
-      if (uid != null && String(uid).length > 0) {
-        sessionStorage.setItem("passwordResetUid", String(uid));
-      }
-      if (data?.token) {
-        sessionStorage.setItem("passwordResetToken", String(data.token));
-      }
+      const data = await api.auth.verifyPasswordResetOtp({ email, otp: String(otp) });
+      const uid = data?.uid ?? data?.user_uid ?? data?.reset_uid ?? data?.id ?? null;
+      if (uid != null && String(uid).length > 0) sessionStorage.setItem("passwordResetUid", String(uid));
+      if (data?.token) sessionStorage.setItem("passwordResetToken", String(data.token));
       sessionStorage.setItem("resetPasswordEmail", email);
       navigate("/reset-password", { replace: true });
     } catch (err) {
@@ -126,27 +104,22 @@ const VerifyOTP = () => {
       } else {
         await api.auth.forgotPassword({ email });
       }
-    } catch (_) {
-      /* still show generic message */
-    } finally {
-      setIsResending(false);
-    }
+    } catch (_) {}
+    finally { setIsResending(false); }
   };
 
   if (!email) {
     return (
-      <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-          <h1 className="text-2xl font-bold text-[#6A00B1] mb-2">Verification</h1>
-          <p className="text-gray-600 mb-6">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-sm w-full text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Verification</h1>
+          <p className="text-gray-500 text-sm mb-6">
             {flow === "registration"
               ? "Start from the sign-up page to receive a code."
               : "Start from Forgot Password to receive a code."}
           </p>
-          <Link
-            to={flow === "registration" ? "/signup" : "/forgot-password"}
-            className="text-[#6A00B1] font-medium hover:text-[#6A00B1]"
-          >
+          <Link to={flow === "registration" ? "/signup" : "/forgot-password"}
+            className="text-[#8D4087] font-semibold hover:underline text-sm">
             {flow === "registration" ? "Go to Sign up" : "Go to Forgot Password"}
           </Link>
         </div>
@@ -155,52 +128,34 @@ const VerifyOTP = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-3xl font-bold text-center text-[#6A00B1] mb-2">{title}</h1>
-        <p className="text-center text-gray-600 mb-2">{subtitle}</p>
-        <p className="text-center text-sm text-gray-500 mb-8">{email}</p>
-      </div>
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-sm w-full">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">{title}</h1>
+        <p className="text-center text-gray-500 text-sm mb-1">{subtitle}</p>
+        <p className="text-center text-sm font-semibold text-[#8D4087] mb-8">{email}</p>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <div className="space-y-6">
-            <OTPInput length={6} onComplete={handleOTPComplete} disabled={loading} />
+        <OTPInput length={6} onComplete={handleOTPComplete} disabled={loading} />
 
-            {error && <p className="text-center text-sm text-red-600">{error}</p>}
-
-            {flow === "password_reset" ? (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Didn&apos;t receive the code?</p>
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  disabled={isResending}
-                  className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isResending ? "Resending..." : "Resend code"}
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Didn&apos;t receive the code?</p>
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  disabled={isResending}
-                  className="text-sm font-medium text-[#6A00B1] hover:text-[#6A00B1] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isResending ? "Resending..." : "Resend code"}
-                </button>
-              </div>
-            )}
-
-            <div className="text-center">
-              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-[#6A00B1]">
-                Back to login
-              </Link>
-            </div>
+        {loading && (
+          <div className="flex justify-center mt-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#8D4087] border-t-transparent" />
           </div>
+        )}
+
+        {error && <p className="text-center text-sm text-red-600 mt-4">{error}</p>}
+
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-sm text-gray-500">Didn&apos;t receive the code?</p>
+          <button type="button" onClick={handleResend} disabled={isResending}
+            className="text-sm font-semibold text-[#8D4087] hover:underline disabled:opacity-50 disabled:cursor-not-allowed">
+            {isResending ? "Resending..." : "Resend code"}
+          </button>
+        </div>
+
+        <div className="text-center mt-4">
+          <Link to="/login" className="text-sm text-gray-500 hover:text-[#8D4087] transition-colors">
+            ← Back to login
+          </Link>
         </div>
       </div>
     </div>

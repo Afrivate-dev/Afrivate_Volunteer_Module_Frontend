@@ -11,14 +11,14 @@ const PAGE_SIZE = 10;
 function mapApiOpportunity(item) {
   return {
     id: String(item.id),
-    title: item.title || '',
+    title: item.title || "",
     company: getOrgName(item),
     type: item.opportunity_type || "Volunteering",
-    description: item.description || '',
+    description: item.description || "",
     responsibilities: [],
     qualifications: [],
-    aboutCompany: '',
-    applicationInstructions: '',
+    aboutCompany: "",
+    applicationInstructions: "",
     jobType: item.opportunity_type || "Volunteer",
     location: item.location || "",
     workModel: item.work_model || "",
@@ -28,6 +28,14 @@ function mapApiOpportunity(item) {
     is_open: item.is_open,
   };
 }
+
+const typeIcon = (type = "") => {
+  const t = type.toLowerCase();
+  if (t.includes("mentor")) return "B";
+  if (t.includes("intern")) return "I";
+  if (t.includes("volunteer")) return "V";
+  return "O";
+};
 
 const OpportunitiesPosted = () => {
   const navigate = useNavigate();
@@ -39,46 +47,24 @@ const OpportunitiesPosted = () => {
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
   const [togglingId, setTogglingId] = useState(null);
 
-  useEffect(() => {
-    document.title = "Opportunities Posted - AfriVate";
-  }, []);
+  useEffect(() => { document.title = "Opportunities Posted - AfriVate"; }, []);
 
   const loadOpportunities = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await opportunities.mine();
-      let rawList = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.results)
-        ? data.results
-        : Array.isArray(data?.data)
-        ? data.data
-        : [];
-
-      // Fallback: if mine() returns empty, load all opportunities and filter by enabler name
+      let rawList = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : Array.isArray(data?.data) ? data.data : [];
       if (!rawList.length) {
         try {
           const enabler = await profile.enablerGet();
           const enablerName = enabler?.name || enabler?.base_details?.organization_name || null;
           const all = await opportunities.list();
-          const allRaw = Array.isArray(all)
-            ? all
-            : Array.isArray(all?.results)
-            ? all.results
-            : Array.isArray(all?.data)
-            ? all.data
-            : [];
-          rawList = enablerName
-            ? allRaw.filter((o) => o.created_by_name === enablerName)
-            : allRaw;
-        } catch (fallbackErr) {
-          console.error("Fallback loading opportunities failed:", fallbackErr);
-        }
+          const allRaw = Array.isArray(all) ? all : Array.isArray(all?.results) ? all.results : Array.isArray(all?.data) ? all.data : [];
+          rawList = enablerName ? allRaw.filter((o) => o.created_by_name === enablerName) : allRaw;
+        } catch (fallbackErr) { console.error("Fallback loading opportunities failed:", fallbackErr); }
       }
-
-      const list = rawList.map(mapApiOpportunity);
-      setOpportunitiesList(list);
+      setOpportunitiesList(rawList.map(mapApiOpportunity));
     } catch (err) {
       console.error("Error loading opportunities:", err);
       setError(err.message || "Failed to load opportunities");
@@ -88,9 +74,7 @@ const OpportunitiesPosted = () => {
     }
   }, []);
 
-  useEffect(() => {
-    loadOpportunities();
-  }, [loadOpportunities]);
+  useEffect(() => { loadOpportunities(); }, [loadOpportunities]);
 
   useEffect(() => {
     if (location.state?.refreshList) {
@@ -99,14 +83,12 @@ const OpportunitiesPosted = () => {
     }
   }, [location.state?.refreshList, loadOpportunities, navigate, location.pathname]);
 
-  const handleDelete = (id) => {
-    setDeleteModal({ isOpen: true, id });
-  };
+  const handleDelete = (id) => setDeleteModal({ isOpen: true, id });
 
   const confirmDelete = async () => {
     try {
       await opportunities.delete(deleteModal.id);
-      setOpportunitiesList(prev => prev.filter(opp => opp.id !== deleteModal.id));
+      setOpportunitiesList((prev) => prev.filter((opp) => opp.id !== deleteModal.id));
     } catch (err) {
       console.error("Error deleting opportunity:", err);
       setError(err.message || "Failed to delete opportunity");
@@ -120,9 +102,7 @@ const OpportunitiesPosted = () => {
     setTogglingId(opp.id);
     try {
       await opportunities.patch(opp.id, { is_open: !opp.is_open });
-      setOpportunitiesList(prev =>
-        prev.map(o => o.id === opp.id ? { ...o, is_open: !opp.is_open } : o)
-      );
+      setOpportunitiesList((prev) => prev.map((o) => o.id === opp.id ? { ...o, is_open: !opp.is_open } : o));
     } catch (err) {
       console.error("Error toggling opportunity:", err);
       setError(err.message || "Failed to update opportunity");
@@ -132,109 +112,76 @@ const OpportunitiesPosted = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
-      <div className="pt-14 px-4 md:px-8 lg:px-12 pb-8">
-        <div className="max-w-6xl mx-auto">
-          
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-3">
+      <div className="pt-16">
+        {/* Purple Header */}
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
+          <div className="max-w-4xl mx-auto flex items-end justify-between">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-black mb-1">
-                Opportunities Posted
-              </h1>
-              <p className="text-gray-600 text-xs md:text-sm">
-                View and manage all your posted volunteering opportunities
-              </p>
+              <h1 className="text-3xl font-bold text-white mb-1">Opportunities Posted</h1>
+              <p className="text-purple-200 text-sm">View and manage all your posted volunteering opportunities</p>
             </div>
-            <button
-              onClick={() => navigate('/create-opportunity')}
-              className="bg-[#6A00B1] text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-[#5A0091] transition-colors flex items-center gap-2 whitespace-nowrap w-fit md:w-auto"
-            >
-              <i className="fa fa-plus text-xs"></i>
-              New Opportunity
+            <button onClick={() => navigate("/create-opportunity")}
+              className="flex items-center gap-2 bg-white text-[#651F5F] px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-purple-50 transition-colors shrink-0">
+              + New Opportunity
             </button>
           </div>
-          
+        </div>
+
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-              {error}
-            </div>
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">{error}</div>
           )}
-          
+
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6A00B1] border-t-transparent mx-auto"></div>
-              <p className="text-gray-600 mt-4">Loading opportunities...</p>
+            <div className="flex justify-center py-16">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
             </div>
           ) : opportunitiesList.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg mb-4">No opportunities posted yet.</p>
-              <button
-                onClick={() => navigate('/create-opportunity')}
-                className="bg-[#6A00B1] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
-              >
+            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></div>
+              <p className="font-bold text-gray-800 mb-1">No opportunities posted yet</p>
+              <p className="text-sm text-gray-400 mb-5">Create your first opportunity to start receiving applications.</p>
+              <button onClick={() => navigate("/create-opportunity")}
+                className="bg-[#651F5F] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#4a1647] transition-colors">
                 Create Your First Opportunity
               </button>
             </div>
           ) : (
             <div className="space-y-3">
               {opportunitiesList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((opp) => (
-                <div
-                  key={opp.id}
-                  className="bg-gray-100 rounded-lg p-3 md:p-4 flex items-start gap-3 md:gap-4"
-                >
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-                    <i className="fa fa-briefcase text-lg md:text-xl text-gray-500"></i>
+                <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-xl shrink-0">
+                    {typeIcon(opp.type)}
                   </div>
-
-                  <div 
-                    className="flex-1 min-w-0 cursor-pointer"
-                    onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}
-                  >
-                    <h2 className="text-sm md:text-base font-bold text-black mb-1">
-                      {opp.title}
-                    </h2>
-                    <p className="text-gray-600 text-xs md:text-sm mb-1">
-                      {opp.type} · {opp.location}
+                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}>
+                    <h2 className="font-bold text-gray-900 mb-0.5">{opp.title}</h2>
+                    <p className="text-xs text-gray-500">
+                      {opp.type}{opp.location && ` • ${opp.location}`}
                     </p>
-                    <p className="text-gray-600 text-xs md:text-sm">
-                      {opp.is_open ? 'Open for applications' : 'Closed'}
-                    </p>
+                    <div className="mt-1">
+                      {opp.is_open ? (
+                        <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full">Open</span>
+                      ) : (
+                        <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">Closed</span>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/enabler/opportunity/${opp.id}`);
-                      }}
-                      className="bg-[#6A00B1] text-white px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-semibold hover:bg-[#5A0091] transition-colors whitespace-nowrap"
-                    >
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/enabler/opportunity/${opp.id}`); }}
+                      className="border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
                       View
                     </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleOpen(opp);
-                      }}
-                      disabled={togglingId === opp.id}
-                      className={`px-2 md:px-3 py-1 md:py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-                        opp.is_open
-                          ? "bg-orange-500 hover:bg-orange-600 text-white"
-                          : "bg-green-600 hover:bg-green-700 text-white"
-                      } ${togglingId === opp.id ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
+                    <button onClick={(e) => { e.stopPropagation(); handleToggleOpen(opp); }} disabled={togglingId === opp.id}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                        opp.is_open ? "bg-orange-100 text-orange-600 hover:bg-orange-200" : "bg-green-100 text-green-700 hover:bg-green-200"
+                      } disabled:opacity-50`}>
                       {togglingId === opp.id ? "…" : opp.is_open ? "Close" : "Reopen"}
                     </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(opp.id);
-                      }}
-                      className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-black hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Delete opportunity"
-                    >
-                      <i className="fa fa-times text-sm md:text-base"></i>
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(opp.id); }}
+                      className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                      ✕
                     </button>
                   </div>
                 </div>

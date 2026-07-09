@@ -12,7 +12,7 @@ export default function AboutUs() {
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img src={logoImg} alt="Afrivate" className="h-8 w-auto object-contain" />
           </Link>
-          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#6A00B1] font-semibold text-xs sm:text-sm">
+          <nav className="flex flex-wrap gap-3 sm:gap-6 text-[#8D4087] font-semibold text-xs sm:text-sm">
             <Link to="/" className="hover:underline whitespace-nowrap">Home</Link>
             <Link to="/opportunity" className="hover:underline whitespace-nowrap">Volunteering</Link>
             <Link to="/contact" className="hover:underline whitespace-nowrap">Contact Us</Link>
@@ -23,10 +23,10 @@ export default function AboutUs() {
       <main className="max-w-4xl mx-auto px-4 py-12">
         {/* Hero */}
         <section className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#6A00B1] mb-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#8D4087] mb-4">
             About Afrivate
           </h1>
-          <p className="text-xl text-[#6A00B1] font-semibold mb-4">
+          <p className="text-xl text-[#8D4087] font-semibold mb-4">
             Elevating life in Africa — Watch out!!
           </p>
           <p className="text-gray-700 max-w-2xl mx-auto">
@@ -36,18 +36,18 @@ export default function AboutUs() {
 
         {/* What We Do */}
         <section className="mb-16">
-          <h2 className="text-2xl font-extrabold text-[#6A00B1] mb-6">What We Do</h2>
+          <h2 className="text-2xl font-extrabold text-[#8D4087] mb-6">What We Do</h2>
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 border border-[#E9E9E9] shadow-sm">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Connect Talent with Opportunity</h3>
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Connect Talent with Opportunity</h3>
               <p className="text-gray-600">We operate a platform that bridges African volunteers (pathfinders) with organizations (enablers) seeking skills and impact. We curate volunteering opportunities from verified partners across tech, non-profits, and enterprises.</p>
             </div>
             <div className="bg-white rounded-2xl p-6 border border-[#E9E9E9] shadow-sm">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Enable Career Growth</h3>
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Enable Career Growth</h3>
               <p className="text-gray-600">We help Africans gain real-world experience, build portfolios, and access opportunities that value impact over borders. Our focus is on outcomes: professional growth, network expansion, and measurable impact.</p>
             </div>
             <div className="bg-white rounded-2xl p-6 border border-[#E9E9E9] shadow-sm">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Power Organizations with Impact</h3>
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Power Organizations with Impact</h3>
               <p className="text-gray-600">We enable enablers to discover, vet, and onboard skilled volunteers. Organizations can post opportunities, receive applications, and build teams that drive real change across the continent.</p>
             </div>
           </div>
@@ -55,18 +55,18 @@ export default function AboutUs() {
 
         {/* How We Do It */}
         <section className="mb-16">
-          <h2 className="text-2xl font-extrabold text-[#6A00B1] mb-6">How We Do It</h2>
+          <h2 className="text-2xl font-extrabold text-[#8D4087] mb-6">How We Do It</h2>
           <div className="space-y-6">
-            <div className="bg-[#6A00B11A] rounded-2xl p-6 border border-[#6A00B1]/20">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Verification & Trust</h3>
+            <div className="bg-[#8D40871A] rounded-2xl p-6 border border-[#8D4087]/20">
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Verification & Trust</h3>
               <p className="text-gray-700">We verify every partner organization to ensure opportunities are legitimate and valuable. Volunteers can trust that they&apos;re engaging with real projects and reputable enablers.</p>
             </div>
-            <div className="bg-[#6A00B11A] rounded-2xl p-6 border border-[#6A00B1]/20">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Curation & Matching</h3>
+            <div className="bg-[#8D40871A] rounded-2xl p-6 border border-[#8D4087]/20">
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Curation & Matching</h3>
               <p className="text-gray-700">We curate opportunities from TechCabal, MSME Africa, and other trusted sources. Our platform helps pathfinders discover roles aligned with their skills and goals.</p>
             </div>
-            <div className="bg-[#6A00B11A] rounded-2xl p-6 border border-[#6A00B1]/20">
-              <h3 className="font-bold text-lg text-[#6A00B1] mb-2">Community & Support</h3>
+            <div className="bg-[#8D40871A] rounded-2xl p-6 border border-[#8D4087]/20">
+              <h3 className="font-bold text-lg text-[#8D4087] mb-2">Community & Support</h3>
               <p className="text-gray-700">We foster a community of change-makers and innovators. From profile creation to application and beyond, we provide the tools and support needed for both pathfinders and enablers to succeed.</p>
             </div>
           </div>
@@ -75,21 +75,21 @@ export default function AboutUs() {
         {/* Stats */}
         <section className="flex justify-center gap-12 md:gap-24 mb-16">
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-[#6A00B1]">10,000+</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">10,000+</h3>
             <p className="text-gray-600 text-sm">Happy Clients</p>
           </div>
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-[#6A00B1]">1200+</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">1200+</h3>
             <p className="text-gray-600 text-sm">Reviews</p>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="text-center bg-gradient-to-br from-[#8500DE] via-[#6A00B1] to-[#1F0133] rounded-2xl p-10 text-white">
+        <section className="text-center bg-gradient-to-br from-[#8500DE] via-[#8D4087] to-[#1F0133] rounded-2xl p-10 text-white">
           <p className="text-xl md:text-2xl font-extrabold mb-4">Ready to Start Your Journey?</p>
           <p className="mb-6">Join a growing community of change-makers and innovators across Africa. Your next opportunity is just a click away.</p>
           <Link to="/signup">
-            <button className="bg-white text-[#6A00B1] font-bold py-3 px-8 rounded-xl hover:bg-purple-50 transition">
+            <button className="bg-white text-[#8D4087] font-bold py-3 px-8 rounded-xl hover:bg-purple-50 transition">
               Create Account
             </button>
           </Link>
@@ -101,14 +101,15 @@ export default function AboutUs() {
         <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
           <div className="flex items-center gap-2">
             <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#6A00B1] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
           </div>
-          <nav className="flex gap-4 text-[#6A00B1] text-xs font-extrabold">
+          <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
           </nav>
-          <p className="text-[10px] md:text-xs text-[#6A00B1] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
         </div>
       </footer>
     </div>
   );
 }
+

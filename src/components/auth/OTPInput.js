@@ -76,7 +76,7 @@ const OTPInput = ({ length = 4, onComplete, disabled = false }) => {
           className="
             w-12 h-12 text-center text-xl font-semibold
             border-2 border-gray-300 rounded-full
-            focus:outline-none focus:border-[#6A00B1] focus:ring-2 focus:ring-purple-200
+            focus:outline-none focus:border-[#8D4087] focus:ring-2 focus:ring-purple-200
             bg-gray-50
           "
         />

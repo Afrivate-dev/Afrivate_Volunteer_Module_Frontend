@@ -38,7 +38,7 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Conf
               className={`px-4 py-2 rounded-lg text-white font-medium transition-colors ${
                 type === "danger" 
                   ? "bg-red-600 hover:bg-red-700" 
-                  : "bg-[#6A00B1] hover:bg-[#5A0091]"
+                  : "bg-[#8D4087] hover:bg-[#5A0091]"
               }`}
             >
               {confirmText}
@@ -51,3 +51,4 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Conf
 };
 
 export default Modal;
+
