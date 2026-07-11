@@ -178,33 +178,33 @@ const Landing = () => {
             <Link
               to="/opportunity"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold border-l-4 border-transparent hover:border-[#843A7F] hover:bg-[#F4E0F1]/50 hover:text-[#843A7F] transition duration-200"
+              className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <HeartHandshake size={18} className="text-[#843A7F]/80" />
+              <HeartHandshake size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
               Volunteering
             </Link>
             <Link
               to="/contact"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold border-l-4 border-transparent hover:border-[#843A7F] hover:bg-[#F4E0F1]/50 hover:text-[#843A7F] transition duration-200"
+              className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <Phone size={18} className="text-[#843A7F]/80" />
+              <Phone size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
               Contact us
             </Link>
             <Link
               to="/about"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold border-l-4 border-transparent hover:border-[#843A7F] hover:bg-[#F4E0F1]/50 hover:text-[#843A7F] transition duration-200"
+              className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <Info size={18} className="text-[#843A7F]/80" />
+              <Info size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
               About us
             </Link>
             <Link
               to="/login"
               onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold border-l-4 border-transparent hover:border-[#843A7F] hover:bg-[#F4E0F1]/50 hover:text-[#843A7F] transition duration-200"
+              className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <ShieldCheck size={18} className="text-[#843A7F]/80" />
+              <ShieldCheck size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
               Login
             </Link>
           </div>
