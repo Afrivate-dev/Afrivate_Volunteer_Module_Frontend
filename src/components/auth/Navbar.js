@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { profile, getRole, notifications } from '../../services/api';
-import logoImg from '../../Assets/afrivate-logo.jpeg';
+import logoImg from '../../Assets/afrivate-logo.svg';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +75,7 @@ const NavBar = () => {
         </div>
 
         <div className="flex-1 flex justify-center mx-2 md:mx-4">
-          <img src={logoImg} alt="Afrivate" className="h-14 w-auto object-contain" />
+          <img src={logoImg} alt="Afrivate" className="h-8 md:h-9 w-auto object-contain" />
         </div>
 
         {/* Right side - Bell icon */}
