@@ -109,7 +109,7 @@ const CreateOpportunity = () => {
             <p className="text-gray-500 max-w-md mx-auto mb-8">
               Your opportunity is now live and visible to Pathfinders. You will receive notifications as soon as candidates begin applying or expressing interest.
             </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
               <button onClick={() => navigate("/enabler/opportunities-posted")}
                 className="border border-[#8D4087] text-[#8D4087] px-6 py-3 rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
                 View my opportunities →
@@ -119,29 +119,13 @@ const CreateOpportunity = () => {
                 Back to Dashboard
               </button>
             </div>
-            <hr className="border-gray-100 mb-6" />
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-4">SHARE THIS OPPORTUNITY</p>
-            <div className="flex items-center justify-center gap-3">
-              {["Link","Email","Share"].map((icon, i) => (
-                <button key={i} className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
-                  {icon}
-                </button>
-              ))}
-            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mb-4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-              <h3 className="font-bold text-gray-900 mb-1">Boost Visibility</h3>
-              <p className="text-sm text-gray-500">Promote this posting to reach 5x more qualified Pathfinders in your region.</p>
-            </div>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-4 text-xl">➕</div>
-              <h3 className="font-bold text-gray-900 mb-1">Post Another</h3>
-              <p className="text-sm text-gray-500">Ready to scale? Create another opportunity using your saved templates.</p>
-              <button onClick={() => { setPosted(false); setCurrentStep(1); setFormData({ title:"",description:"",keyResponsibilities:"",requirementsBenefits:"",aboutCompany:"",applicationInstructions:"",workModel:"Hybrid",location:"",timeCommitment:"",opportunityType:"volunteering" }); setCustomQuestions([]); }}
-                className="mt-3 text-[#8D4087] text-sm font-semibold hover:underline">Post now →</button>
-            </div>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mb-4 text-xl">➕</div>
+            <h3 className="font-bold text-gray-900 mb-1">Post Another</h3>
+            <p className="text-sm text-gray-500">Ready to scale? Create another opportunity using your saved templates.</p>
+            <button onClick={() => { setPosted(false); setCurrentStep(1); setFormData({ title:"",description:"",keyResponsibilities:"",requirementsBenefits:"",aboutCompany:"",applicationInstructions:"",workModel:"Hybrid",location:"",timeCommitment:"",opportunityType:"volunteering" }); setCustomQuestions([]); }}
+              className="mt-3 text-[#8D4087] text-sm font-semibold hover:underline">Post now →</button>
           </div>
         </div>
       </div>
@@ -478,9 +462,9 @@ const CreateOpportunity = () => {
                     <span className="text-xs font-semibold text-[#8D4087]">
                       {publishOpen ? "Open for applications" : "Draft (hidden)"}
                     </span>
-                    <button onClick={() => setPublishOpen(!publishOpen)}
-                      className={`w-12 h-6 rounded-full transition-colors relative ${publishOpen ? "bg-[#8D4087]" : "bg-gray-300"}`}>
-                      <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${publishOpen ? "translate-x-7" : "translate-x-1"}`} />
+                    <button type="button" role="switch" aria-checked={publishOpen} onClick={() => setPublishOpen(!publishOpen)}
+                      className={`w-12 h-6 shrink-0 rounded-full transition-colors relative ${publishOpen ? "bg-[#8D4087]" : "bg-gray-300"}`}>
+                      <span className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${publishOpen ? "translate-x-7" : "translate-x-1"}`} />
                     </button>
                   </div>
                 </div>
