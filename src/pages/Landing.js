@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 // Local asset paths
-import logoImg from '../Assets/Vector (8).png';
+import logoImg from '../Assets/afrivate-logo.svg';
 import phone from '../Assets/phone.png';
 import work from '../Assets/grok-video-c21e1147-f3e2-4f09-8f81-a2f331dfa3e0 1.png';
 import work2 from '../Assets/grok-video-8e5d6500-b97c-46c4-b804-b4a643565470 2.png';
@@ -115,8 +115,7 @@ const Landing = () => {
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-40 w-[min(1100px,94%)] font-montserrat">
         <div className="flex items-center justify-between rounded-full bg-white/95 backdrop-blur-md px-5 py-3 md:py-4 shadow-[0_4px_24px_rgba(132,58,127,0.06)] border border-white/40">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="AfriVate Logo" className="h-10 w-10 md:h-11 md:w-11 object-contain" />
-            <span className="font-extrabold tracking-wider text-[#843A7F] text-lg sm:text-xl font-poppins">AFRIVATE</span>
+            <img src={logoImg} alt="AfriVate Logo" className="h-8 md:h-9 lg:h-10 w-auto object-contain" />
           </Link>
 
           {/* Center Links */}
@@ -162,9 +161,8 @@ const Landing = () => {
         <div className="flex flex-col">
           {/* Mobile Drawer Header */}
           <div className="flex items-center justify-between border-b border-gray-100/80 pb-6 pt-4">
-            <div className="flex items-center gap-2">
-              <img src={logoImg} alt="AfriVate Logo" className="h-9 w-9 object-contain" />
-              <span className="font-extrabold text-[#843A7F] text-base font-poppins">AFRIVATE</span>
+            <div className="flex items-center">
+              <img src={logoImg} alt="AfriVate Logo" className="h-8 w-auto object-contain" />
             </div>
             <button
               onClick={() => setIsMenuOpen(false)}
@@ -571,9 +569,8 @@ const Landing = () => {
       {/* FOOTER */}
       <footer id="contact" className="bg-white border-t border-gray-100 font-montserrat w-full">
         <div className="mx-auto w-[min(1100px,94%)] py-12 flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="AfriVate Logo" className="h-10 w-10 object-contain" />
-            <span className="text-[#843A7F] font-black font-poppins text-base tracking-wider">AFRIVATE</span>
+          <Link to="/" className="flex items-center">
+            <img src={logoImg} alt="AfriVate Logo" className="h-8 md:h-9 w-auto object-contain" />
           </Link>
           <nav className="flex items-center gap-6 sm:gap-8 text-sm font-semibold text-[#843A7F] flex-wrap justify-center">
             <Link to="/" className="hover:opacity-75 transition">Home</Link>

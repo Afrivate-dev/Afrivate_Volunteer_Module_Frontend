@@ -6,7 +6,7 @@ import logoImg from '../Assets/Vector (1).png';
 import pic1 from '../Assets/Picture 1.png';
 import blob1 from '../Assets/Blob 1.png';
 import blob2 from '../Assets/blob 2.png';
-import vector from '../Assets/Vector (8).png';
+import brandLogo from '../Assets/afrivate-logo.svg';
 import pic2 from '../Assets/Picture 2.png';
 import pic3 from '../Assets/Picture 3.png';
 import pic4 from '../Assets/Picture 4.png';
@@ -297,9 +297,8 @@ const LandingPathfinder = () => {
 
       <footer className="w-full bg-[#f3f3f3] px-4 md:px-10 lg:px-[100px] py-4 md:py-6 mt-[200px] md:mt-16">
         <div className="flex items-center justify-between lg:flex-row flex-col gap-3 md:gap-6">
-          <div className="flex items-center justify-start gap-2">
-            <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+          <div className="flex items-center justify-start">
+            <img src={brandLogo} alt="Afrivate Logo" className="h-7 md:h-8 w-auto object-contain" />
           </div>
           <nav className="flex md:gap-8 gap-4 text-[#8D4087] text-xs md:text-sm font-extrabold">
             <Link to="/" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Home</p></Link>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoImg from '../Assets/afrivate-logo.jpeg';
-import vector from '../Assets/Vector (8).png';
+import logoImg from '../Assets/afrivate-logo.svg';
 
 export default function AboutUs() {
   return (
@@ -99,9 +98,8 @@ export default function AboutUs() {
       {/* Footer */}
       <footer className="w-full bg-[#f3f3f3] px-4 md:px-10 lg:px-[100px] py-6 mt-16">
         <div className="flex items-center justify-between max-w-6xl mx-auto flex-wrap gap-3">
-          <div className="flex items-center gap-2">
-            <img src={vector} alt="Afrivate Logo" className="w-5 md:w-7 object-contain" />
-            <span className="text-[#8D4087] font-extrabold font-poppins text-sm md:text-xl">AFRIVATE</span>
+          <div className="flex items-center">
+            <img src={logoImg} alt="Afrivate Logo" className="h-7 md:h-8 w-auto object-contain" />
           </div>
           <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
