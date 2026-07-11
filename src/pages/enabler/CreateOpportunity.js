@@ -101,7 +101,7 @@ const CreateOpportunity = () => {
       <div className="min-h-screen bg-[#FAFAFA] font-sans">
         <EnablerNavbar />
         <div className="pt-16 max-w-3xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center mb-6">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-10 text-center mb-6">
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-white text-2xl">✓</span>
             </div>
@@ -109,9 +109,9 @@ const CreateOpportunity = () => {
             <p className="text-gray-500 max-w-md mx-auto mb-8">
               Your opportunity is now live and visible to Pathfinders. You will receive notifications as soon as candidates begin applying or expressing interest.
             </p>
-            <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-8">
               <button onClick={() => navigate("/enabler/opportunities-posted")}
-                className="border border-[#8D4087] text-[#8D4087] px-6 py-3 rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors flex items-center gap-2">
+                className="border border-[#8D4087] text-[#8D4087] px-6 py-3 rounded-xl font-semibold text-sm hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
                 View my opportunities →
               </button>
               <button onClick={() => navigate("/enabler/dashboard")}
@@ -129,7 +129,7 @@ const CreateOpportunity = () => {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mb-4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
               <h3 className="font-bold text-gray-900 mb-1">Boost Visibility</h3>
@@ -150,9 +150,36 @@ const CreateOpportunity = () => {
 
   // ── Sidebar ─────────────────────────────────────────────────────────────────
   const Sidebar = () => (
-    <div className="w-60 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-5 self-start">
-      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">PROGRESS</p>
-      <div className="space-y-4">
+    <div className="w-full lg:w-60 shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 lg:p-5 self-start">
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 lg:mb-4">PROGRESS</p>
+
+      {/* Horizontal stepper (mobile / tablet) */}
+      <div className="flex items-start lg:hidden">
+        {STEPS.map((step, i) => {
+          const active = currentStep === step.num;
+          const done = currentStep > step.num;
+          return (
+            <React.Fragment key={step.num}>
+              <button
+                onClick={() => done && setCurrentStep(step.num)}
+                className="flex flex-col items-center gap-1 shrink-0">
+                <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                  active ? "bg-[#8D4087] text-white" : done ? "bg-purple-100 text-[#8D4087]" : "bg-gray-100 text-gray-400"
+                }`}>
+                  {done ? "✓" : step.num}
+                </span>
+                <span className={`text-[11px] font-semibold ${active ? "text-[#8D4087]" : done ? "text-gray-700" : "text-gray-400"}`}>{step.label}</span>
+              </button>
+              {i < STEPS.length - 1 && (
+                <div className={`flex-1 h-0.5 mt-4 mx-1 rounded ${done ? "bg-[#8D4087]" : "bg-gray-200"}`} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Vertical stepper (desktop) */}
+      <div className="hidden lg:block space-y-4">
         {STEPS.map((step, i) => {
           const active = currentStep === step.num;
           const done = currentStep > step.num;
@@ -178,19 +205,18 @@ const CreateOpportunity = () => {
           );
         })}
       </div>
-      <div className="mt-6 bg-purple-50 rounded-xl p-3">
+
+      <div className="hidden lg:block mt-6 bg-purple-50 rounded-xl p-3">
         <p className="text-xs text-purple-700 italic">"Tip: Opportunities with detailed descriptions get 40% more applications from qualified Pathfinders."</p>
       </div>
     </div>
   );
 
   const StepHeader = ({ title, subtitle, part }) => (
-    <div className="flex items-start justify-between mb-5">
-      <div>
-        <h2 className="text-xl font-bold text-[#8D4087]">{title}</h2>
-        <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
-      </div>
-      <span className="bg-purple-100 text-[#8D4087] text-xs font-semibold px-3 py-1 rounded-full">{part}</span>
+    <div className="mb-5">
+      <span className="inline-block bg-purple-100 text-[#8D4087] text-[11px] font-semibold px-3 py-1 rounded-full mb-2">{part}</span>
+      <h2 className="text-xl font-bold text-[#8D4087]">{title}</h2>
+      <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
     </div>
   );
 
@@ -199,27 +225,23 @@ const CreateOpportunity = () => {
       <EnablerNavbar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8 flex items-center gap-4">
-          <button onClick={() => currentStep > 1 ? setCurrentStep(currentStep - 1) : navigate(-1)}
-            className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
-            ←
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Post an opportunity</h1>
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
+          <div className="max-w-5xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Post an opportunity</h1>
             <p className="text-purple-200 text-sm mt-1">Connect with talented Pathfinders ready to contribute.</p>
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="max-w-5xl mx-auto px-4 py-8 flex gap-6 items-start">
+        <div className="max-w-5xl mx-auto px-4 py-5 sm:py-8 flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
           <Sidebar />
 
-          <div className="flex-1">
+          <div className="flex-1 w-full min-w-0">
             {/* Step 1: Basics */}
             {currentStep === 1 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
                 <StepHeader title="Step 1: Basics" subtitle="Start with the fundamental identity of your opportunity." part="Part 1 of 4" />
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm text-gray-600 mb-1.5">Opportunity Type</label>
                     <div className="relative">
@@ -248,6 +270,8 @@ const CreateOpportunity = () => {
                 </div>
                 <hr className="border-gray-100 my-5" />
                 <div className="flex items-center justify-end gap-4">
+                  <button onClick={() => navigate(-1)}
+                    className="text-sm text-gray-400 font-semibold hover:text-gray-600 mr-auto">Cancel</button>
                   <button onClick={() => setToast({ isOpen: true, message: "Draft saved!", type: "success" })}
                     className="text-sm text-gray-500 font-semibold hover:text-gray-700">Save as Draft</button>
                   <button onClick={() => setCurrentStep(2)} disabled={!formData.title.trim() || !formData.description.trim()}
@@ -260,7 +284,7 @@ const CreateOpportunity = () => {
 
             {/* Step 2: Details */}
             {currentStep === 2 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
                 <StepHeader title="Step 2: Details" subtitle="Define the scope, skills required, and role expectations." part="Part 2 of 4" />
                 <TipBox text="Tip: Be specific about skills needed — Pathfinders self-select when the requirements are clear, saving you screening time." />
                 <div className="space-y-4">
@@ -299,7 +323,7 @@ const CreateOpportunity = () => {
                   </div>
                 </div>
                 <hr className="border-gray-100 my-5" />
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <button onClick={() => setCurrentStep(1)}
                     className="border border-gray-200 text-gray-600 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
                     ← Back
@@ -318,9 +342,9 @@ const CreateOpportunity = () => {
 
             {/* Step 3: Logistics */}
             {currentStep === 3 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
                 <StepHeader title="Step 3: Logistics" subtitle="Set the location, schedule, and custom screening questions." part="Part 3 of 4" />
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm text-gray-600 mb-1.5">Work Mode</label>
                     <div className="relative">
@@ -367,12 +391,14 @@ const CreateOpportunity = () => {
                     </div>
                   )}
                   {showAddQuestion ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)}
-                        placeholder="Type your question..." className={inputCls + " flex-1"} autoFocus
+                        placeholder="Type your question..." className={inputCls + " sm:flex-1"} autoFocus
                         onKeyDown={(e) => e.key === "Enter" && addCustomQuestion()} />
-                      <button onClick={addCustomQuestion} className="bg-[#8D4087] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#651F5F]">Add</button>
-                      <button onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }} className="border border-gray-200 text-gray-500 px-4 py-2 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
+                      <div className="flex gap-2">
+                        <button onClick={addCustomQuestion} className="flex-1 sm:flex-none bg-[#8D4087] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#651F5F]">Add</button>
+                        <button onClick={() => { setShowAddQuestion(false); setNewQuestion(""); }} className="flex-1 sm:flex-none border border-gray-200 text-gray-500 px-4 py-2 rounded-xl text-sm hover:bg-gray-50">Cancel</button>
+                      </div>
                     </div>
                   ) : (
                     <button onClick={() => setShowAddQuestion(true)} disabled={customQuestions.length >= 5}
@@ -387,7 +413,7 @@ const CreateOpportunity = () => {
                 <TipBox text="Tip: Adding custom questions helps you identify the most motivated Pathfinders before you even read a full application." />
 
                 <hr className="border-gray-100 my-5" />
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <button onClick={() => setCurrentStep(2)}
                     className="border border-gray-200 text-gray-600 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
                     ← Back
@@ -406,11 +432,11 @@ const CreateOpportunity = () => {
 
             {/* Step 4: Review */}
             {currentStep === 4 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
                 <StepHeader title="Step 4: Review" subtitle="Check everything looks good before publishing." part="Part 4 of 4" />
 
                 {/* Summary Header */}
-                <div className="grid grid-cols-4 gap-3 mb-5 pb-5 border-b border-gray-100">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 pb-5 border-b border-gray-100">
                   {[
                     { label: "TYPE", val: formData.opportunityType },
                     { label: "WORK MODE", val: formData.workModel || "—" },
@@ -443,7 +469,7 @@ const CreateOpportunity = () => {
                 ))}
 
                 {/* Publishing Status */}
-                <div className="bg-purple-50 rounded-xl p-4 flex items-center justify-between mb-5">
+                <div className="bg-purple-50 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div>
                     <p className="text-sm font-bold text-[#8D4087]">Publishing Status</p>
                     <p className="text-xs text-gray-500">Set the opportunity visibility immediately after posting.</p>
@@ -459,7 +485,7 @@ const CreateOpportunity = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <button onClick={() => setCurrentStep(3)}
                     className="border border-gray-200 text-gray-600 px-5 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 flex items-center gap-2">
                     ← Edit details
