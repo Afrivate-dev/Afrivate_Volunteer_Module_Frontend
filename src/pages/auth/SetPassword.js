@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api, { getApiErrorMessage, getRole } from "../../services/api";
+import PasswordRequirements, { isPasswordValid } from "../../components/common/PasswordRequirements";
 
 const PasswordField = ({ name, placeholder, value, onChange, error }) => {
   const [show, setShow] = useState(false);
@@ -43,7 +44,7 @@ const SetPassword = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.newPassword) newErrors.newPassword = "Password is required";
-    else if (formData.newPassword.length < 8) newErrors.newPassword = "Password must be at least 8 characters";
+    else if (!isPasswordValid(formData.newPassword)) newErrors.newPassword = "Password doesn't meet all the requirements below";
     if (formData.newPassword !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,7 +72,10 @@ const SetPassword = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">Set a password</h1>
         <p className="text-center text-gray-500 text-sm mb-8">Add a password so you can sign in with email as well as Google.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <PasswordField name="newPassword" placeholder="New password" value={formData.newPassword} onChange={handleChange} error={errors.newPassword} />
+          <div>
+            <PasswordField name="newPassword" placeholder="New password" value={formData.newPassword} onChange={handleChange} error={errors.newPassword} />
+            <PasswordRequirements password={formData.newPassword} />
+          </div>
           <PasswordField name="confirmPassword" placeholder="Confirm password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} />
           {serverError && <p className="text-red-500 text-sm text-center">{serverError}</p>}
           <button type="submit" disabled={loading}

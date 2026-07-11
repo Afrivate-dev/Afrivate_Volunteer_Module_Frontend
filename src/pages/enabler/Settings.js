@@ -4,6 +4,7 @@ import { Camera, Lock, User, FileText, Trash2, Upload } from "lucide-react";
 import EnablerNavbar from "../../components/auth/EnablerNavbar";
 import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
+import PasswordRequirements, { isPasswordValid } from "../../components/common/PasswordRequirements";
 import { profile, auth, getApiErrorMessage } from "../../services/api";
 import { useUser } from "../../context/UserContext";
 import { normalizeWebsiteForStorage } from "../../utils/websiteUrl";
@@ -129,6 +130,9 @@ const Settings = () => {
     const confirm_password = formData.confirmNewPassword.trim();
     if (!old_password || !new_password || !confirm_password) {
       setToast({ isOpen: true, message: "All password fields are required.", type: "error" }); return;
+    }
+    if (!isPasswordValid(new_password)) {
+      setToast({ isOpen: true, message: "New password doesn't meet all the requirements listed below the field.", type: "error" }); return;
     }
     if (new_password !== confirm_password) {
       setToast({ isOpen: true, message: "New passwords do not match.", type: "error" }); return;
@@ -275,6 +279,7 @@ const Settings = () => {
                 <label className="block text-xs text-gray-500 mb-1.5">New Password</label>
                 <input type="password" name="newPassword" value={formData.newPassword} onChange={handleInputChange}
                   placeholder="••••••••" className={inputCls} />
+                <PasswordRequirements password={formData.newPassword} />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1.5">Confirm New Password</label>

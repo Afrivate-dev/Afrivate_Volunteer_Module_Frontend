@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api, { getApiErrorMessage } from '../../services/api';
+import PasswordRequirements, { isPasswordValid } from '../../components/common/PasswordRequirements';
 
 const RESET_EMAIL_KEY = 'resetPasswordEmail';
 const RESET_UID_KEY = 'passwordResetUid';
@@ -52,7 +53,7 @@ const ResetPassword = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.newPassword) newErrors.newPassword = 'New password is required';
-    else if (formData.newPassword.length < 8) newErrors.newPassword = 'Password must be at least 8 characters';
+    else if (!isPasswordValid(formData.newPassword)) newErrors.newPassword = "Password doesn't meet all the requirements below";
     if (formData.newPassword !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -90,7 +91,10 @@ const ResetPassword = () => {
         <h1 className="text-2xl font-bold text-gray-900 mb-1 text-center">Reset your password</h1>
         <p className="text-center text-gray-500 text-sm mb-8">Enter a new password for your account.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <PasswordField name="newPassword" placeholder="New password" value={formData.newPassword} onChange={handleChange} error={errors.newPassword} />
+          <div>
+            <PasswordField name="newPassword" placeholder="New password" value={formData.newPassword} onChange={handleChange} error={errors.newPassword} />
+            <PasswordRequirements password={formData.newPassword} />
+          </div>
           <PasswordField name="confirmPassword" placeholder="Confirm password" value={formData.confirmPassword} onChange={handleChange} error={errors.confirmPassword} />
           {serverError && <p className="text-red-500 text-sm text-center">{serverError}</p>}
           <button type="submit" disabled={loading}

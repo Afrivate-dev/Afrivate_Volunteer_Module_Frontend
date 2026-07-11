@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Eye, EyeOff, User } from "lucide-react";
 import api, { getApiErrorMessage } from "../../services/api";
+import PasswordRequirements, { isPasswordValid } from "../../components/common/PasswordRequirements";
 import heroImage  from "../../Assets/signup-hero.png";
 import globeImage from "../../Assets/signup-globe.png";
 
@@ -98,14 +99,8 @@ const SignUp = () => {
 
     if (!formData.password)
       e.password = "Password is required";
-    else if (formData.password.length < 8)
-      e.password = "At least 8 characters";
-    else if (!/[A-Z]/.test(formData.password))
-      e.password = "Must contain an uppercase letter";
-    else if (!/[a-z]/.test(formData.password))
-      e.password = "Must contain a lowercase letter";
-    else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password))
-      e.password = "Must contain a special character";
+    else if (!isPasswordValid(formData.password))
+      e.password = "Password doesn't meet all the requirements below";
 
     if (!formData.confirmPassword)
       e.confirmPassword = "Please confirm your password";
@@ -395,13 +390,16 @@ const SignUp = () => {
             </div>
 
             {/* Password */}
-            <PasswordField
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-            />
+            <div>
+              <PasswordField
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                error={errors.password}
+              />
+              <PasswordRequirements password={formData.password} />
+            </div>
 
             {/* Confirm Password */}
             <PasswordField
