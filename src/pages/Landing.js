@@ -520,7 +520,10 @@ const Landing = () => {
               AfriVate every day — building careers, building organisations, and
               building the continent.
             </p>
-            <button className="mt-8 rounded-full bg-[#843A7F] text-white font-bold px-8 py-3.5 hover:bg-[#6f3069] transition shadow-md">
+            <button 
+              className="mt-8 rounded-full bg-[#843A7F] text-white font-bold px-8 py-3.5 hover:bg-[#6f3069] transition shadow-md" 
+              onClick={() => window.open("https://chat.whatsapp.com/FMHF97ul4k18alJNwieFxB", "_blank", "noopener,noreferrer")}
+            >
               Join Community
             </button>
           </div>
