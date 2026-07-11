@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Modal from "../../components/common/Modal";
 import Toast from "../../components/common/Toast";
+import PasswordRequirements, { isPasswordValid } from "../../components/common/PasswordRequirements";
 import { profile, auth, getApiErrorMessage } from "../../services/api";
 import { useUser } from "../../context/UserContext";
 
@@ -68,6 +69,9 @@ const PathfinderSettings = () => {
     const confirm_password = (formData.confirmNewPassword || "").trim();
     if (!old_password || !new_password || !confirm_password) {
       setToast({ isOpen: true, message: "Enter current password, new password, and confirmation.", type: "error" }); return;
+    }
+    if (!isPasswordValid(new_password)) {
+      setToast({ isOpen: true, message: "New password doesn't meet all the requirements listed below the field.", type: "error" }); return;
     }
     if (new_password !== confirm_password) {
       setToast({ isOpen: true, message: "New passwords do not match.", type: "error" }); return;
@@ -149,6 +153,7 @@ const PathfinderSettings = () => {
               <div>
                 <label className={labelCls}>New Password</label>
                 <input type="password" name="newPassword" value={formData.newPassword} onChange={handleInputChange} placeholder="New password" className={inputCls} />
+                <PasswordRequirements password={formData.newPassword} />
               </div>
               <div>
                 <label className={labelCls}>Confirm New Password</label>
