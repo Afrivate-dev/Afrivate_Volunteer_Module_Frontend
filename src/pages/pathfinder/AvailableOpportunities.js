@@ -165,7 +165,7 @@ const AvailableOpportunities = () => {
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-5 hover:bg-white/30 transition-colors">
               ← Back
             </button>
-            <h1 className="text-4xl font-bold text-white mb-2">Available Opportunities</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Available Opportunities</h1>
             <p className="text-purple-200">Explore your next career step with tailored internships, mentorship programs, and impactful volunteer positions.</p>
           </div>
         </div>

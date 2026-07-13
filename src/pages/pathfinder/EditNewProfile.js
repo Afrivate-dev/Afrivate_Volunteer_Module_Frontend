@@ -416,7 +416,7 @@ const EditNewProfile = () => {
 
           {/* Notifications */}
           {(successMessage || (redirectCountdown !== null && redirectCountdown > 0)) && (
-            <div className="max-w-4xl mx-auto px-8 pt-4">
+            <div className="max-w-4xl mx-auto px-4 sm:px-8 pt-4">
               {successMessage && (
                 <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-2 text-sm">
                   {successMessage}
@@ -771,9 +771,9 @@ const EditNewProfile = () => {
                 {socialLinks.map((link, index) => (
                   <div key={link.id != null ? `sl-${link.id}` : `sl-new-${index}`} className="flex gap-2 items-center">
                     <input type="text" value={link.platform_name || ""} onChange={(e) => updateSocialLink(index, "platform_name", e.target.value)}
-                      placeholder="Platform" className="w-32 border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white shrink-0" />
+                      placeholder="Platform" className="w-24 sm:w-32 border border-gray-200 rounded-xl px-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white shrink-0" />
                     <input type="url" value={link.platform_url || ""} onChange={(e) => updateSocialLink(index, "platform_url", e.target.value)}
-                      placeholder="https://..." className={inputCls + " flex-1"} />
+                      placeholder="https://..." className={inputCls + " flex-1 min-w-0"} />
                     <button type="button" onClick={() => removeSocialLink(index)} className="text-gray-400 hover:text-red-500 text-xl shrink-0">×</button>
                   </div>
                 ))}
@@ -823,13 +823,13 @@ const EditNewProfile = () => {
             </div>
 
             {/* Save / Preview */}
-            <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button type="button" onClick={() => setIsPreviewMode(true)}
-                className="px-8 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors">
+                className="px-6 sm:px-8 py-3 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors">
                 Preview
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="px-8 py-3 rounded-xl bg-[#651F5F] text-white font-semibold text-sm hover:bg-[#4a1647] transition-colors disabled:opacity-50">
+                className="px-6 sm:px-8 py-3 rounded-xl bg-[#651F5F] text-white font-semibold text-sm hover:bg-[#4a1647] transition-colors disabled:opacity-50">
                 {saving ? "Saving..." : "Save profile"}
               </button>
             </div>

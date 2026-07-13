@@ -174,12 +174,12 @@ const Opportunity = () => {
                   }
                 }}
               >
-                <div>
-                  <h2 className="font-bold">{item.title}</h2>
-                  <p className="text-sm text-gray-500">{item.company}</p>
+                <div className="min-w-0">
+                  <h2 className="font-bold break-words">{item.title}</h2>
+                  <p className="text-sm text-gray-500 truncate">{item.company}</p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => handleSave(item)}
                     className="px-3 py-1 rounded bg-gray-100 text-sm"

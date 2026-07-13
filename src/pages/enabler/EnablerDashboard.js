@@ -290,8 +290,8 @@ const EnablerDashboard = () => {
                   const avatar = pf?.base_details?.profile_pic || null;
                   const { label, cls } = applicantStatusConfig(applicant.status);
                   return (
-                    <div key={i} className="flex items-center justify-between px-5 py-4">
-                      <div className="flex items-center gap-3">
+                    <div key={i} className="flex items-center justify-between gap-2 px-5 py-4">
+                      <div className="flex items-center gap-3 min-w-0">
                         {avatar ? (
                           <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover" />
                         ) : (
@@ -299,12 +299,12 @@ const EnablerDashboard = () => {
                             {name.charAt(0).toUpperCase()}
                           </div>
                         )}
-                        <div>
-                          <p className="font-semibold text-gray-900 text-sm">{name}</p>
-                          <p className="text-gray-500 text-xs">{role}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 text-sm truncate">{name}</p>
+                          <p className="text-gray-500 text-xs truncate">{role}</p>
                         </div>
                       </div>
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full shrink-0 ${cls}`}>
                         {label}
                       </span>
                     </div>

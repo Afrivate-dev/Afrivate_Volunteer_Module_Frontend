@@ -233,15 +233,15 @@ const Landingenabler = () => {
           <div className="flex items-center justify-start">
             <img src={brandLogo} alt="Afrivate Logo" className="h-7 md:h-8 w-auto object-contain" />
           </div>
-          <nav className="flex md:gap-8 gap-4 text-[#8D4087] text-xs md:text-sm font-extrabold">
-            <Link to="/" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Home</p></Link>
-            <Link to="/about" className="hover:underline whitespace-nowrap text-ellipsis"> <p>About Us</p></Link>
-            <Link to="/contact" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Contact Us</p></Link>
-            <Link to="/privacy" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Privacy Policy</p></Link>
+          <nav className="flex flex-wrap md:gap-8 gap-x-4 gap-y-2 text-[#8D4087] text-xs md:text-sm font-extrabold">
+            <Link to="/" className="hover:underline"> <p>Home</p></Link>
+            <Link to="/about" className="hover:underline"> <p>About Us</p></Link>
+            <Link to="/contact" className="hover:underline"> <p>Contact Us</p></Link>
+            <Link to="/privacy" className="hover:underline"> <p>Privacy Policy</p></Link>
           </nav>
         </div>
         <div className="flex items-center justify-between md:mt-20 mt-4 lg:flex-row flex-col gap-3 md:gap-6 text-center">
-          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
           <div className="flex items-center gap-4 md:gap-7 text-[#8D4087] text-base md:text-2xl">
             <a href="https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09" target="_blank" rel="noopener noreferrer" aria-label="X"><i className="fa-brands fa-x-twitter"></i></a>
             <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>

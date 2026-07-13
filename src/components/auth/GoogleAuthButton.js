@@ -136,12 +136,13 @@ export function GoogleAuthButton({
   };
 
   if (!GOOGLE_CLIENT_ID) {
+    // User-facing copy stays generic; the dev hint lives in the tooltip.
     return (
       <div
         className={`flex items-center justify-center w-full py-4 rounded-[15px] border border-gray-300 bg-gray-50 text-gray-500 text-sm ${className}`}
-        title="Create a Web OAuth client in Google Cloud Console and set REACT_APP_GOOGLE_CLIENT_ID in .env, then restart npm start"
+        title="Developer: set REACT_APP_GOOGLE_CLIENT_ID (in .env locally, or in the host's environment variables) and rebuild"
       >
-        {buttonText} — add REACT_APP_GOOGLE_CLIENT_ID to .env
+        Google sign-in is temporarily unavailable
       </div>
     );
   }

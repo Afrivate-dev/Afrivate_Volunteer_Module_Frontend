@@ -148,7 +148,7 @@ const OrganizationProfile = () => {
               {base.contact_email && (
                 <div className="flex items-center gap-3">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                  <span className="text-gray-700 text-sm">{base.contact_email}</span>
+                  <span className="text-gray-700 text-sm break-all min-w-0">{base.contact_email}</span>
                 </div>
               )}
               {base.phone_number && (
@@ -160,7 +160,7 @@ const OrganizationProfile = () => {
               {base.website && (
                 <div className="flex items-center gap-3">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                  <a href={base.website} target="_blank" rel="noopener noreferrer" className="text-[#8D4087] hover:underline text-sm">{base.website}</a>
+                  <a href={base.website} target="_blank" rel="noopener noreferrer" className="text-[#8D4087] hover:underline text-sm break-all min-w-0">{base.website}</a>
                 </div>
               )}
               {!base.contact_email && !base.phone_number && !base.website && (

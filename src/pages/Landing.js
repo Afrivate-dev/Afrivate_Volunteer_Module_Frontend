@@ -259,7 +259,7 @@ const Landing = () => {
             </div>
 
             {/* Headline Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#843A7F] leading-tight font-montserrat tracking-tight px-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#843A7F] leading-tight font-montserrat tracking-tight px-4 sm:px-10">
               Volunteer Your Skills,
               <br />
               Build Your Future.
@@ -508,7 +508,7 @@ const Landing = () => {
       <section id="about" className="py-20 bg-white font-montserrat">
         <div className="mx-auto w-[min(1100px,94%)] grid md:grid-cols-2 gap-10 items-center">
           <div className="text-center md:text-left">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-[#843A7F] leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#843A7F] leading-tight">
               A community
               <br />
               built for

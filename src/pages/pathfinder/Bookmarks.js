@@ -120,7 +120,7 @@ const Bookmarks = () => {
         {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold text-white mb-1">Saved</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1">Saved</h1>
             <p className="text-purple-200 text-sm mb-5">Manage your bookmarked opportunities and organizations.</p>
             {/* Tabs */}
             <div className="flex items-center gap-0">

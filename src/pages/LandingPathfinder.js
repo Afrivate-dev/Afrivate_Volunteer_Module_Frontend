@@ -253,10 +253,10 @@ const LandingPathfinder = () => {
           
           </p>
 
-                <div className=" absolute md:top-[-100px] top-[-95px] max-w-xl py-7 p-6 md:py-10 rounded-3xl text-[#8D4087] font-semibold
+                <div className=" md:absolute md:top-[-100px] max-w-xl py-7 p-6 md:py-10 rounded-3xl text-[#8D4087] font-semibold
               bg-white/20 backdrop-blur-sm
               shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-              bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[53%] ml-[3%] m-5 md:m-0
+              bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[53%] mx-4 my-5 md:m-0
             "
             >
               <p className=" text-xs md:text-base leading-relaxed">
@@ -266,10 +266,10 @@ const LandingPathfinder = () => {
               </p>
             </div>
 
-            <div className=" absolute md:top-[140px] top-[90px] max-w-xl p-6 py-10 rounded-3xl text-[#8D4087] font-semibold
+            <div className=" md:absolute md:top-[140px] max-w-xl p-6 py-10 rounded-3xl text-[#8D4087] font-semibold
               bg-white/20 backdrop-blur-sm
               shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-              bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[20%] ml-[3%] m-5 md:m-0 
+              bg-gradient-to-br from-purple-100/70 via-purple-200/40 to-purple-100/80 md:ml-[20%] mx-4 my-5 md:m-0
             "
             >
               <p className="text-xs leading-relaxed">
@@ -288,27 +288,27 @@ const LandingPathfinder = () => {
 
 
 
-      <div className="w-full flex justify-center md:justify-end md:px-[300px] gap-8 md:gap-16 md:mt-[170px] mt-[150px] font-sans">
+      <div className="w-full flex justify-center md:justify-end md:px-[300px] gap-8 md:gap-16 md:mt-[170px] mt-8 font-sans">
         <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#8D4087]">10,000+</h2><p className="text-[#191919] md:text-base text-[10px]">Happy Clients</p></div>
         <div className="text-center"><h2 className="text-base sm:text-xl md:text-2xl font-bold text-[#8D4087]">1200+</h2><p className="text-[#191919] md:text-base text-[10px]">Reviews</p></div>
       </div>
 
 
 
-      <footer className="w-full bg-[#f3f3f3] px-4 md:px-10 lg:px-[100px] py-4 md:py-6 mt-[200px] md:mt-16">
+      <footer className="w-full bg-[#f3f3f3] px-4 md:px-10 lg:px-[100px] py-4 md:py-6 mt-16">
         <div className="flex items-center justify-between lg:flex-row flex-col gap-3 md:gap-6">
           <div className="flex items-center justify-start">
             <img src={brandLogo} alt="Afrivate Logo" className="h-7 md:h-8 w-auto object-contain" />
           </div>
-          <nav className="flex md:gap-8 gap-4 text-[#8D4087] text-xs md:text-sm font-extrabold">
-            <Link to="/" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Home</p></Link>
-            <Link to="/about" className="hover:underline whitespace-nowrap text-ellipsis"> <p>About Us</p></Link>
-            <Link to="/contact" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Contact Us</p></Link>
-            <Link to="/privacy" className="hover:underline whitespace-nowrap text-ellipsis"> <p>Privacy Policy</p></Link>
+          <nav className="flex flex-wrap md:gap-8 gap-x-4 gap-y-2 text-[#8D4087] text-xs md:text-sm font-extrabold">
+            <Link to="/" className="hover:underline"> <p>Home</p></Link>
+            <Link to="/about" className="hover:underline"> <p>About Us</p></Link>
+            <Link to="/contact" className="hover:underline"> <p>Contact Us</p></Link>
+            <Link to="/privacy" className="hover:underline"> <p>Privacy Policy</p></Link>
           </nav>
         </div>
         <div className="flex items-center justify-between md:mt-20 mt-4 lg:flex-row flex-col gap-3 md:gap-6 text-center">
-          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat whitespace-nowrap text-ellipsis">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
           <div className="flex items-center gap-4 md:gap-7 text-[#8D4087] text-base md:text-2xl">
             <a href="https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09" target="_blank" rel="noopener noreferrer" aria-label="X"><i className="fa-brands fa-x-twitter"></i></a>
             <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>

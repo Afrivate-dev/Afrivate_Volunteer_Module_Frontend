@@ -297,16 +297,16 @@ const Settings = () => {
           </div>
 
           {/* Legacy Authentication */}
-          <div className="border-2 border-dashed border-purple-200 rounded-2xl p-4 flex items-center justify-between bg-purple-50/40">
-            <div className="flex items-center gap-3">
-              <User size={20} className="text-[#8D4087]" />
-              <div>
+          <div className="border-2 border-dashed border-purple-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-purple-50/40">
+            <div className="flex items-center gap-3 min-w-0">
+              <User size={20} className="text-[#8D4087] shrink-0" />
+              <div className="min-w-0">
                 <p className="text-sm font-semibold text-gray-800">Legacy Authentication</p>
                 <p className="text-xs text-gray-500">Need to set a dedicated password for third-party integrations?</p>
               </div>
             </div>
             <button onClick={() => navigate("/set-password")}
-              className="text-[#8D4087] text-sm font-semibold hover:underline whitespace-nowrap">
+              className="text-[#8D4087] text-sm font-semibold hover:underline whitespace-nowrap shrink-0 self-start sm:self-auto">
               Set integration password
             </button>
           </div>
