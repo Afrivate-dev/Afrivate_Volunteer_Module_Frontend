@@ -103,7 +103,7 @@ const EnablerProfile = () => {
         {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
           className="px-4 sm:px-8 py-6 sm:py-8">
-          <div className="max-w-5xl mx-auto flex items-center gap-6">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div className="w-20 h-20 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {base.profile_pic ? (
                 <img src={base.profile_pic} alt="Logo" className="w-full h-full object-cover rounded-xl" />
@@ -111,13 +111,13 @@ const EnablerProfile = () => {
                 <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>
               )}
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white">{profileData?.name || "Your Organization"}</h1>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl font-bold text-white break-words">{profileData?.name || "Your Organization"}</h1>
               <p className="text-purple-200 text-sm mt-1">{base.bio || "Pioneering digital transformation."}</p>
             </div>
             <button
               onClick={() => navigate("/enabler/edit-profile")}
-              className="border border-white text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#651F5F] transition-colors flex items-center gap-2"
+              className="border border-white text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-white hover:text-[#651F5F] transition-colors flex items-center gap-2 shrink-0 self-start sm:self-auto"
             >
               Edit Profile
             </button>

@@ -99,7 +99,7 @@ const MyApplications = () => {
               className="inline-flex items-center gap-1.5 bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm mb-4 hover:bg-white/30 transition-colors">
               ← Back
             </button>
-            <h1 className="text-4xl font-bold text-white mb-1">My Applications</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1">My Applications</h1>
             <p className="text-purple-200 text-sm">Monitor your career path and explore new opportunities.</p>
           </div>
         </div>

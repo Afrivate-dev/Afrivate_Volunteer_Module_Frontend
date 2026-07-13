@@ -229,7 +229,7 @@ const ApplyApplication = () => {
       <NavBar />
       <div className="pt-16">
         {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-8 py-8 flex items-center gap-4">
+        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8 flex items-center gap-4">
           <button onClick={() => navigate(-1)}
             className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors">
             ←

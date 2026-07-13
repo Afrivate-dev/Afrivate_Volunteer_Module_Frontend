@@ -139,7 +139,7 @@ const KYCForm = () => {
             {step < currentStep ? '✓' : step}
           </div>
           {step < 5 && (
-            <div className={`w-16 h-1 ${step < currentStep ? 'bg-green-500' : 'bg-gray-200'}`} />
+            <div className={`w-4 sm:w-16 h-1 ${step < currentStep ? 'bg-green-500' : 'bg-gray-200'}`} />
           )}
         </div>
       ))}
@@ -193,7 +193,7 @@ const KYCForm = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-        <div className="flex space-x-6">
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
           {['MALE', 'FEMALE', 'RATHER NOT SAY'].map(option => (
             <label key={option} className="flex items-center">
               <input
@@ -379,7 +379,7 @@ const KYCForm = () => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Current Employment Status</label>
-        <div className="flex space-x-6">
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
           {['Employed', 'Not Employed', 'Freelancing'].map(option => (
             <label key={option} className="flex items-center">
               <input
@@ -488,7 +488,7 @@ const KYCForm = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow p-8">
+        <div className="bg-white rounded-lg shadow p-5 sm:p-8">
           {renderStepIndicator()}
           
           <form onSubmit={handleSubmit}>
