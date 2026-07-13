@@ -11,6 +11,8 @@ const EnablerProfile = () => {
   const [error, setError] = useState(null);
   const [credentials, setCredentials] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [docName, setDocName] = useState("");
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
 
   useEffect(() => {
@@ -39,24 +41,31 @@ const EnablerProfile = () => {
     } catch {}
   };
 
-  const handleDocumentUpload = async (e) => {
+  const handleFileSelected = (e) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const documentName = prompt("Enter document name (e.g., Business Registration, Tax Certificate):");
-    if (!documentName) { e.target.value = ""; return; }
+    setPendingFile(file);
+    setDocName(file.name.replace(/\.[^/.]+$/, ""));
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!pendingFile) return;
+    const name = docName.trim() || pendingFile.name.replace(/\.[^/.]+$/, "");
     setUploading(true);
     try {
       const formData = new FormData();
-      formData.append("document_name", documentName);
-      formData.append("document", file);
+      formData.append("document_name", name);
+      formData.append("document", pendingFile);
       await profile.credentialsCreate(formData);
       setToast({ isOpen: true, message: "Document uploaded successfully!", type: "success" });
+      setPendingFile(null);
+      setDocName("");
       await loadCredentials();
     } catch (err) {
       setToast({ isOpen: true, message: err.message || "Failed to upload document.", type: "error" });
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
   };
 
@@ -85,8 +94,6 @@ const EnablerProfile = () => {
 
   const base = profileData?.base_details || {};
   const socialLinks = profileData?.social_links || [];
-
-  const docIcons = ["", "", "", ""];
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
@@ -128,9 +135,9 @@ const EnablerProfile = () => {
                 {base.contact_email && (
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-gray-400">Email Address</p>
-                      <p className="text-sm text-gray-800">{base.contact_email}</p>
+                      <p className="text-sm text-gray-800 break-all">{base.contact_email}</p>
                     </div>
                   </div>
                 )}
@@ -146,10 +153,10 @@ const EnablerProfile = () => {
                 {base.website && (
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-gray-400">Website</p>
                       <a href={base.website} target="_blank" rel="noopener noreferrer"
-                        className="text-sm text-[#8D4087] hover:underline">
+                        className="text-sm text-[#8D4087] hover:underline break-all">
                         {base.website.replace(/^https?:\/\//, "")}
                       </a>
                     </div>
@@ -203,7 +210,7 @@ const EnablerProfile = () => {
                 <h2 className="font-bold text-gray-900 flex items-center gap-2">Corporate Documents</h2>
                 <label className="bg-[#8D4087] text-white px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-[#651F5F] transition-colors flex items-center gap-1.5">
                   {uploading ? "Uploading..." : "Upload Documents"}
-                  <input type="file" accept=".pdf,.png,.jpeg,.jpg,.webp" onChange={handleDocumentUpload}
+                  <input type="file" accept=".pdf,.png,.jpeg,.jpg,.webp" onChange={handleFileSelected}
                     disabled={uploading} className="hidden" />
                 </label>
               </div>
@@ -215,22 +222,20 @@ const EnablerProfile = () => {
                   {credentials.map((cred, i) => (
                     <div key={cred.id || i}
                       className="border border-gray-100 rounded-xl p-3 flex items-center justify-between bg-purple-50/30 hover:bg-purple-50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center text-lg">
-                          {docIcons[i % docIcons.length]}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         </div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-800">{cred.document_name}</p>
-                          {cred.uploaded_at && (
-                            <p className="text-xs text-gray-400">
-                              {new Date(cred.uploaded_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
-                            </p>
-                          )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-gray-800 truncate">{cred.document_name}</p>
+                          <p className="text-xs text-gray-400">{cred.is_verified ? "Verified" : "Pending review"}</p>
                         </div>
                       </div>
                       {cred.document && (
-                        <a href={cred.document} target="_blank" rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-[#8D4087] text-lg">⬇️</a>
+                        <a href={cred.document} target="_blank" rel="noopener noreferrer" title="Download document"
+                          className="text-gray-400 hover:text-[#8D4087] shrink-0 p-1.5 rounded-lg hover:bg-purple-100 transition-colors">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </a>
                       )}
                     </div>
                   ))}
@@ -256,6 +261,36 @@ const EnablerProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Document naming dialog — shown after a file is picked, before upload */}
+      {pendingFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => !uploading && setPendingFile(null)}></div>
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full z-10 p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Name this document</h3>
+            <p className="text-sm text-gray-500 mb-4 break-all">File: {pendingFile.name}</p>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Document Name</label>
+            <input
+              type="text"
+              value={docName}
+              onChange={(e) => setDocName(e.target.value)}
+              placeholder="e.g. Business Registration, Tax Certificate"
+              autoFocus
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#8D4087] focus:border-[#8D4087] transition-all mb-5"
+            />
+            <div className="flex justify-end gap-3">
+              <button onClick={() => setPendingFile(null)} disabled={uploading}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50">
+                Cancel
+              </button>
+              <button onClick={handleConfirmUpload} disabled={uploading}
+                className="px-4 py-2 rounded-lg text-white text-sm font-medium bg-[#8D4087] hover:bg-[#651F5F] transition-colors disabled:opacity-50">
+                {uploading ? "Uploading..." : "Upload"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Toast isOpen={toast.isOpen} message={toast.message} type={toast.type}
         onClose={() => setToast({ isOpen: false, message: "", type: "success" })} />

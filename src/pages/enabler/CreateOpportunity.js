@@ -39,7 +39,7 @@ const CreateOpportunity = () => {
   const [formData, setFormData] = useState({
     title: "", description: "", keyResponsibilities: "", requirementsBenefits: "",
     aboutCompany: "", applicationInstructions: "", workModel: "Hybrid", location: "",
-    timeCommitment: "", opportunityType: "volunteering",
+    timeCommitment: "", opportunityType: "volunteering", targetApplicants: "",
   });
   const [customQuestions, setCustomQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
@@ -72,10 +72,12 @@ const CreateOpportunity = () => {
       });
       const link = createOpportunityLink(formData.title, formData.opportunityType);
       if (!link.startsWith("https://")) throw new Error("Generated opportunity link must use HTTPS.");
+      const targetVal = parseInt(formData.targetApplicants, 10);
       await opportunities.create({
         title: formData.title.trim(), description: combinedDesc,
         opportunity_type: formData.opportunityType || "volunteering",
         link, is_open: publishOpen,
+        target_applicants: Number.isNaN(targetVal) || targetVal <= 0 ? null : targetVal,
       });
       setPosted(true);
     } catch (err) {
@@ -352,13 +354,18 @@ const CreateOpportunity = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mb-5">
+                <div className="mb-4">
                   <label className="block text-sm text-gray-600 mb-1.5">Location</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">📍</span>
                     <input name="location" value={formData.location} onChange={handleInputChange}
                       placeholder="Enter city, region, or 'Remote'" className={inputCls + " pl-9"} />
                   </div>
+                </div>
+                <div className="mb-5">
+                  <label className="block text-sm text-gray-600 mb-1.5">Target Number of Applicants <span className="text-gray-400">(optional)</span></label>
+                  <input name="targetApplicants" type="number" min="1" value={formData.targetApplicants} onChange={handleInputChange}
+                    placeholder="e.g. 40" className={inputCls} />
                 </div>
 
                 {/* Custom Questions */}

@@ -244,11 +244,13 @@ export const bookmark = {
   },
 
   opportunitiesSavedCreate(body) {
-    const data = {};
-    if (body.opportunity != null) data.opportunity = body.opportunity;
-    const oid = body.opportunity_id ?? body.opportunity?.id;
-    if (oid != null) data.opportunity_id = oid;
-    return request("POST", "/bookmark/opportunities/saved/", { data });
+    // Backend requires the write-only field `opportunity_id`. Accept either
+    // an explicit opportunity_id, a numeric `opportunity`, or an object.
+    const oid = body.opportunity_id
+      ?? (typeof body.opportunity === "object" ? body.opportunity?.id : body.opportunity);
+    return request("POST", "/bookmark/opportunities/saved/", {
+      data: oid != null ? { opportunity_id: Number(oid) } : {},
+    });
   },
 
   /** Pathfinder: remove a saved opportunity by opportunity id. */
@@ -263,12 +265,11 @@ export const bookmark = {
 
   /** Enabler: bookmark a pathfinder (e.g. applicant). POST /api/bookmark/applicants/saved/ */
   applicantsSavedCreate(body) {
-    const data = {};
-    if (body.pathfinder != null) data.pathfinder = body.pathfinder;
-    if (body.pathfinder_id != null) data.pathfinder_id = body.pathfinder_id;
-    if (body.opportunity != null) data.opportunity = body.opportunity;
-    if (body.opportunity_id != null) data.opportunity_id = body.opportunity_id;
-    return request("POST", "/bookmark/applicants/saved/", { data });
+    // Backend requires the write-only `pathfinder_id` (the pathfinder's USER id).
+    const pid = body.pathfinder_id ?? body.pathfinder;
+    return request("POST", "/bookmark/applicants/saved/", {
+      data: pid != null ? { pathfinder_id: Number(pid) } : {},
+    });
   },
 
   /** Enabler: remove saved bookmark by pathfinder id. DELETE /api/bookmark/applicants/saved/{pathfinder_id}/ */
@@ -278,10 +279,11 @@ export const bookmark = {
 
   /** Pathfinder: bookmark an enabler. POST /api/bookmark/enablers/saved/ */
   enablersSavedCreate(body) {
-    const data = {};
-    if (body.enabler != null) data.enabler = body.enabler;
-    if (body.enabler_id != null) data.enabler_id = body.enabler_id;
-    return request("POST", "/bookmark/enablers/saved/", { data });
+    // Backend requires the write-only `enabler_id` (the enabler's USER id).
+    const eid = body.enabler_id ?? body.enabler;
+    return request("POST", "/bookmark/enablers/saved/", {
+      data: eid != null ? { enabler_id: Number(eid) } : {},
+    });
   },
 
   /** Pathfinder: list bookmarked enablers. GET /api/bookmark/enablers/saved/ */
@@ -441,7 +443,7 @@ export const profile = {
 
 export const waitlist = {
   create(body) {
-    return request("POST", "/waitlist/", { data: { email: body.email, name: body.name || null } });
+    return request("POST", "/waitlist/", { data: { email: body.email, name: body.name || "" } });
   },
 
   stats() {

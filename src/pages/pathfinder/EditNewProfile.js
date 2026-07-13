@@ -313,6 +313,27 @@ const EditNewProfile = () => {
     }
   };
 
+  // Curated starter skills for users who struggle to articulate their skill
+  // set — typing in the input narrows these down.
+  const SKILL_SUGGESTIONS = [
+    "Communication", "Leadership", "Project Management", "Teamwork",
+    "Digital Marketing", "Social Media Management", "Content Writing",
+    "Graphic Design", "UI/UX Design", "Data Analysis", "Microsoft Excel",
+    "Customer Service", "Sales", "Public Speaking", "Event Planning",
+    "Community Management", "Research", "Teaching / Tutoring",
+    "Video Editing", "Photography", "Accounting", "Business Development",
+    "Fundraising", "Volunteer Coordination", "Monitoring & Evaluation",
+    "Web Development", "Mobile Development", "Problem Solving",
+  ];
+  const addedSkillNames = new Set(
+    skills.map((s) => (typeof s === "string" ? s : s?.name || "").toLowerCase())
+  );
+  const skillSuggestions = SKILL_SUGGESTIONS.filter((s) => {
+    if (addedSkillNames.has(s.toLowerCase())) return false;
+    const q = newSkill.trim().toLowerCase();
+    return !q || s.toLowerCase().includes(q);
+  }).slice(0, 8);
+
   const removeSkill = (index) => {
     setSkills(skills.filter((_, i) => i !== index));
   };
@@ -681,6 +702,19 @@ const EditNewProfile = () => {
                   + Add
                 </button>
               </div>
+              {skillSuggestions.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs text-gray-400 mb-2">Suggestions — tap to add:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {skillSuggestions.map((s) => (
+                      <button key={s} type="button" onClick={() => setSkills([...skills, s])}
+                        className="border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-medium hover:border-[#8D4087] hover:text-[#8D4087] hover:bg-purple-50 transition-colors">
+                        + {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Education */}

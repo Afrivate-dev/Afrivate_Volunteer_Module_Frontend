@@ -34,6 +34,7 @@ const Settings = () => {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState("");
   const [credentials, setCredentials] = useState([]);
   const [documentFile, setDocumentFile] = useState(null);
+  const [documentName, setDocumentName] = useState("");
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false });
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
@@ -151,12 +152,14 @@ const Settings = () => {
     setUploadingDoc(true);
     try {
       const fd = new FormData();
-      fd.append("document_name", documentFile.name || "Company Document");
+      const name = documentName.trim() || documentFile.name.replace(/\.[^/.]+$/, "") || "Company Document";
+      fd.append("document_name", name);
       fd.append("document", documentFile);
       await profile.credentialsCreate(fd);
       const credList = await profile.credentialsList();
       setCredentials(Array.isArray(credList) ? credList : credList?.results || []);
       setDocumentFile(null);
+      setDocumentName("");
       if (documentInputRef.current) documentInputRef.current.value = "";
       setToast({ isOpen: true, message: "Document uploaded.", type: "success" });
     } catch {
@@ -208,7 +211,7 @@ const Settings = () => {
       <div className="pt-16">
         {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }}
-          className="px-8 py-8 flex items-center justify-between">
+          className="px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white">Settings</h1>
             <p className="text-purple-200 text-sm mt-1">Manage your profile, password, and account.</p>
@@ -241,7 +244,7 @@ const Settings = () => {
                 <p className="text-xs text-gray-400">Update your company details and visibility.</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-gray-500 mb-1.5">Company Name</label>
                 <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Afrivate Global Solutions" className={inputCls} />
@@ -315,18 +318,29 @@ const Settings = () => {
               <label className="border border-[#8D4087] text-[#8D4087] px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer hover:bg-purple-50 flex items-center gap-1.5">
                 <Upload size={13} /> Upload new
                 <input ref={documentInputRef} type="file" accept=".pdf,.png,.jpeg,.jpg,.webp"
-                  onChange={(e) => setDocumentFile(e.target.files?.[0] || null)} className="hidden" />
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] || null;
+                    setDocumentFile(f);
+                    setDocumentName(f ? f.name.replace(/\.[^/.]+$/, "") : "");
+                  }} className="hidden" />
               </label>
             </div>
             {documentFile && (
-              <div className="mb-4 flex items-center gap-3 bg-gray-50 rounded-xl p-3">
-                <span className="text-sm text-gray-700 flex-1">{documentFile.name}</span>
-                <button onClick={handleDocumentUpload} disabled={uploadingDoc}
-                  className="bg-[#8D4087] text-white px-4 py-1.5 rounded-lg text-xs font-semibold hover:bg-[#651F5F] disabled:opacity-50">
-                  {uploadingDoc ? "Uploading..." : "Upload"}
-                </button>
-                <button onClick={() => { setDocumentFile(null); if (documentInputRef.current) documentInputRef.current.value = ""; }}
-                  className="text-gray-400 hover:text-gray-600 text-sm">✕</button>
+              <div className="mb-4 bg-gray-50 rounded-xl p-3">
+                <p className="text-xs text-gray-400 mb-2 break-all">File: {documentFile.name}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                  <input type="text" value={documentName} onChange={(e) => setDocumentName(e.target.value)}
+                    placeholder="Document name (e.g. Business Registration)"
+                    className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#8D4087] focus:border-[#8D4087]" />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button onClick={handleDocumentUpload} disabled={uploadingDoc}
+                      className="bg-[#8D4087] text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-[#651F5F] disabled:opacity-50">
+                      {uploadingDoc ? "Uploading..." : "Upload"}
+                    </button>
+                    <button onClick={() => { setDocumentFile(null); setDocumentName(""); if (documentInputRef.current) documentInputRef.current.value = ""; }}
+                      className="text-gray-400 hover:text-gray-600 text-sm px-2">✕</button>
+                  </div>
+                </div>
               </div>
             )}
             {credentials.length === 0 ? (
@@ -334,22 +348,16 @@ const Settings = () => {
             ) : (
               <div className="space-y-3">
                 {credentials.map((cred) => {
-                  const isExpiring = cred.status === "expiring";
                   return (
                     <div key={cred.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center"><FileText size={18} className="text-[#8D4087]" /></div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-800">{cred.document_name}</p>
-                          {cred.uploaded_at && (
-                            <p className="text-xs text-gray-400">Added {new Date(cred.uploaded_at).toLocaleDateString()}</p>
-                          )}
-                        </div>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-purple-100 flex items-center justify-center shrink-0"><FileText size={18} className="text-[#8D4087]" /></div>
+                        <p className="text-sm font-semibold text-gray-800 truncate">{cred.document_name}</p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {isExpiring
-                          ? <span className="text-xs font-semibold bg-orange-100 text-orange-600 px-2.5 py-1 rounded-full">Expiring soon</span>
-                          : <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Verified</span>}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {cred.is_verified
+                          ? <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Verified</span>
+                          : <span className="text-xs font-semibold bg-orange-100 text-orange-600 px-2.5 py-1 rounded-full">Pending review</span>}
                         <button onClick={() => handleDeleteCredential(cred.id)}
                           className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
                       </div>

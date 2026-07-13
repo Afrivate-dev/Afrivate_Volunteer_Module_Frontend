@@ -65,14 +65,19 @@ const Applicants = () => {
         }
 
         const mapped = forOpp.map((app) => {
-          const { name, email } = parseContactDetails(app.cover_letter);
+          // Prefer the real serializer fields (username/email on the
+          // applicants list; user_name/user on the fallback applications
+          // list); the cover-letter contact block is only a last resort.
+          const parsed = parseContactDetails(app.cover_letter);
+          const userId = app.applicant_id ?? app.user;
           return {
-            id: app.id, userId: app.applicant_id, bookmarkPathfinderId: app.applicant_id,
-            pathfinderName: name, pathfinderEmail: email,
+            id: app.id, userId, bookmarkPathfinderId: userId,
+            pathfinderName: app.username || app.user_name || parsed.name,
+            pathfinderEmail: app.email || parsed.email,
             opportunityTitle: app.opportunity_title || titleFromOpp,
             status: app.status || "pending", applicationText: app.cover_letter || "",
-            cvUrl: app.cv || app.cv_url || app.resume || app.document || null,
-            avatar: app.applicant_photo || app.pathfinder_photo || null,
+            cvUrl: app.resume || app.profile_resume_url || null,
+            avatar: app.pathfinder_profile?.base_details?.profile_pic || null,
           };
         });
         setApplicationsList(mapped);
@@ -210,20 +215,20 @@ const Applicants = () => {
                     {/* Header row */}
                     <div className="flex items-center justify-between px-5 py-4 cursor-pointer"
                       onClick={() => setExpandedId(expanded ? null : app.id)}>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         {app.avatar ? (
-                          <img src={app.avatar} alt={app.pathfinderName} className="w-12 h-12 rounded-full object-cover" />
+                          <img src={app.avatar} alt={app.pathfinderName} className="w-12 h-12 rounded-full object-cover shrink-0" />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-[#8D4087] font-bold">
+                          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-[#8D4087] font-bold shrink-0">
                             {app.pathfinderName.charAt(0).toUpperCase()}
                           </div>
                         )}
-                        <div>
-                          <p className="font-semibold text-gray-900">{app.pathfinderName}</p>
-                          <p className="text-sm text-gray-400">{app.pathfinderEmail}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 truncate">{app.pathfinderName}</p>
+                          <p className="text-sm text-gray-400 truncate">{app.pathfinderEmail}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 shrink-0">
                         <span className={`text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>{label}</span>
                         <span className="text-gray-400">{expanded ? "▲" : "▶"}</span>
                       </div>
@@ -239,9 +244,9 @@ const Applicants = () => {
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           {/* Left actions */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             {app.cvUrl && (
                               <a href={app.cvUrl} target="_blank" rel="noopener noreferrer"
                                 className="flex items-center gap-1.5 border border-purple-200 bg-purple-50 text-[#8D4087] px-3 py-2 rounded-xl text-xs font-semibold hover:bg-purple-100 transition-colors">
@@ -249,7 +254,7 @@ const Applicants = () => {
                               </a>
                             )}
                             {app.userId && (
-                              <button onClick={() => navigate(`/enabler/pathfinder-profile/${app.userId}`)}
+                              <button onClick={() => navigate(`/enabler/pathfinder/${app.userId}`)}
                                 className="flex items-center gap-1.5 border border-gray-200 text-gray-600 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
                                 View profile
                               </button>
@@ -265,7 +270,7 @@ const Applicants = () => {
                           </div>
 
                           {/* Right actions */}
-                          <div className="flex flex-col gap-2 min-w-[180px]">
+                          <div className="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[180px]">
                             {app.status !== "accepted" && (
                               <button
                                 onClick={() => handleStatusChange(app.id, "accepted")}
@@ -275,7 +280,7 @@ const Applicants = () => {
                               </button>
                             )}
                             {app.userId && (
-                              <button onClick={() => navigate(`/enabler/contact-pathfinder/${app.userId}`)}
+                              <button onClick={() => navigate(`/enabler/contact/${app.userId}`)}
                                 className="border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors text-center">
                                 Contact
                               </button>

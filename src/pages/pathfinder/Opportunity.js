@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { opportunities, bookmarks, applications } from "../../services/api";
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
+import { parseDescription } from "../../utils/descriptionUtils";
 
 function mapOpportunityFromApi(item) {
   if (!item) return null;
@@ -12,7 +13,8 @@ function mapOpportunityFromApi(item) {
     title: item.title,
     company: getOrgName(item),
     type: item.opportunity_type || "Volunteering",
-    location: item.location || "",
+    // location lives inside the structured description, not on the model
+    location: item.location || parseDescription(item.description || "").location || "",
     button: "Apply",
     _raw: item,
   };

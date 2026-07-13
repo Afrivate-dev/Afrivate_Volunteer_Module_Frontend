@@ -33,6 +33,7 @@ const EnablerProfileSetup = () => {
     role: "",
     social_links: [],
     document: null,
+    document_name: "",
   });
 
   useEffect(() => {
@@ -73,7 +74,15 @@ const EnablerProfileSetup = () => {
 
   const handleFileChange = (e, fieldName) => {
     const file = e.target.files[0];
-    if (file) setFormData(prev => ({ ...prev, [fieldName]: file }));
+    if (!file) return;
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: file,
+      // Prefill the document name from the file name unless the user already typed one
+      ...(fieldName === 'document' && !prev.document_name.trim()
+        ? { document_name: file.name.replace(/\.[^/.]+$/, "") }
+        : {}),
+    }));
   };
 
   const handleProceed = async () => {
@@ -143,7 +152,10 @@ const EnablerProfileSetup = () => {
       if (formData.document) {
         try {
           const fd = new FormData();
-          fd.append("document_name", "Company Document");
+          const docName = formData.document_name.trim()
+            || formData.document.name.replace(/\.[^/.]+$/, "")
+            || "Company Document";
+          fd.append("document_name", docName);
           fd.append("document", formData.document);
           await profile.credentialsCreate(fd);
         } catch (docErr) {
@@ -289,7 +301,7 @@ const EnablerProfileSetup = () => {
                 placeholder="+234..." className={inputCls} />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Country *</label>
                 <select name="country" value={formData.country} onChange={handleInputChange}
@@ -383,6 +395,13 @@ const EnablerProfileSetup = () => {
                   )}
                 </label>
               </div>
+              {formData.document && (
+                <div className="mt-3">
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Document Name</label>
+                  <input type="text" name="document_name" value={formData.document_name} onChange={handleInputChange}
+                    placeholder="e.g. Business Registration, Tax Certificate" className={inputCls} />
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between pt-2">

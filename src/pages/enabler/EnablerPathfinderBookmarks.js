@@ -82,13 +82,15 @@ const EnablerPathfinderBookmarks = () => {
           ) : (
             <div className="space-y-3">
               {pathfinders.map((pf) => (
-                <div key={String(pf.pathfinderUserId)} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shrink-0 ${avatarBg(pf.name)}`}>
-                    {pf.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h2 className="font-bold text-gray-900">{pf.name}</h2>
-                    <p className="text-xs text-gray-500">{pf.role}{pf.location && ` • ${pf.location}`}</p>
+                <div key={String(pf.pathfinderUserId)} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shrink-0 ${avatarBg(pf.name)}`}>
+                      {pf.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="font-bold text-gray-900 truncate">{pf.name}</h2>
+                      <p className="text-xs text-gray-500 truncate">{pf.role}{pf.location && ` • ${pf.location}`}</p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button onClick={() => navigate(`/enabler/pathfinder/${pf.pathfinderUserId}`)}

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import { useUser } from "../../context/UserContext";
-import { opportunities, applications } from "../../services/api";
+import { opportunities, applications, profile, bookmarks } from "../../services/api";
 import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
+import { parseDescription } from "../../utils/descriptionUtils";
 
 const TYPE_FILTERS = ["Internship", "Mentorship", "Volunteer", "Full-time"];
+// Chip label → backend opportunity_type value
+const FILTER_TO_TYPE = { Internship: "internship", Mentorship: "mentorship", Volunteer: "volunteering", "Full-time": "full_time" };
 
 const typeBadge = (type = "") => {
   const t = type.toLowerCase();
@@ -46,21 +49,31 @@ const PathfinderDashboard = () => {
   const [recommended, setRecommended] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loadingOpps, setLoadingOpps] = useState(true);
+  // "Complete skill assessment" was removed — the feature doesn't exist yet;
+  // re-add the step once assessments ship.
   const [profileChecklist, setProfileChecklist] = useState([
-    { label: "Complete your profile", done: false },
-    { label: "Upload CV/Resume", done: false },
-    { label: "Complete skill assessment", done: false },
-    { label: "Apply for first opportunity", done: false },
+    { key: "profile", label: "Complete your profile", done: false },
+    { key: "cv", label: "Upload CV/Resume", done: false },
+    { key: "apply", label: "Apply for first opportunity", done: false },
   ]);
+
+  const markChecklistDone = (key) =>
+    setProfileChecklist((prev) => prev.map((item) => (item.key === key ? { ...item, done: true } : item)));
 
   useEffect(() => {
     document.title = "Pathfinder Dashboard - AfriVate";
     if (user?.name) setDisplayName(user.name.split(" ")[0]);
     else if (user?.first_name) setDisplayName(user.first_name);
-    if (user?.has_profile) {
-      setProfileChecklist((prev) => prev.map((item, i) => i === 0 ? { ...item, done: true } : item));
-    }
+    if (user?.hasProfile) markChecklistDone("profile");
   }, [user]);
+
+  useEffect(() => {
+    // "Upload CV/Resume" is done when any document exists on the profile.
+    profile.credentialsList().then((credList) => {
+      const arr = Array.isArray(credList) ? credList : credList?.results || [];
+      if (arr.length > 0) markChecklistDone("cv");
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -71,27 +84,39 @@ const PathfinderDashboard = () => {
         setStats((s) => ({ ...s, active, total: raw.length }));
         const recent = raw.slice(0, 4).map((a) => ({
           title: a.opportunity_title || "Opportunity",
-          company: a.company || "Organisation",
+          company: a.organization_name || "Organisation",
           status: a.status || "pending",
-          time: a.updated_at || a.created_at || "",
+          time: a.applied_at || "",
         }));
         setRecentActivity(recent);
-        if (raw.length > 0) setProfileChecklist((prev) => prev.map((item, i) => i === 3 ? { ...item, done: true } : item));
+        if (raw.length > 0) markChecklistDone("apply");
       } catch {}
     };
     load();
   }, []);
 
   useEffect(() => {
+    // Saved-opportunities count for the stat card (endpoint is paginated).
+    bookmarks.opportunitiesSavedList().then((data) => {
+      const saved = data?.count ?? (Array.isArray(data) ? data.length : data?.results?.length) ?? 0;
+      setStats((s) => ({ ...s, saved }));
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const load = async () => {
       setLoadingOpps(true);
       try {
-        const data = await opportunities.list({ is_open: true });
+        const params = { is_open: true };
+        if (activeFilter && FILTER_TO_TYPE[activeFilter]) params.opportunity_type = FILTER_TO_TYPE[activeFilter];
+        const data = await opportunities.list(params);
         const raw = Array.isArray(data) ? data : data?.results || [];
         setRecommended(raw.slice(0, 3).map((o) => ({
           id: o.id, title: o.title || "Opportunity",
           type: o.opportunity_type || "Volunteer",
-          company: getOrgName(o), location: o.location || "",
+          company: getOrgName(o),
+          // location is not a backend field — it's embedded in the structured description
+          location: parseDescription(o.description || "").location || "",
           description: cleanDescription(o.description || "").slice(0, 160),
           _raw: o,
         })));
@@ -99,10 +124,12 @@ const PathfinderDashboard = () => {
       setLoadingOpps(false);
     };
     load();
-  }, []);
+  }, [activeFilter]);
 
   const handleSearch = (e) => {
-    if (e.key === "Enter" && search.trim()) navigate("/available-opportunities");
+    if (e.key === "Enter" && search.trim()) {
+      navigate("/available-opportunities", { state: { search: search.trim() } });
+    }
   };
 
 
@@ -144,7 +171,8 @@ const PathfinderDashboard = () => {
             </div>
             {/* Filter chips */}
             <div className="flex items-center gap-2 flex-wrap">
-              <button className="flex items-center gap-1.5 bg-white/20 text-white border border-white/30 px-3 py-1.5 rounded-lg text-xs font-semibold">
+              <button onClick={() => navigate("/available-opportunities")}
+                className="flex items-center gap-1.5 bg-white/20 text-white border border-white/30 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-white/30 transition-colors">
                 Filters ▾
               </button>
               {TYPE_FILTERS.map((f) => (

@@ -117,7 +117,7 @@ const OpportunitiesPosted = () => {
       <div className="pt-16">
         {/* Purple Header */}
         <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
-          <div className="max-w-4xl mx-auto flex items-end justify-between">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-white mb-1">Opportunities Posted</h1>
               <p className="text-purple-200 text-sm">View and manage all your posted volunteering opportunities</p>
