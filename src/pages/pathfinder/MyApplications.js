@@ -6,7 +6,8 @@ import NavBar from "../../components/auth/Navbar";
 import { applications } from "../../services/api";
 import { navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 
-const STATUS_TABS = ["All", "Pending", "Shortlisted", "Accepted", "Closed"];
+// Backend statuses are pending/accepted/rejected — "Closed" maps to rejected.
+const STATUS_TABS = ["All", "Pending", "Accepted", "Closed"];
 
 const statusStyle = (status = "") => {
   const s = status.toLowerCase();
@@ -106,7 +107,7 @@ const MyApplications = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6">
           {/* Filter Tabs */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 px-2">
-            <div className="flex items-center gap-1 overflow-x-auto">
+            <div className="flex items-center gap-1 overflow-x-auto overflow-y-hidden no-scrollbar">
               {STATUS_TABS.map((tab) => {
                 const count = countByStatus(tab);
                 const active = activeTab === tab;
@@ -140,10 +141,10 @@ const MyApplications = () => {
               {filtered.map((app, i) => {
                 const oppId = app.opportunity ?? app.opportunity_id ?? app.id;
                 const title = app.opportunity_title || "Opportunity";
-                const company = app.company_name || app.enabler_name || "Organisation";
+                const company = app.organization_name || "Organisation";
                 const location = app.location || "";
                 const { label, cls } = statusStyle(app.status);
-                const date = app.created_at || app.applied_at || "";
+                const date = app.applied_at || "";
                 const bgColor = bgColors[i % bgColors.length];
 
                 return (

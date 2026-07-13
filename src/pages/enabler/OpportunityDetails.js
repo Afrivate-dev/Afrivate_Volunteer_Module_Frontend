@@ -33,9 +33,8 @@ const OpportunityDetails = () => {
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const saved = JSON.parse(localStorage.getItem("enablerOpportunities") || "[]");
-      let found = saved.find((o) => String(o.id) === numericId || String(o.id) === id);
-      if (!found && numericId) {
+      let found = null;
+      if (numericId) {
         try {
           const apiData = await opportunities.get(numericId);
           if (apiData?.id) {
@@ -90,8 +89,9 @@ const OpportunityDetails = () => {
   }
 
   const { label: statusLabel, cls: statusCls } = statusConfig(opportunity.status);
-  const target = opportunity.target || 40;
-  const progress = Math.min(100, Math.round((totalApps / target) * 100));
+  // Only show targeting progress when the enabler actually set a target.
+  const target = opportunity.target;
+  const progress = target ? Math.min(100, Math.round((totalApps / target) * 100)) : 0;
 
   const reqSections = [
     { key: "EDUCATION", text: parsedDescription.education || "Relevant educational background." },
@@ -112,10 +112,10 @@ const OpportunityDetails = () => {
               className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition-colors mb-4">
               ←
             </button>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-1">{opportunity.title}</h1>
-                <div className="flex items-center gap-2 text-sm text-purple-200">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold text-white mb-1 break-words">{opportunity.title}</h1>
+                <div className="flex flex-wrap items-center gap-2 text-sm text-purple-200">
                   <span>{opportunity.company}</span>
                   {opportunity.type && <><span>•</span><span className="capitalize">{opportunity.type}</span></>}
                   <span>•</span>
@@ -175,7 +175,7 @@ const OpportunityDetails = () => {
                   <FormattedText text={parsedDescription.requirementsBenefits} />
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {reqSections.map(({ key, text }) => (
                     <div key={key} className="bg-purple-50/50 rounded-xl p-4">
                       <p className="text-xs font-bold text-gray-400 uppercase mb-1">{key}</p>
@@ -203,10 +203,22 @@ const OpportunityDetails = () => {
               <h3 className="font-bold text-gray-900 mb-4">Summary</h3>
               <div className="space-y-3">
                 {[
-                  { icon: null, label: "TYPE", val: opportunity.type || "Internship Opportunity" },
-                  { icon: null, label: "LOCATION", val: opportunity.location || parsedDescription.location || "Not specified" },
-                  { icon: null, label: "WORK MODE", val: opportunity.workMode || parsedDescription.workMode || "Not specified" },
-                  { icon: null, label: "TIME COMMITMENT", val: opportunity.timeCommitment || parsedDescription.timeCommitment || "Not specified" },
+                  {
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
+                    label: "TYPE", val: opportunity.type || "Internship Opportunity",
+                  },
+                  {
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+                    label: "LOCATION", val: opportunity.location || parsedDescription.location || "Not specified",
+                  },
+                  {
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>,
+                    label: "WORK MODE", val: opportunity.workMode || parsedDescription.workMode || "Not specified",
+                  },
+                  {
+                    icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+                    label: "TIME COMMITMENT", val: opportunity.timeCommitment || parsedDescription.timeCommitment || "Not specified",
+                  },
                 ].map(({ icon, label, val }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-sm shrink-0">{icon}</div>
@@ -225,13 +237,19 @@ const OpportunityDetails = () => {
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm font-semibold text-gray-800">Total Applications</p>
                   <span className="bg-purple-100 text-[#8D4087] text-xs font-bold px-2.5 py-1 rounded-full">
-                    {totalApps} New
+                    {totalApps}
                   </span>
                 </div>
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#8D4087] rounded-full transition-all" style={{ width: `${progress}%` }} />
-                </div>
-                <p className="text-xs text-gray-400 mt-1">Targeting {target}-{target + 10} applicants</p>
+                {target ? (
+                  <>
+                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#8D4087] rounded-full transition-all" style={{ width: `${progress}%` }} />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">Targeting {target} applicants</p>
+                  </>
+                ) : (
+                  <p className="text-xs text-gray-400 mt-1">No applicant target set. Add one by editing this opportunity.</p>
+                )}
               </div>
 
               <button onClick={() => { navigator.clipboard?.writeText(window.location.href); }}

@@ -230,17 +230,17 @@ const VolunteerDetails = () => {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs font-semibold bg-white/20 text-white px-3 py-1 rounded-full">{jobData.type || "Volunteering"}</span>
               {isOpen ? (
-                <span className="text-xs font-semibold bg-green-400/30 text-green-100 px-3 py-1 rounded-full">Open</span>
+                <span className="text-xs font-bold bg-green-400 text-green-950 px-3 py-1 rounded-full">Open</span>
               ) : (
-                <span className="text-xs font-semibold bg-red-400/30 text-red-100 px-3 py-1 rounded-full">Closed</span>
+                <span className="text-xs font-bold bg-red-400 text-red-950 px-3 py-1 rounded-full">Closed</span>
               )}
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">{jobData.title}</h1>
             <div className="flex items-center gap-4 text-purple-200 text-sm flex-wrap">
               {displayLocation && <span className="flex items-center gap-1">{displayLocation}</span>}
-              {jobData._raw?.created_at && (
+              {(jobData._raw?.posted_at || jobData._raw?.created_at) && (
                 <span className="flex items-center gap-1">
-                  Posted {new Date(jobData._raw.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                  Posted {new Date(jobData._raw.posted_at || jobData._raw.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                 </span>
               )}
             </div>

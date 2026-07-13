@@ -2,7 +2,7 @@
 
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from "../../components/auth/Navbar";
 import Toast from "../../components/common/Toast";
 import Pagination from "../../components/common/Pagination";
@@ -24,13 +24,19 @@ function getPreview(text) {
 
 function mapOpp(item) {
   if (!item) return null;
+  // location/work mode/time commitment are not backend fields — they're
+  // embedded in the structured description, so parse them out (otherwise the
+  // work-mode filter can never match anything).
+  const parsed = parseDescription(item.description || "");
   return {
     id: String(item.id), title: item.title, company: getOrgName(item),
-    type: item.opportunity_type || "Volunteering", location: item.location || "",
-    workMode: item.work_mode || "", timeCommitment: item.time_commitment || "",
+    type: item.opportunity_type || "Volunteering",
+    location: item.location || parsed.location || "",
+    workMode: item.work_mode || parsed.workModel || "",
+    timeCommitment: item.time_commitment || parsed.timeCommitment || "",
     description: getPreview(item.description || ""),
     status: item.is_open ? "Currently Active" : "Closed",
-    postedAt: item.created_at || item.posted_at || "",
+    postedAt: item.posted_at || "",
     _raw: item,
   };
 }
@@ -71,7 +77,9 @@ const typeColor = (type = "") => {
 
 const AvailableOpportunities = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
+  const location = useLocation();
+  // Search text carried over from the dashboard search bar, if any.
+  const [search, setSearch] = useState(location.state?.search || "");
   const [filterType, setFilterType] = useState("All");
   const [filterMode, setFilterMode] = useState("All");
   const [sort, setSort] = useState("Latest First");
@@ -201,7 +209,7 @@ const AvailableOpportunities = () => {
           </div>
 
           {/* Mobile filter chips */}
-          <div className="sm:hidden flex gap-2 overflow-x-auto pb-1 w-full">
+          <div className="sm:hidden flex gap-2 overflow-x-auto no-scrollbar pb-1 w-full">
             {OPP_TYPES.filter((t) => t !== "All").map((t) => (
               <button key={t} onClick={() => setFilterType(filterType === t ? "All" : t)}
                 className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${

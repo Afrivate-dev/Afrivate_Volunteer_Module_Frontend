@@ -13,6 +13,9 @@ const statusConfig = (status = "") => {
   return { label: "Position closed", cls: "bg-gray-100 text-gray-500" };
 };
 
+// The API exposes is_open (boolean), not a status string — derive one.
+const oppStatus = (opp) => opp.status || (opp.is_open ? "open" : "closed");
+
 const applicantStatusConfig = (status = "") => {
   const s = status.toLowerCase();
   if (s === "shortlisted")
@@ -100,9 +103,9 @@ const EnablerDashboard = () => {
         });
         setAppCountByOpp(counts);
 
-        // recent applicants — latest 4
+        // recent applicants — latest 4 (backend timestamp field is applied_at)
         const sorted = [...data].sort(
-          (a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)
+          (a, b) => new Date(b.applied_at || 0) - new Date(a.applied_at || 0)
         );
         setRecentApplicants(sorted.slice(0, 4));
       } catch {
@@ -113,7 +116,7 @@ const EnablerDashboard = () => {
   }, []);
 
   const openCount = opportunitiesList.filter((o) => {
-    const s = (o.status || "").toLowerCase();
+    const s = oppStatus(o).toLowerCase();
     return s === "open" || s === "active" || s === "published";
   }).length;
 
@@ -221,8 +224,8 @@ const EnablerDashboard = () => {
             ) : (
               <div className="space-y-3">
                 {opportunitiesList.slice(0, 3).map((opp) => {
-                  const { label, cls } = statusConfig(opp.status);
-                  const appCount = appCountByOpp[String(opp.id)] || 0;
+                  const { label, cls } = statusConfig(oppStatus(opp));
+                  const appCount = opp.applications_count ?? appCountByOpp[String(opp.id)] ?? 0;
                   return (
                     <div
                       key={opp.id}
@@ -233,8 +236,8 @@ const EnablerDashboard = () => {
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-gray-900 text-base truncate">{opp.title}</p>
                           <p className="text-gray-500 text-sm mt-0.5">
-                            {opp.organization_name || opp.company || "Your organization"} •{" "}
-                            {opp.location || "Remote"}
+                            {opp.created_by_name || "Your organization"} •{" "}
+                            <span className="capitalize">{(opp.opportunity_type || "").replace("_", "-") || "Opportunity"}</span>
                           </p>
                         </div>
                         <span className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>
@@ -244,8 +247,8 @@ const EnablerDashboard = () => {
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span>{appCount} applicant{appCount !== 1 ? "s" : ""} applied</span>
-                          {opp.created_at && (
-                            <span>{timeAgo(opp.created_at)}</span>
+                          {opp.posted_at && (
+                            <span>{timeAgo(opp.posted_at)}</span>
                           )}
                         </div>
                         <span className="text-[#8D4087] text-lg">→</span>
@@ -262,7 +265,7 @@ const EnablerDashboard = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900">Recent applicants</h2>
               <button
-                onClick={() => navigate("/enabler/applicants")}
+                onClick={() => navigate("/enabler/opportunities-posted")}
                 className="text-sm font-semibold text-[#8D4087] hover:underline"
               >
                 See more
@@ -274,20 +277,17 @@ const EnablerDashboard = () => {
                 <p className="text-center text-gray-500 text-sm py-10">No applicants yet.</p>
               ) : (
                 recentApplicants.map((applicant, i) => {
+                  // ApplicationSerializer nests the full profile as pathfinder_profile
+                  // and exposes the username as user_name.
+                  const pf = applicant.pathfinder_profile;
                   const name =
-                    applicant.applicant_name ||
-                    applicant.pathfinder_name ||
-                    (applicant.pathfinder?.first_name
-                      ? `${applicant.pathfinder.first_name} ${applicant.pathfinder.last_name || ""}`.trim()
-                      : `Applicant ${i + 1}`);
+                    (pf?.first_name ? `${pf.first_name} ${pf.last_name || ""}`.trim() : "") ||
+                    applicant.user_name ||
+                    `Applicant ${i + 1}`;
                   const role =
                     applicant.opportunity_title ||
-                    applicant.role ||
                     "Opportunity applicant";
-                  const avatar =
-                    applicant.applicant_photo ||
-                    applicant.pathfinder?.profile_photo ||
-                    null;
+                  const avatar = pf?.base_details?.profile_pic || null;
                   const { label, cls } = applicantStatusConfig(applicant.status);
                   return (
                     <div key={i} className="flex items-center justify-between px-5 py-4">
@@ -328,7 +328,7 @@ const EnablerDashboard = () => {
                 top candidates to speed up your process.
               </p>
               <button
-                onClick={() => navigate("/enabler/applicants")}
+                onClick={() => navigate("/enabler/recommendations")}
                 className="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 View matches

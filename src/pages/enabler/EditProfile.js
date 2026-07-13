@@ -60,12 +60,22 @@ const EditProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePhotoChange = (e) => {
+  const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
+    // Show the preview immediately, then actually upload — previously the
+    // preview was shown but the file was never sent to the backend.
     const reader = new FileReader();
     reader.onload = () => setProfilePhotoUrl(reader.result);
     reader.readAsDataURL(file);
+    try {
+      const fd = new FormData();
+      fd.append("profile_pic", file);
+      const res = await profile.picturePatch(fd);
+      if (res?.profile_pic) setProfilePhotoUrl(res.profile_pic);
+    } catch (err) {
+      setToast({ isOpen: true, message: getApiErrorMessage(err) || "Failed to upload photo.", type: "error" });
+    }
   };
 
   const addSocialLink = () => setSocialLinks((prev) => [...prev, { platform_name: "", platform_url: "" }]);
@@ -169,7 +179,7 @@ const EditProfile = () => {
             </div>
 
             {/* Company Name + Position */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1.5">Company Name</label>
                 <input name="name" value={formData.name} onChange={handleInputChange}
@@ -191,7 +201,7 @@ const EditProfile = () => {
             </div>
 
             {/* Email + Phone */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1.5">Email Address</label>
                 <input type="email" name="contact_email" value={formData.contact_email} onChange={handleInputChange}
@@ -205,7 +215,7 @@ const EditProfile = () => {
             </div>
 
             {/* Location + Website */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1.5">Location</label>
                 <div className="relative">

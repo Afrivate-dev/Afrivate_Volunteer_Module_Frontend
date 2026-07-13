@@ -18,6 +18,7 @@ const EditOpportunity = () => {
     title: "", description: "", keyResponsibilities: "", requirementsBenefits: "",
     aboutCompany: "", applicationInstructions: "", workModel: "Hybrid",
     location: "", timeCommitment: "", opportunityType: "volunteering",
+    targetApplicants: "",
   });
   const [customQuestions, setCustomQuestions] = useState([]);
   const [showAddQuestion, setShowAddQuestion] = useState(false);
@@ -44,6 +45,7 @@ const EditOpportunity = () => {
             location: parsed.location || "",
             timeCommitment: parsed.timeCommitment || "",
             opportunityType: data.opportunity_type || "volunteering",
+            targetApplicants: data.target_applicants != null ? String(data.target_applicants) : "",
           });
           try {
             const savedQuestions = sessionStorage.getItem(`opportunity_questions_${id}`);
@@ -94,7 +96,11 @@ const EditOpportunity = () => {
       });
       const link = createOpportunityLink(formData.title, formData.opportunityType);
       if (!link.startsWith("https://")) throw new Error("Generated opportunity link must use HTTPS. Please contact support.");
-      await opportunities.update(id, { title: formData.title, description: combinedDesc, opportunity_type: formData.opportunityType, link, is_open: true });
+      const targetVal = parseInt(formData.targetApplicants, 10);
+      await opportunities.update(id, {
+        title: formData.title, description: combinedDesc, opportunity_type: formData.opportunityType, link, is_open: true,
+        target_applicants: Number.isNaN(targetVal) || targetVal <= 0 ? null : targetVal,
+      });
       if (customQuestions.length > 0) sessionStorage.setItem(`opportunity_questions_${id}`, JSON.stringify(customQuestions));
       setToast({ isOpen: true, message: "Opportunity updated successfully!", type: "success" });
       setTimeout(() => navigate(`/enabler/opportunity/${id}`), 1200);
@@ -221,6 +227,11 @@ const EditOpportunity = () => {
             <div>
               <label className={labelCls}>Location</label>
               <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="e.g., Lagos, Nigeria or Remote" className={inputCls} />
+            </div>
+
+            <div>
+              <label className={labelCls}>Target Number of Applicants <span className="text-gray-400">(optional)</span></label>
+              <input type="number" min="1" name="targetApplicants" value={formData.targetApplicants} onChange={handleInputChange} placeholder="e.g. 40" className={inputCls} />
             </div>
           </div>
 

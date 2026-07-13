@@ -108,22 +108,24 @@
   background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar — muted brand purple; full brand color on hover.
+   (The old #7C3AED was an off-brand blue-violet and drew too much attention,
+   especially inside textareas.) */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #7C3AED;
+  background: #CBAEC8;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6D28D9;
+  background: #8D4087;
 }
 
 .thin-scrollbar::-webkit-scrollbar {

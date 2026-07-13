@@ -38,9 +38,10 @@ const ResetPassword = () => {
 
   useEffect(() => {
     document.title = "Reset Password - AfriVate";
-    const uid = sessionStorage.getItem(RESET_UID_KEY);
-    const email = sessionStorage.getItem(RESET_EMAIL_KEY);
-    if (!uid && !email) navigate('/forgot-password', { replace: true });
+    // The single-use reset token from the verify-OTP step is required by the
+    // backend — without it the reset cannot succeed, so restart the flow.
+    const token = sessionStorage.getItem(RESET_TOKEN_KEY);
+    if (!token) navigate('/forgot-password', { replace: true });
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -63,15 +64,13 @@ const ResetPassword = () => {
     e.preventDefault();
     if (!validateForm()) return;
     const uid = sessionStorage.getItem(RESET_UID_KEY);
-    const email = sessionStorage.getItem(RESET_EMAIL_KEY);
     const token = sessionStorage.getItem(RESET_TOKEN_KEY);
-    if (!uid && !email) { navigate('/forgot-password', { replace: true }); return; }
+    if (!token) { navigate('/forgot-password', { replace: true }); return; }
     setLoading(true);
     setServerError('');
     try {
-      const payload = { new_password: formData.newPassword, confirm_password: formData.confirmPassword };
-      if (uid) { payload.uid = uid; if (token) payload.token = token; }
-      else payload.email = email;
+      const payload = { token, new_password: formData.newPassword, confirm_password: formData.confirmPassword };
+      if (uid) payload.uid = uid;
       await api.auth.resetPassword(payload);
       sessionStorage.removeItem(RESET_EMAIL_KEY);
       sessionStorage.removeItem(RESET_UID_KEY);

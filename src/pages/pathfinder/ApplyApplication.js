@@ -19,10 +19,11 @@ const ApplyApplication = () => {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState({ isOpen: false, message: "", type: "success" });
   const [formData, setFormData] = useState({ name: "", email: "", aboutMe: "", motivation: "" });
+  const [errors, setErrors] = useState({});
   const [cvFile, setCvFile] = useState(null);
-  const [profileCvUrl, setProfileCvUrl] = useState(null);
-  const [profileCvName, setProfileCvName] = useState(null);
-  const [uploadingProfileCv, setUploadingProfileCv] = useState(false);
+  const [credentials, setCredentials] = useState([]);
+  const [selectedCredId, setSelectedCredId] = useState(null);
+  const [savingToProfile, setSavingToProfile] = useState(false);
   const [customAnswers, setCustomAnswers] = useState({});
   const [customQuestions, setCustomQuestions] = useState([]);
   const [existingApplication, setExistingApplication] = useState(null);
@@ -93,12 +94,18 @@ const ApplyApplication = () => {
         if (fullName) setFormData((p) => ({ ...p, name: p.name || fullName }));
         const email = prof.base_details?.contact_email || prof.email;
         if (email) setFormData((p) => ({ ...p, email: p.email || email }));
+        // Prefill About You from the profile so applicants don't retype it —
+        // they can still tailor it to this specific role.
+        const about = prof.about || prof.base_details?.bio;
+        if (about) setFormData((p) => ({ ...p, aboutMe: p.aboutMe || about }));
       }
       try {
         const credList = await apiClient.profile.credentialsList();
         const arr = Array.isArray(credList) ? credList : credList?.results || [];
-        const cvCred = arr.find((c) => (c.document_name || c.name || "").toLowerCase().includes("cv"));
-        if (cvCred?.document) { setProfileCvUrl(cvCred.document); setProfileCvName(cvCred.document_name || "CV"); }
+        setCredentials(arr);
+        // Pre-select the document that looks like a CV/résumé, if any.
+        const cvCred = arr.find((c) => /(cv|resume|résumé|curriculum)/i.test(c.document_name || c.name || ""));
+        if (cvCred) setSelectedCredId(cvCred.id);
       } catch {}
     }).catch(() => {});
     setLoading(false);
@@ -122,43 +129,43 @@ const ApplyApplication = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors((p) => ({ ...p, [name]: "" }));
   };
 
-  const uploadProfileCv = async (file) => {
+  // Optionally save the freshly picked file into the profile's documents so
+  // it can be reused for future applications. Non-destructive: existing
+  // documents are left alone.
+  const saveFileToProfile = async (file) => {
     if (!file) return;
-    setUploadingProfileCv(true);
+    setSavingToProfile(true);
     try {
-      const credList = await apiClient.profile.credentialsList();
-      const existing = Array.isArray(credList) ? credList : credList?.results || [];
-      for (const cred of existing) {
-        if ((cred.document_name || cred.name || "").toLowerCase().includes("cv")) {
-          try { await apiClient.profile.credentialsDelete(cred.id); } catch {}
-        }
-      }
       const fd = new FormData();
-      fd.append("document_name", "CV");
+      fd.append("document_name", file.name.replace(/\.[^/.]+$/, "") || "CV");
       fd.append("document", file);
       await apiClient.profile.credentialsCreate(fd);
       const newList = await apiClient.profile.credentialsList();
       const arr = Array.isArray(newList) ? newList : newList?.results || [];
-      const newCv = arr.find((c) => (c.document_name || c.name || "").toLowerCase().includes("cv"));
-      if (newCv?.document) { setProfileCvUrl(newCv.document); setProfileCvName(newCv.document_name || "CV"); }
-      setCvFile(null);
+      setCredentials(arr);
+      setToast({ isOpen: true, message: "Saved to your profile documents.", type: "success" });
     } catch (err) {
-      console.error("CV upload failed", err);
+      setToast({ isOpen: true, message: "Could not save to profile.", type: "error" });
     } finally {
-      setUploadingProfileCv(false);
+      setSavingToProfile(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (cvFile) { try { await uploadProfileCv(cvFile); } catch {} }
-    if (!formData.name.trim() || !formData.email.trim()) {
-      setToast({ isOpen: true, message: "Please enter your name and email.", type: "error" }); return;
-    }
-    if (!formData.motivation.trim()) {
-      setToast({ isOpen: true, message: "Please explain why you're applying.", type: "error" }); return;
+    // Field-level validation — highlight the exact field and scroll to it.
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Please enter your full name.";
+    if (!formData.email.trim()) newErrors.email = "Please enter your email address.";
+    if (!formData.motivation.trim()) newErrors.motivation = "Please fill this in — explain why you're applying.";
+    setErrors(newErrors);
+    const firstError = ["name", "email", "motivation"].find((k) => newErrors[k]);
+    if (firstError) {
+      document.getElementById(`apply-field-${firstError}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
     }
     setSubmitting(true);
     const lines = [];
@@ -179,7 +186,19 @@ const ApplyApplication = () => {
       });
     }
     const coverLetter = lines.join("\n").trim() || formData.motivation || "";
-    const applicationData = { opportunity: parseInt(opportunityId), cover_letter: coverLetter };
+    // Attach the resume: a newly picked file goes up as multipart; a selected
+    // profile document is linked by its credential id (profile_resume).
+    let applicationData;
+    if (cvFile) {
+      const fd = new FormData();
+      fd.append("opportunity", String(parseInt(opportunityId)));
+      fd.append("cover_letter", coverLetter);
+      fd.append("resume", cvFile);
+      applicationData = fd;
+    } else {
+      applicationData = { opportunity: parseInt(opportunityId), cover_letter: coverLetter };
+      if (selectedCredId != null) applicationData.profile_resume = selectedCredId;
+    }
     try {
       if (existingApplication?.id) {
         await applications.patch(existingApplication.id, applicationData);
@@ -232,27 +251,34 @@ const ApplyApplication = () => {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h2 className="font-bold text-gray-900 mb-5">Your details</h2>
             <div className="space-y-4">
-              <div>
+              <div id="apply-field-name">
                 <label className="block text-sm text-gray-600 mb-1.5">Full Name</label>
                 <input name="name" value={formData.name} onChange={handleChange}
-                  placeholder="Please provide your full name" className={inputCls} />
+                  placeholder="Please provide your full name"
+                  className={inputCls + (errors.name ? " border-red-400 ring-1 ring-red-300" : "")} />
+                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
               </div>
-              <div>
+              <div id="apply-field-email">
                 <label className="block text-sm text-gray-600 mb-1.5">Email Address</label>
                 <input name="email" type="email" value={formData.email} onChange={handleChange}
-                  placeholder="example@domain.com" className={inputCls} />
+                  placeholder="example@domain.com"
+                  className={inputCls + (errors.email ? " border-red-400 ring-1 ring-red-300" : "")} />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1.5">About You</label>
+                <label className="block text-sm text-gray-600 mb-0.5">About You</label>
+                <p className="text-xs text-gray-400 mb-1.5">Prefilled from your profile — feel free to tailor it to this role.</p>
                 <textarea name="aboutMe" value={formData.aboutMe} onChange={handleChange} rows={4}
                   placeholder="Share a brief overview of your professional experience..."
                   className={textareaCls} />
               </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1.5">What makes you an ideal candidate?</label>
+              <div id="apply-field-motivation">
+                <label className="block text-sm text-gray-600 mb-0.5">What makes you an ideal candidate? <span className="text-red-400">*</span></label>
+                <p className="text-xs text-gray-400 mb-1.5">Specific to this opportunity — tell them why you're a great fit.</p>
                 <textarea name="motivation" value={formData.motivation} onChange={handleChange} rows={4}
                   placeholder="Explain your motivation for applying to this role..."
-                  className={textareaCls} />
+                  className={textareaCls + (errors.motivation ? " border-red-400 ring-1 ring-red-300" : "")} />
+                {errors.motivation && <p className="text-red-500 text-xs mt-1">{errors.motivation}</p>}
               </div>
             </div>
           </div>
@@ -260,43 +286,57 @@ const ApplyApplication = () => {
           {/* CV / Résumé */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h2 className="font-bold text-gray-900 mb-4">CV / Résumé</h2>
-            {!cvFile && !profileCvUrl ? (
-              <label className="block border-2 border-dashed border-purple-200 rounded-xl p-8 text-center cursor-pointer hover:border-[#8D4087] transition-colors">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-                <p className="font-semibold text-gray-700 mb-1">Upload your file or drag it here</p>
-                <p className="text-xs text-gray-400">Accepted formats: PDF, DOCX (max 10MB)</p>
-                <input type="file" accept=".pdf,.doc,.docx" ref={fileInputRef}
-                  onChange={(e) => setCvFile(e.target.files?.[0] || null)} className="hidden" />
-              </label>
-            ) : (
-              <div>
-                <label className="block border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-[#8D4087] transition-colors mb-3">
-                  <p className="text-xs text-gray-400 mb-1">Upload a different file</p>
-                  <input type="file" accept=".pdf,.doc,.docx" ref={fileInputRef}
-                    onChange={(e) => setCvFile(e.target.files?.[0] || null)} className="hidden" />
-                </label>
-                {(cvFile || profileCvUrl) && (
-                  <div className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">
-                          {cvFile ? cvFile.name : profileCvName || "CV"}
-                        </p>
-                        {cvFile && <p className="text-xs text-gray-400">{(cvFile.size / (1024 * 1024)).toFixed(1)} MB</p>}
-                      </div>
-                    </div>
-                    <button type="button" onClick={() => { setCvFile(null); if (!profileCvUrl) setProfileCvUrl(null); }}
-                      className="text-gray-400 hover:text-red-500 text-lg">✕</button>
-                  </div>
-                )}
-                {cvFile && (
-                  <button type="button" onClick={() => uploadProfileCv(cvFile)} disabled={uploadingProfileCv}
-                    className="mt-2 text-[#8D4087] text-xs font-semibold hover:underline disabled:opacity-50">
-                    {uploadingProfileCv ? "Uploading..." : "Save as profile CV"}
-                  </button>
+
+            {/* Documents already on the profile — pick one to attach */}
+            {credentials.length > 0 && !cvFile && (
+              <div className="space-y-2 mb-4">
+                <p className="text-xs text-gray-400">Attach a document from your profile:</p>
+                {credentials.map((cred) => (
+                  <label key={cred.id}
+                    className={`flex items-center gap-3 border rounded-xl px-4 py-3 cursor-pointer transition-colors ${
+                      selectedCredId === cred.id ? "border-[#8D4087] bg-purple-50" : "border-gray-200 hover:border-purple-200"
+                    }`}>
+                    <input type="radio" name="profileCred" checked={selectedCredId === cred.id}
+                      onChange={() => setSelectedCredId(cred.id)} className="accent-[#8D4087] shrink-0" />
+                    <svg className="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span className="text-sm font-semibold text-gray-800 truncate">{cred.document_name || "Document"}</span>
+                  </label>
+                ))}
+                {selectedCredId != null && (
+                  <button type="button" onClick={() => setSelectedCredId(null)}
+                    className="text-xs text-gray-400 hover:text-gray-600">Clear selection</button>
                 )}
               </div>
+            )}
+
+            {cvFile ? (
+              <div>
+                <div className="flex items-center justify-between bg-purple-50 rounded-xl px-4 py-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <svg className="shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{cvFile.name}</p>
+                      <p className="text-xs text-gray-400">{(cvFile.size / (1024 * 1024)).toFixed(1)} MB — will be attached to this application</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setCvFile(null)}
+                    className="text-gray-400 hover:text-red-500 text-lg shrink-0">✕</button>
+                </div>
+                <button type="button" onClick={() => saveFileToProfile(cvFile)} disabled={savingToProfile}
+                  className="mt-2 text-[#8D4087] text-xs font-semibold hover:underline disabled:opacity-50">
+                  {savingToProfile ? "Saving..." : "Also save to my profile documents"}
+                </button>
+              </div>
+            ) : (
+              <label className="block border-2 border-dashed border-purple-200 rounded-xl p-8 text-center cursor-pointer hover:border-[#8D4087] transition-colors">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8D4087" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                <p className="font-semibold text-gray-700 mb-1">
+                  {credentials.length > 0 ? "Or upload a new file" : "Upload your file or drag it here"}
+                </p>
+                <p className="text-xs text-gray-400">Accepted formats: PDF, DOCX (max 10MB)</p>
+                <input type="file" accept=".pdf,.doc,.docx" ref={fileInputRef}
+                  onChange={(e) => { const f = e.target.files?.[0] || null; setCvFile(f); if (f) setSelectedCredId(null); }} className="hidden" />
+              </label>
             )}
           </div>
 

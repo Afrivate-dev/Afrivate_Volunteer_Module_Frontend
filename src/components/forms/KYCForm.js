@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
 import Button from '../common/Button';
@@ -39,6 +39,12 @@ const KYCForm = () => {
     bvn: ''
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    // Older builds saved submitted KYC data (BVN, bank details, ID info) to
+    // localStorage. Scrub it — data this sensitive must never sit in browser storage.
+    try { localStorage.removeItem('kycFormData'); } catch (_) {}
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -113,9 +119,9 @@ const KYCForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateStep()) {
-      try {
-        localStorage.setItem('kycFormData', JSON.stringify({ ...formData, submittedAt: new Date().toISOString() }));
-      } catch (_) {}
+      // There is no backend KYC endpoint yet, so the data goes nowhere on
+      // submit. It must NOT be persisted client-side as a stopgap — it
+      // contains BVN, bank account and identity details.
       navigate('/dashboard');
     }
   };

@@ -45,7 +45,10 @@ const ContactPathfinder = () => {
     try {
       await notifications.create({
         title: subject.trim(), message: message.trim(), priority: "info", type: "personal",
-        link: `/enabler/pathfinder/${pathfinder.id}`,
+        // The route param is the pathfinder's user id — required so the
+        // notification is addressed to them (backend rejects unaddressed
+        // creates from non-staff users).
+        recipient: parseInt(id, 10),
       });
       setToast({ isOpen: true, message: "Message sent successfully. The pathfinder will be notified.", type: "success" });
       setSubject("");
@@ -97,7 +100,7 @@ const ContactPathfinder = () => {
           </div>
         </div>
 
-        <div className="max-w-2xl mx-auto px-8 py-8 space-y-4">
+        <div className="max-w-2xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-4">
           {/* Pathfinder card */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center font-bold text-[#8D4087] text-lg shrink-0">
