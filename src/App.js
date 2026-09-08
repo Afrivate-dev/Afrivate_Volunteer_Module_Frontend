@@ -43,11 +43,13 @@ import KYCForm from './components/forms/KYCForm';
 import DeepPayInfo from './pages/DeepPayInfo';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
+import Support from './pages/Support';
 import Notifications from './pages/Notifications';
 // eslint-disable-next-line no-unused-vars -- used in Route element
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import NotFound from './pages/NotFound';
 import PathfinderSettings from './pages/pathfinder/PathfinderSettings';
+import { Registration, MyExperience, ShowWork, OnlinePresence, Congratulations } from './pages/org';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -149,6 +151,8 @@ function App() {
           <Route path="/road" element={<Road />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/contact-support" element={<Support />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
           <Route path="/deep-pay-info" element={<DeepPayInfo />} />
@@ -172,6 +176,18 @@ function App() {
           <Route path="/enabler/bookmarked-pathfinders" element={<RequireAuth role="enabler"><EnablerPathfinderBookmarks /></RequireAuth>} />
           <Route path="/enabler/applicants/:id" element={<RequireAuth role="enabler"><Applicants /></RequireAuth>} />
           <Route path="/enabler/profile-setup" element={<RequireAuth role="enabler"><EnablerProfileSetup /></RequireAuth>} />
+
+          {/* Organization pages */}
+          <Route path="/org/registration" element={<Registration />} />
+          <Route path="/org/cac" element={<Registration />} />
+          <Route path="/org/experience" element={<MyExperience />} />
+          <Route path="/org/my-experience" element={<MyExperience />} />
+          <Route path="/org/show-work" element={<ShowWork />} />
+          <Route path="/org/work" element={<ShowWork />} />
+          <Route path="/org/online-presence" element={<OnlinePresence />} />
+          <Route path="/org/online" element={<OnlinePresence />} />
+          <Route path="/org/congratulations" element={<Congratulations />} />
+          <Route path="/org/registration-success" element={<Congratulations />} />
 
           {/* Legacy redirects */}
           <Route
