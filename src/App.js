@@ -49,7 +49,11 @@ import Notifications from './pages/Notifications';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import NotFound from './pages/NotFound';
 import PathfinderSettings from './pages/pathfinder/PathfinderSettings';
-import { Registration, MyExperience, ShowWork, OnlinePresence, Congratulations } from './pages/org';
+import Registration from './pages/enabler/Registration';
+import ShowWork from './pages/enabler/ShowWork';
+import Congratulations from './pages/enabler/Congratulations';
+import OnlinePresence from './pages/enabler/OnlinePresence';
+import MyExperience from './pages/pathfinder/MyExperience';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -144,6 +148,7 @@ function App() {
           <Route path="/apply/:opportunityId" element={<RequireAuth role="pathfinder"><ApplyApplication /></RequireAuth>} />
           <Route path="/bookmarks" element={<RequireAuth role="pathfinder"><Bookmarks /></RequireAuth>} />
           <Route path="/available-opportunities" element={<RequireAuth role="pathfinder"><AvailableOpportunities /></RequireAuth>} />
+          <Route path="/volunteer" element={<RequireAuth role="pathfinder"><VolunteerDetails /></RequireAuth>} />
           <Route path="/enabler-profile/:id" element={<RequireAuth role="pathfinder"><EnablerProfileView /></RequireAuth>} />
           {/* Both /profile and /pathfinder/profile-setup render the same component; the latter is used by onboarding links. */}
           <Route path="/pathfinder/profile-setup" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
@@ -177,7 +182,21 @@ function App() {
           <Route path="/enabler/applicants/:id" element={<RequireAuth role="enabler"><Applicants /></RequireAuth>} />
           <Route path="/enabler/profile-setup" element={<RequireAuth role="enabler"><EnablerProfileSetup /></RequireAuth>} />
 
-          {/* Organization pages */}
+          {/* Enabler Registration / Upgrade Flow */}
+          <Route path="/enabler/registration" element={<Registration />} />
+          <Route path="/enabler/cac" element={<Registration />} />
+          <Route path="/enabler/upgrade" element={<Registration />} />
+          <Route path="/enabler/online-presence" element={<OnlinePresence />} />
+          <Route path="/enabler/online" element={<OnlinePresence />} />
+          <Route path="/enabler/show-work" element={<ShowWork />} />
+          <Route path="/enabler/work" element={<ShowWork />} />
+          <Route path="/enabler/congratulations" element={<Congratulations />} />
+
+          {/* Pathfinder Experience */}
+          <Route path="/pathfinder/experience" element={<MyExperience />} />
+          <Route path="/pathfinder/my-experience" element={<MyExperience />} />
+
+          {/* Organization legacy routes */}
           <Route path="/org/registration" element={<Registration />} />
           <Route path="/org/cac" element={<Registration />} />
           <Route path="/org/experience" element={<MyExperience />} />

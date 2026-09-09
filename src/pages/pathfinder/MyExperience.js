@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavBar from '../../components/auth/Navbar';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
+import { useUser } from '../../context/UserContext';
 import {
   ChevronDown,
   Share2,
@@ -18,6 +20,8 @@ import {
 
 export default function MyExperience() {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const isEnabler = user?.role === 'enabler';
 
   // Experiences data matching screenshots
   const experiences = [
@@ -121,7 +125,7 @@ export default function MyExperience() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
-      <EnablerNavbar />
+      {isEnabler ? <EnablerNavbar /> : <NavBar />}
 
       <div className="pt-16">
         {/* Purple gradient header */}

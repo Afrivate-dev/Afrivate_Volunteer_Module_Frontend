@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Plus, X, Check } from 'lucide-react';
+import { ArrowRight, Plus, X } from 'lucide-react';
 
 export default function Support() {
   const navigate = useNavigate();

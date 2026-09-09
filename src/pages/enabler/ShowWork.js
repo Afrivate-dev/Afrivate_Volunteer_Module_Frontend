@@ -117,7 +117,7 @@ export default function ShowWork() {
   };
 
   const handleNext = () => {
-    navigate('/org/experience');
+    navigate('/enabler/congratulations');
   };
 
   return (

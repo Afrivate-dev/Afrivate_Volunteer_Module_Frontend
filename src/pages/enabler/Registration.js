@@ -76,7 +76,7 @@ export default function Registration() {
   };
 
   const handleContinue = () => {
-    navigate('/org/congratulations');
+    navigate('/enabler/congratulations');
   };
 
   const registrationTypes = [

@@ -144,6 +144,17 @@ const EnablerNavbar = () => {
               </li>
             </Link>
             
+            <Link to="/enabler/registration" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/registration')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
+              }`}>
+                <i className="fas fa-arrow-circle-up"></i>
+                <span className="font-medium">Upgrade</span>
+              </li>
+            </Link>
+            
             <Link to="/enabler/settings" onClick={() => setIsOpen(false)}>
               <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
                 isActive('/enabler/settings')

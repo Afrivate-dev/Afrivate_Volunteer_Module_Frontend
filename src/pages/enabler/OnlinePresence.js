@@ -125,11 +125,11 @@ export default function OnlinePresence() {
   };
 
   const handleBack = () => {
-    navigate('/org/registration');
+    navigate('/enabler/registration');
   };
 
   const handleContinue = () => {
-    navigate('/org/show-work');
+    navigate('/enabler/show-work');
   };
 
   return (

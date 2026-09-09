@@ -11,7 +11,7 @@ export default function Congratulations() {
   };
 
   const handleUpgradeTier = () => {
-    navigate('/org/show-work');
+    navigate('/enabler/online-presence');
   };
 
   return (
