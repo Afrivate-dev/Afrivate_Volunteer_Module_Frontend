@@ -53,6 +53,8 @@ import Registration from './pages/enabler/Registration';
 import ShowWork from './pages/enabler/ShowWork';
 import Congratulations from './pages/enabler/Congratulations';
 import OnlinePresence from './pages/enabler/OnlinePresence';
+import VerificationStatus from './pages/enabler/VerificationStatus';
+import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
 
 class ErrorBoundary extends Component {
@@ -191,6 +193,8 @@ function App() {
           <Route path="/enabler/show-work" element={<ShowWork />} />
           <Route path="/enabler/work" element={<ShowWork />} />
           <Route path="/enabler/congratulations" element={<Congratulations />} />
+          <Route path="/enabler/verification-status" element={<VerificationStatus />} />
+          <Route path="/enabler/submitted" element={<Submitted />} />
 
           {/* Pathfinder Experience */}
           <Route path="/pathfinder/experience" element={<MyExperience />} />

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/auth/Navbar';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
-import { useUser } from '../../context/UserContext';
+import { getRole } from '../../services/api';
 import {
   ChevronDown,
   Share2,
@@ -20,8 +20,7 @@ import {
 
 export default function MyExperience() {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const isEnabler = user?.role === 'enabler';
+  const isEnabler = getRole() === 'enabler';
 
   // Experiences data matching screenshots
   const experiences = [

@@ -140,7 +140,7 @@ const NavBar = () => {
                 </li>
               </Link>
             )}
-            <Link to="/volunteer" onClick={() => setIsOpen(false)}>
+            <Link to="/available-opportunities" onClick={() => setIsOpen(false)}>
               <li className="bg-white py-2 px-3 rounded-xl hover:bg-gray-300 flex items-center gap-3 m-2">
                 <i className="fas fa-hands-helping"></i> Volunteer
               </li>
