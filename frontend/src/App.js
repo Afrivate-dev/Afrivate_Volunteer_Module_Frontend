@@ -56,6 +56,8 @@ import OnlinePresence from './pages/enabler/OnlinePresence';
 import VerificationStatus from './pages/enabler/VerificationStatus';
 import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
+import PendingAttestations from './pages/enabler/PendingAttestations';
+import VerifyCertificate from './pages/VerifyCertificate';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -196,9 +198,14 @@ function App() {
           <Route path="/enabler/verification-status" element={<VerificationStatus />} />
           <Route path="/enabler/submitted" element={<Submitted />} />
 
-          {/* Pathfinder Experience */}
           <Route path="/pathfinder/experience" element={<MyExperience />} />
           <Route path="/pathfinder/my-experience" element={<MyExperience />} />
+
+          {/* Enabler Attestations */}
+          <Route path="/enabler/attestations" element={<RequireAuth role="enabler"><PendingAttestations /></RequireAuth>} />
+
+          {/* Public Credential Verification */}
+          <Route path="/verify/:id" element={<VerifyCertificate />} />
 
           {/* Organization legacy routes */}
           <Route path="/org/registration" element={<Registration />} />

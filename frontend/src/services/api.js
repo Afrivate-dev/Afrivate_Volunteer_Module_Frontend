@@ -627,6 +627,56 @@ export const opportunities = {
   },
 };
 
+// --- Engagements & Credentials ---
+
+export const engagements = {
+  // Common
+  list() {
+    return request("GET", "/engagements/engagements/");
+  },
+  get(id) {
+    return request("GET", `/engagements/engagements/${id}/`);
+  },
+
+  // Pathfinder specific
+  requestAttestation(id) {
+    return request("POST", `/engagements/engagements/${id}/request_attestation/`);
+  },
+  generateCertificate(id) {
+    return request("POST", `/engagements/engagements/${id}/generate_certificate/`);
+  },
+
+  // Enabler specific
+  pendingAttestations() {
+    return request("GET", "/engagements/engagements/pending_attestations/");
+  },
+  attest(id, notes = "") {
+    return request("POST", `/engagements/engagements/${id}/attest/`, { data: { attestation_notes: notes } });
+  },
+  dispute(id, reason) {
+    return request("POST", `/engagements/engagements/${id}/dispute/`, { data: { dispute_reason: reason } });
+  },
+
+  // Tasks
+  listTasks(engagementId) {
+    return request("GET", `/engagements/engagements/${engagementId}/tasks/`);
+  },
+  createTask(engagementId, body) {
+    return request("POST", `/engagements/engagements/${engagementId}/tasks/`, { data: body });
+  },
+  deleteTask(engagementId, taskId) {
+    return request("DELETE", `/engagements/engagements/${engagementId}/tasks/${taskId}/`);
+  },
+
+  // Public Verify
+  verifyCertificate(certificateId) {
+    return request("GET", `/engagements/verify/${certificateId}/`, { public: true });
+  },
+  getCertificatePdfUrl(certificateId) {
+    return request("GET", `/engagements/verify/${certificateId}/pdf/`, { public: true });
+  }
+};
+
 const apiClient = {
   BASE_URL,
   getAccessToken,
@@ -645,6 +695,7 @@ const apiClient = {
   waitlist,
   applications,
   opportunities,
+  engagements,
 };
 
 export default apiClient;
