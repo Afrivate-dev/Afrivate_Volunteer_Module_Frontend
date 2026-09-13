@@ -1,6 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
+import Toast from '../../components/common/Toast';
+import { organization, getApiErrorMessage } from '../../services/api';
+import { getDraftOrgId } from '../../utils/orgDraft';
 import {
   UploadCloud,
   FileText,
@@ -9,44 +12,91 @@ import {
   Plus
 } from 'lucide-react';
 
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+/** Map a browser File to the document_type the backend expects. */
+function proofDocumentType(file) {
+  if (file.type.startsWith('image/')) return 'proof_of_work_photo';
+  if (file.type === 'video/mp4') return 'proof_of_work_video';
+  return 'other';
+}
+
+function docToItem(doc) {
+  const isImage = /\.(jpe?g|png|webp)$/i.test(doc.file || '');
+  return {
+    id: doc.id,
+    name: doc.file ? doc.file.split('/').pop().split('?')[0] : doc.document_type,
+    status: doc.review_status === 'approved' ? 'Approved' : doc.review_status === 'rejected' ? 'Rejected' : 'Pending review',
+    type: isImage ? 'image' : 'doc',
+    thumbnail: isImage ? doc.file : null,
+    url: doc.file,
+  };
+}
+
 export default function ShowWork() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const letterheadInputRef = useRef(null);
   const additionalInputRef = useRef(null);
 
-  // Proof of work uploaded items
-  const [proofFiles, setProofFiles] = useState([
-    {
-      id: '1',
-      name: 'Community_Workshop.jpg',
-      size: '1.2 MB',
-      status: 'Upload complete',
-      description: 'Recent community outreach event',
-      type: 'image',
-      thumbnail: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=200&q=80'
-    },
-    {
-      id: '2',
-      name: 'Annual_Report_2023.pdf',
-      size: '4.5 MB',
-      status: 'Upload complete',
-      description: 'Annual impact report',
-      type: 'pdf'
-    }
-  ]);
+  const [orgId, setOrgId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingProof, setUploadingProof] = useState(false);
+  const [toast, setToast] = useState({ isOpen: false, message: '', type: 'error' });
+
+  // Proof of work uploaded items — loaded from the org's real documents
+  const [proofFiles, setProofFiles] = useState([]);
 
   // Letterhead document
-  const [letterheadFile, setLetterheadFile] = useState({
-    name: 'AfriVote_Letterhead.pdf',
-    size: '850 KB'
-  });
+  const [letterheadFile, setLetterheadFile] = useState(null);
 
-  // Additional documents
+  // Additional documents (stored as document_type: "other")
   const [additionalFiles, setAdditionalFiles] = useState([]);
 
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const init = async () => {
+      const id = getDraftOrgId();
+      if (!id) {
+        navigate('/enabler/registration');
+        return;
+      }
+      setOrgId(id);
+      try {
+        const docs = await organization.documents.list(id);
+        const proof = [];
+        let letterhead = null;
+        const extras = [];
+        // API returns most-recent-first, so the first letterhead seen is the current one.
+        (docs || []).forEach((doc) => {
+          if (doc.document_type === 'proof_of_work_photo' || doc.document_type === 'proof_of_work_video') {
+            proof.push(docToItem(doc));
+          } else if (doc.document_type === 'letterhead') {
+            if (!letterhead) letterhead = docToItem(doc);
+          } else if (doc.document_type !== 'cac_certificate' && doc.document_type !== 'scuml_certificate') {
+            extras.push(docToItem(doc));
+          }
+        });
+        setProofFiles(proof);
+        setLetterheadFile(letterhead);
+        setAdditionalFiles(extras);
+      } catch (err) {
+        setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const validateFile = (file) => {
+    if (file.size > MAX_FILE_BYTES) return 'File is too large — max 10MB.';
+    return null;
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -65,60 +115,96 @@ export default function ShowWork() {
     }
   };
 
-  const handleFilesSelected = (files) => {
-    const newItems = Array.from(files).map((file, idx) => ({
-      id: `${Date.now()}-${idx}`,
-      name: file.name,
-      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      status: 'Upload complete',
-      description: '',
-      type: file.type.includes('image') ? 'image' : file.type.includes('pdf') ? 'pdf' : 'doc',
-      thumbnail: file.type.includes('image') ? URL.createObjectURL(file) : null
-    }));
-    setProofFiles((prev) => [...prev, ...newItems]);
-  };
-
-  const handleRemoveProof = (id) => {
-    setProofFiles((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleDescriptionChange = (id, text) => {
-    setProofFiles((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, description: text } : item))
-    );
-  };
-
-  const handleLetterheadChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setLetterheadFile({
-        name: file.name,
-        size: `${(file.size / 1024).toFixed(0)} KB`
-      });
-    }
-  };
-
-  const handleAdditionalFileSelected = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAdditionalFiles((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          name: file.name,
-          size: `${(file.size / 1024).toFixed(0)} KB`
+  const handleFilesSelected = async (files) => {
+    setUploadingProof(true);
+    try {
+      for (const file of Array.from(files)) {
+        const err = validateFile(file);
+        if (err) {
+          setToast({ isOpen: true, message: `${file.name}: ${err}`, type: 'error' });
+          continue;
         }
-      ]);
+        const doc = await organization.documents.create(orgId, proofDocumentType(file), file);
+        setProofFiles((prev) => [...prev, docToItem(doc)]);
+      }
+    } catch (err) {
+      setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
+    } finally {
+      setUploadingProof(false);
     }
   };
 
-  const handleRemoveAdditional = (id) => {
-    setAdditionalFiles((prev) => prev.filter((item) => item.id !== id));
+  const handleRemoveProof = async (id) => {
+    const prev = proofFiles;
+    setProofFiles((p) => p.filter((item) => item.id !== id));
+    try {
+      await organization.documents.delete(id);
+    } catch (err) {
+      setProofFiles(prev);
+      setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
+    }
+  };
+
+  const handleLetterheadChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const err = validateFile(file);
+    if (err) return setToast({ isOpen: true, message: err, type: 'error' });
+    try {
+      const doc = await organization.documents.create(orgId, 'letterhead', file);
+      setLetterheadFile(docToItem(doc));
+    } catch (err2) {
+      setToast({ isOpen: true, message: getApiErrorMessage(err2), type: 'error' });
+    }
+  };
+
+  const handleAdditionalFileSelected = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const err = validateFile(file);
+    if (err) return setToast({ isOpen: true, message: err, type: 'error' });
+    try {
+      const doc = await organization.documents.create(orgId, 'other', file);
+      setAdditionalFiles((prev) => [...prev, docToItem(doc)]);
+    } catch (err2) {
+      setToast({ isOpen: true, message: getApiErrorMessage(err2), type: 'error' });
+    }
+  };
+
+  const handleRemoveAdditional = async (id) => {
+    const prev = additionalFiles;
+    setAdditionalFiles((p) => p.filter((item) => item.id !== id));
+    try {
+      await organization.documents.delete(id);
+    } catch (err) {
+      setAdditionalFiles(prev);
+      setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
+    }
   };
 
   const handleNext = () => {
+    if (proofFiles.length === 0) {
+      setToast({ isOpen: true, message: 'Please upload at least one item of proof-of-work before continuing.', type: 'error' });
+      return;
+    }
+    if (!letterheadFile) {
+      setToast({ isOpen: true, message: 'Please upload your organizational letterhead before continuing.', type: 'error' });
+      return;
+    }
+    setSaving(true);
     navigate('/enabler/congratulations');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] font-sans">
+        <EnablerNavbar />
+        <div className="pt-16 flex justify-center items-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
@@ -191,13 +277,14 @@ export default function ShowWork() {
 
               <button
                 type="button"
+                disabled={uploadingProof}
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                className="mt-4 px-4 py-1.5 border border-gray-200 bg-white rounded-lg text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition"
+                className="mt-4 px-4 py-1.5 border border-gray-200 bg-white rounded-lg text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition disabled:opacity-50"
               >
-                Browse files
+                {uploadingProof ? 'Uploading…' : 'Browse files'}
               </button>
 
               <input
@@ -237,35 +324,19 @@ export default function ShowWork() {
                             {file.name}
                           </p>
                           <p className="text-[11px] text-gray-400">
-                            {file.size} • {file.status}
+                            {file.status}
                           </p>
                         </div>
                       </div>
 
                       <button
                         onClick={() => handleRemoveProof(file.id)}
-                        className="p-1 text-gray-400 hover:text-red-500 transition shrink-0"
-                        title="Delete file"
+                        disabled={file.status !== 'Pending review'}
+                        title={file.status !== 'Pending review' ? 'A reviewed document can no longer be removed' : 'Delete file'}
+                        className="p-1 text-gray-400 hover:text-red-500 transition shrink-0 disabled:opacity-30 disabled:hover:text-gray-400"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
-                    </div>
-
-                    {/* What does this show? Input */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <span>What does this show?</span>
-                        <span className="bg-gray-100 text-gray-500 font-semibold px-1.5 py-0.5 rounded text-[9px]">
-                          OPTIONAL
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        value={file.description}
-                        onChange={(e) => handleDescriptionChange(file.id, e.target.value)}
-                        placeholder="e.g. Recent community outreach event"
-                        className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white transition"
-                      />
                     </div>
                   </div>
                 ))}
@@ -289,7 +360,7 @@ export default function ShowWork() {
               </p>
             </div>
 
-            {letterheadFile && (
+            {letterheadFile ? (
               <div className="bg-[#FAF7FA] border border-purple-100/80 rounded-xl p-3.5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-lg bg-purple-100/70 text-[#8D4087] flex items-center justify-center shrink-0">
@@ -299,7 +370,7 @@ export default function ShowWork() {
                     <p className="text-xs font-bold text-gray-800 truncate">
                       {letterheadFile.name}
                     </p>
-                    <p className="text-[11px] text-gray-400">{letterheadFile.size}</p>
+                    <p className="text-[11px] text-gray-400">{letterheadFile.status}</p>
                   </div>
                 </div>
 
@@ -310,15 +381,24 @@ export default function ShowWork() {
                 >
                   Replace
                 </button>
-                <input
-                  ref={letterheadInputRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleLetterheadChange}
-                  className="hidden"
-                />
               </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => letterheadInputRef.current?.click()}
+                className="w-full py-3.5 border-2 border-dashed border-purple-200 bg-[#FAF5FB]/60 hover:bg-[#FAF5FB] text-[#70236A] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+              >
+                <UploadCloud className="w-4 h-4" />
+                <span>Upload letterhead (PDF, JPG, PNG)</span>
+              </button>
             )}
+            <input
+              ref={letterheadInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={handleLetterheadChange}
+              className="hidden"
+            />
           </div>
 
           {/* 3. Additional Supporting Evidence Card */}
@@ -348,11 +428,13 @@ export default function ShowWork() {
                     <div className="flex items-center gap-2 truncate">
                       <FileText className="w-4 h-4 text-[#8D4087] shrink-0" />
                       <span className="font-medium text-gray-800 truncate">{doc.name}</span>
-                      <span className="text-gray-400">({doc.size})</span>
+                      <span className="text-gray-400">({doc.status})</span>
                     </div>
                     <button
                       onClick={() => handleRemoveAdditional(doc.id)}
-                      className="text-gray-400 hover:text-red-500 ml-2"
+                      disabled={doc.status !== 'Pending review'}
+                      title={doc.status !== 'Pending review' ? 'A reviewed document can no longer be removed' : 'Delete file'}
+                      className="text-gray-400 hover:text-red-500 ml-2 disabled:opacity-30 disabled:hover:text-gray-400"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -372,7 +454,7 @@ export default function ShowWork() {
             <input
               ref={additionalInputRef}
               type="file"
-              accept=".pdf,.doc,.docx,.jpg,.png"
+              accept=".pdf,.jpg,.jpeg,.png"
               onChange={handleAdditionalFileSelected}
               className="hidden"
             />
@@ -383,14 +465,22 @@ export default function ShowWork() {
             <button
               type="button"
               onClick={handleNext}
-              className="bg-[#70236A] hover:bg-[#591B54] text-white px-10 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition min-w-[200px]"
+              disabled={saving}
+              className="bg-[#70236A] hover:bg-[#591B54] text-white px-10 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition min-w-[200px] disabled:opacity-60"
             >
-              <span>Next</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{saving ? 'Saving…' : 'Next'}</span>
+              {!saving && <ArrowRight className="w-4 h-4" />}
             </button>
           </div>
         </div>
       </div>
+
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

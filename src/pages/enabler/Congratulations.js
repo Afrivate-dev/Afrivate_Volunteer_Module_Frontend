@@ -1,17 +1,19 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
+import { clearDraftOrgId } from '../../utils/orgDraft';
 import { Clock } from 'lucide-react';
 
 export default function Congratulations() {
   const navigate = useNavigate();
 
   const handleViewStatus = () => {
-    navigate('/enabler/dashboard');
+    clearDraftOrgId();
+    navigate('/enabler/verification-status');
   };
 
-  const handleUpgradeTier = () => {
-    navigate('/enabler/online-presence');
+  const handleAddMoreEvidence = () => {
+    navigate('/enabler/show-work');
   };
 
   return (
@@ -58,10 +60,10 @@ export default function Congratulations() {
 
             <button
               type="button"
-              onClick={handleUpgradeTier}
+              onClick={handleAddMoreEvidence}
               className="w-full bg-white hover:bg-[#FAF5FB] text-[#70236A] border border-[#70236A] font-semibold text-xs sm:text-sm py-3.5 px-4 rounded-xl transition duration-150 flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <span>Upgrade to Tier 3</span>
+              <span>Add More Evidence</span>
               <svg
                 className="w-3.5 h-3.5 stroke-current fill-none stroke-[2] inline ml-0.5"
                 viewBox="0 0 24 24"

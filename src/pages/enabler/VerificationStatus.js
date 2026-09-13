@@ -1,13 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
+import { organization } from '../../services/api';
+
+const TIER_LABEL = {
+  tier_1: 'Verified Organization (CAC-Registered)',
+  tier_2: 'Community-Referenced Organization',
+  tier_3: 'Self-Declared — Unverified',
+};
 
 export default function VerificationStatus() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const status = searchParams.get('status') || 'review'; // 'review' | 'failed'
+  const [org, setOrg] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const isFailed = status === 'failed';
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const orgs = await organization.mine();
+        setOrg((orgs || [])[0] || null);
+      } catch (err) {
+        setOrg(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const paramStatus = searchParams.get('status') || 'review'; // 'review' | 'failed'
+  const isFailed = org ? org.tier_status === 'rejected' : paramStatus === 'failed';
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
+        <EnablerNavbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans">
@@ -74,9 +108,16 @@ export default function VerificationStatus() {
 
           <p className="text-gray-500 text-xs sm:text-sm leading-relaxed max-w-[320px] mx-auto mb-7">
             {isFailed
-              ? 'Unfortunately, your professional credentials did not match.'
-              : 'Our Support team is currently verifying your professional credentials.'}
+              ? (org?.verification_notes || 'Unfortunately, your organization’s documents could not be verified.')
+              : 'Our team is currently reviewing your organization’s documents.'}
           </p>
+
+          {/* Current tier — only when we have a real org loaded */}
+          {org && (
+            <div className="inline-flex items-center gap-1.5 bg-[#FAF5FB] text-[#70236A] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
+              Current tier: {TIER_LABEL[org.tier] || org.tier}
+            </div>
+          )}
 
           {/* Info card — only on under review */}
           {!isFailed && (
@@ -89,7 +130,7 @@ export default function VerificationStatus() {
                 </svg>
               </span>
               <span>
-                When your verification is complete, you will receive a notification and can start creating opportunities.
+                Your organization can already operate at its current tier while review is in progress. You'll get a notification the moment that changes.
               </span>
             </div>
           )}
@@ -109,7 +150,7 @@ export default function VerificationStatus() {
               onClick={() => navigate('/enabler/dashboard')}
               className="w-full bg-white hover:bg-[#FAF5FB] text-[#70236A] border border-[#70236A] font-semibold text-sm py-3.5 px-4 rounded-xl transition duration-150 cursor-pointer mb-6"
             >
-              Contact Support
+              Go to Dashboard
             </button>
           )}
 
