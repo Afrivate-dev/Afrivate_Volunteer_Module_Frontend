@@ -627,6 +627,158 @@ export const opportunities = {
   },
 };
 
+// --- Engagements & Credentials ---
+
+export const engagements = {
+  // Common
+  list() {
+    return request("GET", "/engagements/engagements/");
+  },
+  get(id) {
+    return request("GET", `/engagements/engagements/${id}/`);
+  },
+
+  // Pathfinder specific
+  requestAttestation(id) {
+    return request("POST", `/engagements/engagements/${id}/request_attestation/`);
+  },
+  generateCertificate(id) {
+    return request("POST", `/engagements/engagements/${id}/generate_certificate/`);
+  },
+
+  // Enabler specific
+  pendingAttestations() {
+    return request("GET", "/engagements/engagements/pending_attestations/");
+  },
+  attest(id, notes = "") {
+    return request("POST", `/engagements/engagements/${id}/attest/`, { data: { attestation_notes: notes } });
+  },
+  dispute(id, reason) {
+    return request("POST", `/engagements/engagements/${id}/dispute/`, { data: { dispute_reason: reason } });
+  },
+
+  // Tasks
+  listTasks(engagementId) {
+    return request("GET", `/engagements/engagements/${engagementId}/tasks/`);
+  },
+  createTask(engagementId, body) {
+    return request("POST", `/engagements/engagements/${engagementId}/tasks/`, { data: body });
+  },
+  deleteTask(engagementId, taskId) {
+    return request("DELETE", `/engagements/engagements/${engagementId}/tasks/${taskId}/`);
+  },
+
+  // Public Verify
+  verifyCertificate(certificateId) {
+    return request("GET", `/engagements/verify/${certificateId}/`, { public: true });
+  },
+  getCertificatePdfUrl(certificateId) {
+    return request("GET", `/engagements/verify/${certificateId}/pdf/`, { public: true });
+  }
+};
+
+// --- Organizations (Tiered Trust / Verification Layer) ---
+
+export const organization = {
+  /** Create a new organization — starts at tier_3 / active immediately. */
+  create(body) {
+    return request("POST", "/organizations/", { data: body });
+  },
+
+  /** Every organization the current user created or represents. */
+  mine() {
+    return request("GET", "/organizations/mine/");
+  },
+
+  get(id) {
+    return request("GET", `/organizations/${id}/`);
+  },
+
+  /**
+   * Owner only. Core profile fields (name/description/location/country/website),
+   * plus `scuml_id` — server-restricted to organization_type: "ngo" (400 otherwise).
+   * Tier and registry_type/registry_id still aren't editable here.
+   */
+  update(id, body) {
+    return request("PATCH", `/organizations/${id}/`, { data: body });
+  },
+
+  documents: {
+    list(orgId) {
+      return request("GET", `/organizations/${orgId}/documents/`);
+    },
+
+    /** multipart/form-data: document_type + file */
+    create(orgId, documentType, file) {
+      const fd = new FormData();
+      fd.append("document_type", documentType);
+      fd.append("file", file);
+      return request("POST", `/organizations/${orgId}/documents/`, { body: fd, headers: {} });
+    },
+
+    /** Owner only, and only while the document is still pending review. */
+    delete(docId) {
+      return request("DELETE", `/organizations/documents/${docId}/`);
+    },
+  },
+
+  socialLinks: {
+    list(orgId) {
+      return request("GET", `/organizations/${orgId}/social-links/`);
+    },
+
+    create(orgId, body) {
+      return request("POST", `/organizations/${orgId}/social-links/`, { data: body });
+    },
+
+    /** Editing the URL resets activity_verified server-side — intentional, not a bug. */
+    update(linkId, body) {
+      return request("PATCH", `/organizations/social-links/${linkId}/`, { data: body });
+    },
+
+    delete(linkId) {
+      return request("DELETE", `/organizations/social-links/${linkId}/`);
+    },
+  },
+
+  representatives: {
+    list(orgId) {
+      return request("GET", `/organizations/${orgId}/representatives/`);
+    },
+
+    /** Provide work_email or an appointment_letter file (at least one). */
+    create(orgId, body) {
+      if (body.appointment_letter instanceof File) {
+        const fd = new FormData();
+        Object.entries(body).forEach(([k, v]) => {
+          if (v != null) fd.append(k, v);
+        });
+        return request("POST", `/organizations/${orgId}/representatives/`, { body: fd, headers: {} });
+      }
+      return request("POST", `/organizations/${orgId}/representatives/`, { data: body });
+    },
+
+    /** The current user's own representative applications, across every organization. */
+    mine() {
+      return request("GET", "/organizations/representatives/me/");
+    },
+
+    /** Org owner only — revokes a representative's attestation rights. */
+    delete(orgId, repId) {
+      return request("DELETE", `/organizations/${orgId}/representatives/${repId}/`);
+    },
+  },
+
+  vouches: {
+    /** orgId is the applicant being vouched for; fromOrganizationId is the voucher (must be Tier 1, or admin-approved Tier 2). */
+    create(orgId, fromOrganizationId, vouchText) {
+      return request("POST", `/organizations/${orgId}/vouches/`, {
+        data: { from_organization: fromOrganizationId, vouch_text: vouchText },
+      });
+    },
+  },
+};
+
 const apiClient = {
   BASE_URL,
   getAccessToken,
@@ -645,6 +797,8 @@ const apiClient = {
   waitlist,
   applications,
   opportunities,
+  engagements,
+  organization,
 };
 
 export default apiClient;
