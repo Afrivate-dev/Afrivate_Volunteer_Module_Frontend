@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../components/auth/Navbar';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
@@ -11,7 +11,6 @@ import {
   Award,
   Eye,
   Calendar,
-  MapPin,
   ShieldCheck,
   Download,
   Plus,
@@ -33,23 +32,23 @@ export default function MyExperience() {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskDate, setTaskDate] = useState('');
 
-  const fetchExperiences = async () => {
+  const fetchExperiences = useCallback(async () => {
     try {
       const data = await apiEngagements.list();
       setExperiences(data || []);
-      if (data && data.length > 0 && !expandedId) {
-        setExpandedId(data[0].id);
+      if (data && data.length > 0) {
+        setExpandedId((prev) => prev ?? data[0].id);
       }
     } catch (err) {
       console.error("Failed to fetch engagements:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchExperiences();
-  }, []);
+  }, [fetchExperiences]);
 
   const activeExperience = experiences.find((exp) => exp.id === expandedId) || experiences[0];
 
