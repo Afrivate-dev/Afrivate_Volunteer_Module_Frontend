@@ -779,6 +779,36 @@ export const organization = {
   },
 };
 
+// --- Support & Feedback ---
+
+export const support = {
+  feedbackCreate(body) {
+    if (body instanceof FormData) {
+      return request("POST", "/support/feedback/", { body, headers: {} });
+    }
+    return request("POST", "/support/feedback/", { data: body });
+  },
+
+  feedbackList() {
+    return request("GET", "/support/feedback/");
+  },
+
+  chatSessionCreate() {
+    return request("POST", "/support/chat/sessions/", { data: {} });
+  },
+
+  chatSessionGet(id) {
+    return request("GET", `/support/chat/sessions/${id}/`);
+  },
+
+  chatMessageCreate(sessionId, body) {
+    if (body instanceof FormData) {
+      return request("POST", `/support/chat/sessions/${sessionId}/messages/`, { body, headers: {} });
+    }
+    return request("POST", `/support/chat/sessions/${sessionId}/messages/`, { data: body });
+  }
+};
+
 const apiClient = {
   BASE_URL,
   getAccessToken,
@@ -799,6 +829,7 @@ const apiClient = {
   opportunities,
   engagements,
   organization,
+  support,
 };
 
 export default apiClient;
