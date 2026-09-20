@@ -13,9 +13,9 @@ export default function Support() {
   const quickQuestions = [
     {
       id: 'what-is-afrivate',
-      text: 'What is Afrivate?',
+      text: 'What is AfriVate?',
       answer:
-        'Afrivate is a platform connecting skilled volunteers (Pathfinders) with verified non-profits, NGOs, and mission-driven organizations (Enablers) across Africa.'
+        'AfriVate is a platform connecting skilled volunteers (Pathfinders) with verified non-profits, NGOs, and mission-driven organizations (Enablers) across Africa.'
     },
     {
       id: 'who-is-volunteer',
@@ -67,7 +67,7 @@ export default function Support() {
       {
         id: Date.now() + 1,
         sender: 'support',
-        text: "Thank you for reaching out to Afrivate Support. Our team typically responds within 24-48 hours. If your issue is urgent, you can also email us directly at contact@afrivate.org."
+        text: "Thank you for reaching out to AfriVate Support. Our team typically responds within 24-48 hours. If your issue is urgent, you can also email us directly at support@afrivate.org."
       }
     ]);
 

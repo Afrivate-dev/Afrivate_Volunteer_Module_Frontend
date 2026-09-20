@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from '../Assets/afrivate-logo.svg';
 
-const CONTACT_EMAIL = 'contact@afrivate.org';
+const CONTACT_EMAIL = 'support@afrivate.org';
 
 const SOCIAL_LINKS = {
-  instagram: 'https://www.instagram.com/afrivate_tech?igsh=MzJtMTg3anhoeXZ5',
+  instagram: 'https://www.instagram.com/afrivate_/',
   linkedin: 'https://www.linkedin.com/company/afrivate/',
-  x: 'https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09',
+  x: 'https://x.com/Afrivate',
 };
 
 export default function ContactUs() {
@@ -33,7 +33,7 @@ export default function ContactUs() {
             Get in Touch
           </h1>
           <p className="text-lg text-gray-700">
-            Afrivate is elevating life in Africa — Watch out!!
+            AfriVate is elevating life in Africa through innovation, opportunity, and technology
           </p>
           <p className="mt-4 text-gray-600">
             Have questions about volunteering, partnerships, or how we can help you grow? We&apos;d love to hear from you.
@@ -58,7 +58,7 @@ export default function ContactUs() {
         <section className="bg-white rounded-2xl p-8 border border-[#E9E9E9] shadow-sm mb-12">
           <h2 className="text-xl font-bold text-[#8D4087] mb-6">Connect With Us</h2>
           <p className="text-gray-600 mb-6">
-            Follow us on social media for the latest opportunities, success stories, and updates from the Afrivate community.
+            Follow us on social media for the latest opportunities, success stories, and updates from the AfriVate community.
           </p>
           <div className="flex gap-6 justify-center">
             <a
@@ -109,7 +109,7 @@ export default function ContactUs() {
           <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
           </nav>
-          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa through innovation, opportunity, and technology</p>
         </div>
       </footer>
     </div>

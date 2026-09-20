@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 // Local asset paths
-import logoImg from '../Assets/afrivate-logo.svg';
+import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
 import phone from '../Assets/phone.png';
 import work from '../Assets/grok-video-c21e1147-f3e2-4f09-8f81-a2f331dfa3e0 1.png';
 import work2 from '../Assets/grok-video-8e5d6500-b97c-46c4-b804-b4a643565470 2.png';
@@ -221,9 +221,9 @@ const Landing = () => {
           </Link>
           <div className="flex flex-col items-center gap-3">
             <div className="flex gap-4 text-[#843A7F]">
-              <a href="https://x.com/Afrivate_tech" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><XTwitterIcon size={14} /></a>
+              <a href="https://x.com/Afrivate" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><XTwitterIcon size={14} /></a>
               <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><LinkedinIcon size={14} /></a>
-              <a href="https://www.instagram.com/afrivate_tech" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><InstagramIcon size={14} /></a>
+              <a href="https://www.instagram.com/afrivate_/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><InstagramIcon size={14} /></a>
             </div>
             <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">Elevating Life in Africa</span>
           </div>
@@ -587,7 +587,7 @@ const Landing = () => {
           <span>© 2026 AfriVate. All rights reserved.</span>
           <div className="flex items-center gap-4 text-[#843A7F]">
             <a 
-              href="https://x.com/Afrivate_tech?t=qyFrRGry9MgLvriCOLlaCw&s=09" 
+              href="https://x.com/Afrivate" 
               target="_blank" 
               rel="noopener noreferrer" 
               aria-label="X"
@@ -605,7 +605,7 @@ const Landing = () => {
               <LinkedinIcon size={16} />
             </a>
             <a 
-              href="https://www.instagram.com/afrivate_tech?igsh=MzJtMTg3anhoeXZ5" 
+              href="https://www.instagram.com/afrivate_/" 
               target="_blank" 
               rel="noopener noreferrer" 
               aria-label="Instagram"

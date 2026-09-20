@@ -56,6 +56,7 @@ import OnlinePresence from './pages/enabler/OnlinePresence';
 import VerificationStatus from './pages/enabler/VerificationStatus';
 import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
+import SupportButton from './components/common/SupportButton';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -240,6 +241,7 @@ function App() {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <SupportButton />
         <CookieConsent />
       </div>
     </UserProvider>

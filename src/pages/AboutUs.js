@@ -26,7 +26,7 @@ export default function AboutUs() {
             About Afrivate
           </h1>
           <p className="text-xl text-[#8D4087] font-semibold mb-4">
-            Elevating life in Africa — Watch out!!
+            Elevating life in Africa through innovation, opportunity, and technology
           </p>
           <p className="text-gray-700 max-w-2xl mx-auto">
             Afrivate is a technology organization building the future of skills-based volunteering across Africa. We connect talented Africans with meaningful opportunities to grow, contribute, and thrive.
@@ -74,11 +74,11 @@ export default function AboutUs() {
         {/* Stats */}
         <section className="flex justify-center gap-12 md:gap-24 mb-16">
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">10,000+</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">10+</h3>
             <p className="text-gray-600 text-sm">Happy Clients</p>
           </div>
           <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">1200+</h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-[#8D4087]">1+</h3>
             <p className="text-gray-600 text-sm">Reviews</p>
           </div>
         </section>
