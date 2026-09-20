@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Plus, X } from 'lucide-react';
+import api from '../services/api';
 
 export default function Support() {
   const navigate = useNavigate();
@@ -9,6 +10,18 @@ export default function Support() {
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [attachedFiles, setAttachedFiles] = useState([]);
+  const [sessionId, setSessionId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    api.support.chatSessionCreate()
+      .then((res) => {
+        setSessionId(res.id);
+      })
+      .catch((err) => {
+        console.error('Failed to create chat session:', err);
+      });
+  }, []);
 
   const quickQuestions = [
     {
@@ -49,9 +62,9 @@ export default function Support() {
     ]);
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     if (e) e.preventDefault();
-    if (!inputMessage.trim() && attachedFiles.length === 0) return;
+    if ((!inputMessage.trim() && attachedFiles.length === 0) || !sessionId) return;
 
     const userText = inputMessage.trim();
     const currentAttachments = [...attachedFiles];
@@ -73,13 +86,49 @@ export default function Support() {
 
     setInputMessage('');
     setAttachedFiles([]);
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      if (userText) formData.append('content', userText);
+      if (currentAttachments.length > 0 && currentAttachments[0].file) {
+        formData.append('attachment', currentAttachments[0].file);
+      }
+      
+      const res = await api.support.chatMessageCreate(sessionId, formData);
+      const lastMsg = res.messages[res.messages.length - 1];
+      
+      if (lastMsg && lastMsg.role === 'assistant') {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: lastMsg.id,
+            sender: 'support',
+            text: lastMsg.content
+          }
+        ]);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'support',
+          text: "Sorry, something went wrong. Please try again."
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files).map((f) => ({
         name: f.name,
-        size: `${(f.size / 1024).toFixed(0)} KB`
+        size: `${(f.size / 1024).toFixed(0)} KB`,
+        file: f
       }));
       setAttachedFiles((prev) => [...prev, ...filesArray]);
     }
@@ -237,7 +286,12 @@ export default function Support() {
             {/* Send Button */}
             <button
               type="submit"
-              className="w-10 h-10 rounded-full bg-[#70236A] hover:bg-[#591B54] text-white flex items-center justify-center transition shadow-xs cursor-pointer shrink-0"
+              disabled={loading || !sessionId}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition shadow-xs shrink-0 ${
+                loading || !sessionId 
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                  : 'bg-[#70236A] hover:bg-[#591B54] text-white cursor-pointer'
+              }`}
               title="Send message"
             >
               <ArrowRight className="w-5 h-5" />

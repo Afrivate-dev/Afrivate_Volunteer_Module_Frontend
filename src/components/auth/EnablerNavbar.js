@@ -143,6 +143,17 @@ const EnablerNavbar = () => {
                 <span className="font-medium">Bookmarked Pathfinders</span>
               </li>
             </Link>
+
+            <Link to="/enabler/attestations" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${
+                isActive('/enabler/attestations')
+                  ? 'bg-[#E0C6FF] text-black'
+                  : 'bg-transparent text-black hover:bg-gray-200'
+              }`}>
+                <i className="fas fa-certificate"></i>
+                <span className="font-medium">Attestations</span>
+              </li>
+            </Link>
             
             <Link to="/enabler/registration" onClick={() => setIsOpen(false)}>
               <li className={`py-3 px-4 rounded-lg flex items-center gap-3 transition-colors ${

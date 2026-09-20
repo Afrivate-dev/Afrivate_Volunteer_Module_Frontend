@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EnablerNavbar from '../../components/auth/EnablerNavbar';
+import Toast from '../../components/common/Toast';
+import { organization, getApiErrorMessage } from '../../services/api';
+import { normalizeWebsiteForStorage } from '../../utils/websiteUrl';
+import { getDraftOrgId } from '../../utils/orgDraft';
 import {
   Globe,
   Pencil,
@@ -44,19 +48,36 @@ const YoutubeIcon = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 
+// UI label -> backend `platform` enum (linkedin/facebook/instagram/x/tiktok/other)
+const PLATFORM_TO_API = {
+  LinkedIn: 'linkedin',
+  'Twitter / X': 'x',
+  Instagram: 'instagram',
+  Facebook: 'facebook',
+  YouTube: 'other',
+  TikTok: 'tiktok',
+};
+const API_TO_PLATFORM = {
+  linkedin: 'LinkedIn',
+  x: 'Twitter / X',
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  other: 'Other',
+};
+
 export default function OnlinePresence() {
   const navigate = useNavigate();
 
-  const [website, setWebsite] = useState('https://www.example.com');
-  const [socialProfiles, setSocialProfiles] = useState([
-    {
-      id: '1',
-      platform: 'LinkedIn',
-      url: 'linkedin.com/company/example'
-    }
-  ]);
+  const [orgId, setOrgId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ isOpen: false, message: '', type: 'error' });
 
-  // Modal / Inline Add or Edit Profile state
+  const [website, setWebsite] = useState('');
+  const [socialProfiles, setSocialProfiles] = useState([]);
+
+  // Modal / Add or Edit Profile state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [modalPlatform, setModalPlatform] = useState('LinkedIn');
@@ -69,6 +90,33 @@ export default function OnlinePresence() {
     { name: 'Facebook', icon: FacebookIcon },
     { name: 'YouTube', icon: YoutubeIcon }
   ];
+
+  useEffect(() => {
+    const init = async () => {
+      const id = getDraftOrgId();
+      if (!id) {
+        navigate('/enabler/registration');
+        return;
+      }
+      setOrgId(id);
+      try {
+        const [links, org] = await Promise.all([
+          organization.socialLinks.list(id).catch(() => []),
+          organization.get(id).catch(() => null),
+        ]);
+        setSocialProfiles((links || []).map((l) => ({
+          id: l.id,
+          platform: API_TO_PLATFORM[l.platform] || l.platform,
+          url: l.url,
+        })));
+        if (org?.website) setWebsite(org.website);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getPlatformIcon = (platformName) => {
     const found = platforms.find(
@@ -88,49 +136,79 @@ export default function OnlinePresence() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (profile) => {
-    setEditingId(profile.id);
-    setModalPlatform(profile.platform);
-    setModalUrl(profile.url);
+  const handleOpenEdit = (item) => {
+    setEditingId(item.id);
+    setModalPlatform(item.platform);
+    setModalUrl(item.url);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id) => {
-    setSocialProfiles((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id) => {
+    const prev = socialProfiles;
+    setSocialProfiles((p) => p.filter((item) => item.id !== id));
+    try {
+      await organization.socialLinks.delete(id);
+    } catch (err) {
+      setSocialProfiles(prev);
+      setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
+    }
   };
 
-  const handleSaveModal = (e) => {
+  const handleSaveModal = async (e) => {
     e.preventDefault();
-    if (!modalUrl.trim()) return;
-
-    if (editingId) {
-      setSocialProfiles((prev) =>
-        prev.map((p) =>
-          p.id === editingId
-            ? { ...p, platform: modalPlatform, url: modalUrl.trim() }
-            : p
-        )
-      );
-    } else {
-      setSocialProfiles((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          platform: modalPlatform,
-          url: modalUrl.trim()
-        }
-      ]);
+    if (!modalUrl.trim() || !orgId) return;
+    const body = { platform: PLATFORM_TO_API[modalPlatform] || 'other', url: modalUrl.trim() };
+    try {
+      if (editingId) {
+        // Editing resets activity_verified server-side — intentional: an admin
+        // verified the content behind the old URL, not the link's right to a badge.
+        const updated = await organization.socialLinks.update(editingId, body);
+        setSocialProfiles((prev) => prev.map((p) => (
+          p.id === editingId ? { id: updated.id, platform: modalPlatform, url: updated.url } : p
+        )));
+      } else {
+        const created = await organization.socialLinks.create(orgId, body);
+        setSocialProfiles((prev) => [
+          ...prev,
+          { id: created.id, platform: modalPlatform, url: created.url },
+        ]);
+      }
+      setIsModalOpen(false);
+    } catch (err) {
+      setToast({ isOpen: true, message: getApiErrorMessage(err), type: 'error' });
     }
-    setIsModalOpen(false);
+  };
+
+  const handleWebsiteBlur = async () => {
+    if (!website.trim() || !orgId) return;
+    try {
+      await organization.update(orgId, { website: normalizeWebsiteForStorage(website) });
+    } catch (err) {
+      setToast({ isOpen: true, message: 'Website link could not be saved — check the URL and try again.', type: 'error' });
+    }
   };
 
   const handleBack = () => {
     navigate('/enabler/registration');
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    setSaving(true);
+    await handleWebsiteBlur();
+    setSaving(false);
     navigate('/enabler/show-work');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] font-sans">
+        <EnablerNavbar />
+        <div className="pt-16 flex justify-center items-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
@@ -171,6 +249,7 @@ export default function OnlinePresence() {
               type="url"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
+              onBlur={handleWebsiteBlur}
               placeholder="https://www.example.com"
               className="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D4087] bg-white transition"
             />
@@ -250,7 +329,8 @@ export default function OnlinePresence() {
           <button
             type="button"
             onClick={handleBack}
-            className="bg-[#FAF5FB] hover:bg-purple-100/70 text-[#70236A] font-semibold text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition"
+            disabled={saving}
+            className="bg-[#FAF5FB] hover:bg-purple-100/70 text-[#70236A] font-semibold text-xs sm:text-sm px-6 py-2.5 rounded-xl flex items-center gap-2 transition disabled:opacity-50"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
@@ -259,16 +339,17 @@ export default function OnlinePresence() {
           <button
             type="button"
             onClick={handleContinue}
-            className="bg-[#70236A] hover:bg-[#591B54] text-white font-semibold text-xs sm:text-sm px-7 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition"
+            disabled={saving}
+            className="bg-[#70236A] hover:bg-[#591B54] text-white font-semibold text-xs sm:text-sm px-7 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition disabled:opacity-60"
           >
-            <span>Continue</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>{saving ? 'Saving…' : 'Continue'}</span>
+            {!saving && <ArrowRight className="w-4 h-4" />}
           </button>
         </div>
       </div>
       </div>
 
-      {/* Add / Edit Social Profile Modal */}
+      {/* Add Social Profile Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-xl max-w-md w-full p-6 relative animate-in fade-in zoom-in-95 duration-200">
@@ -328,13 +409,20 @@ export default function OnlinePresence() {
                   type="submit"
                   className="px-5 py-2 bg-[#70236A] hover:bg-[#591B54] text-white rounded-xl text-xs font-semibold shadow-sm"
                 >
-                  {editingId ? 'Update' : 'Add Profile'}
+                  {editingId ? 'Save Changes' : 'Add Profile'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

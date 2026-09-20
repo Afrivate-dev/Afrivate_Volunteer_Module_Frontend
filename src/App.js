@@ -56,7 +56,12 @@ import OnlinePresence from './pages/enabler/OnlinePresence';
 import VerificationStatus from './pages/enabler/VerificationStatus';
 import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
+<<<<<<< HEAD
 import SupportButton from './components/common/SupportButton';
+=======
+import PendingAttestations from './pages/enabler/PendingAttestations';
+import VerifyCertificate from './pages/VerifyCertificate';
+>>>>>>> e5041538a08a8cb886536d8a034a678cac65d144
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -185,33 +190,37 @@ function App() {
           <Route path="/enabler/applicants/:id" element={<RequireAuth role="enabler"><Applicants /></RequireAuth>} />
           <Route path="/enabler/profile-setup" element={<RequireAuth role="enabler"><EnablerProfileSetup /></RequireAuth>} />
 
-          {/* Enabler Registration / Upgrade Flow */}
-          <Route path="/enabler/registration" element={<Registration />} />
-          <Route path="/enabler/cac" element={<Registration />} />
-          <Route path="/enabler/upgrade" element={<Registration />} />
-          <Route path="/enabler/online-presence" element={<OnlinePresence />} />
-          <Route path="/enabler/online" element={<OnlinePresence />} />
-          <Route path="/enabler/show-work" element={<ShowWork />} />
-          <Route path="/enabler/work" element={<ShowWork />} />
-          <Route path="/enabler/congratulations" element={<Congratulations />} />
-          <Route path="/enabler/verification-status" element={<VerificationStatus />} />
-          <Route path="/enabler/submitted" element={<Submitted />} />
+          <Route path="/enabler/registration" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
+          <Route path="/enabler/cac" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
+          <Route path="/enabler/upgrade" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
+          <Route path="/enabler/online-presence" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
+          <Route path="/enabler/online" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
+          <Route path="/enabler/show-work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
+          <Route path="/enabler/work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
+          <Route path="/enabler/congratulations" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
+          <Route path="/enabler/verification-status" element={<RequireAuth role="enabler"><VerificationStatus /></RequireAuth>} />
+          <Route path="/enabler/submitted" element={<RequireAuth role="enabler"><Submitted /></RequireAuth>} />
 
-          {/* Pathfinder Experience */}
-          <Route path="/pathfinder/experience" element={<MyExperience />} />
-          <Route path="/pathfinder/my-experience" element={<MyExperience />} />
+          <Route path="/pathfinder/experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
+          <Route path="/pathfinder/my-experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
 
-          {/* Organization legacy routes */}
-          <Route path="/org/registration" element={<Registration />} />
-          <Route path="/org/cac" element={<Registration />} />
-          <Route path="/org/experience" element={<MyExperience />} />
-          <Route path="/org/my-experience" element={<MyExperience />} />
-          <Route path="/org/show-work" element={<ShowWork />} />
-          <Route path="/org/work" element={<ShowWork />} />
-          <Route path="/org/online-presence" element={<OnlinePresence />} />
-          <Route path="/org/online" element={<OnlinePresence />} />
-          <Route path="/org/congratulations" element={<Congratulations />} />
-          <Route path="/org/registration-success" element={<Congratulations />} />
+          {/* Enabler Attestations */}
+          <Route path="/enabler/attestations" element={<RequireAuth role="enabler"><PendingAttestations /></RequireAuth>} />
+
+          {/* Public Credential Verification */}
+          <Route path="/verify/:id" element={<VerifyCertificate />} />
+
+          {/* Organization routes */}
+          <Route path="/org/registration" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
+          <Route path="/org/cac" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
+          <Route path="/org/experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
+          <Route path="/org/my-experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
+          <Route path="/org/show-work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
+          <Route path="/org/work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
+          <Route path="/org/online-presence" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
+          <Route path="/org/online" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
+          <Route path="/org/congratulations" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
+          <Route path="/org/registration-success" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
 
           {/* Legacy redirects */}
           <Route
