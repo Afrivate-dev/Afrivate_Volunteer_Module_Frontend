@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoImg from '../Assets/afrivate-logo.svg';
+import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
 
 export default function AboutUs() {
   return (
@@ -23,7 +23,7 @@ export default function AboutUs() {
         {/* Hero */}
         <section className="text-center mb-16">
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#8D4087] mb-4">
-            About Afrivate
+            About AfriVate
           </h1>
           <p className="text-xl text-[#8D4087] font-semibold mb-4">
             Elevating life in Africa through innovation, opportunity, and technology
@@ -104,7 +104,7 @@ export default function AboutUs() {
           <nav className="flex gap-4 text-[#8D4087] text-xs font-extrabold">
             <Link to="/privacy" className="hover:underline">Privacy Policy</Link>
           </nav>
-          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© Afrivate 2026 — Elevating Life in Africa</p>
+          <p className="text-[10px] md:text-xs text-[#8D4087] font-montserrat">© AfriVate 2026 — Elevating Life in Africa through innovation, opportunity, and technology</p>
         </div>
       </footer>
     </div>

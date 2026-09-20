@@ -56,12 +56,10 @@ import OnlinePresence from './pages/enabler/OnlinePresence';
 import VerificationStatus from './pages/enabler/VerificationStatus';
 import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
-<<<<<<< HEAD
 import SupportButton from './components/common/SupportButton';
-=======
 import PendingAttestations from './pages/enabler/PendingAttestations';
 import VerifyCertificate from './pages/VerifyCertificate';
->>>>>>> e5041538a08a8cb886536d8a034a678cac65d144
+
 
 class ErrorBoundary extends Component {
   constructor(props) {

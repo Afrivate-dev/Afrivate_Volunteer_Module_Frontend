@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoImg from '../Assets/afrivate-logo.svg';
+import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
 
 const CONTACT_EMAIL = 'support@afrivate.org';
 
