@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { profile, notifications } from '../../services/api';
-import logoImg from '../../Assets/afrivate-logo.svg';
+import logoImg from '../../Assets/AfriVate_logo_long_white_on_navy.png';
 
 const EnablerNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);

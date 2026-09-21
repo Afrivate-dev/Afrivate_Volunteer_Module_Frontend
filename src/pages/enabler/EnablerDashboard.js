@@ -154,7 +154,7 @@ const EnablerDashboard = () => {
     <div className="min-h-screen bg-[#FAFAFA] font-sans">
       <EnablerNavbar />
 
-      <div className="pt-16">
+      <div className="pt-16 mx-20">
         {/* Hero Banner */}
         <div
           className="mx-4 sm:mx-6 mt-6 sm:mt-8 rounded-2xl px-5 sm:px-12 py-7 sm:py-10"
