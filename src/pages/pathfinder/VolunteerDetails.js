@@ -409,20 +409,22 @@ const VolunteerDetails = () => {
             </div>
 
             {/* Apply Button */}
-            {isOpen ? (
-              <button
-                onClick={() =>
-                  navigate("/apply/" + jobId, {
-                    state: { job: jobData, existingApplication: existingApplication || undefined, isEdit: !!existingApplication },
-                  })
-                }
-                className="w-full bg-[#651F5F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-[#4a1647] transition-colors">
-                {existingApplication ? "View application" : "Apply now"}
-              </button>
-            ) : (
-              <button disabled className="w-full bg-gray-200 text-gray-400 py-4 rounded-2xl font-bold text-sm cursor-not-allowed">
-                Applications Closed
-              </button>
+            {!!parsedDescription.description && (
+              isOpen ? (
+                <button
+                  onClick={() =>
+                    navigate("/apply/" + jobId, {
+                      state: { job: jobData, existingApplication: existingApplication || undefined, isEdit: !!existingApplication },
+                    })
+                  }
+                  className="w-full bg-[#651F5F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-[#4a1647] transition-colors">
+                  {existingApplication ? "View application" : "Apply now"}
+                </button>
+              ) : (
+                <button disabled className="w-full bg-gray-200 text-gray-400 py-4 rounded-2xl font-bold text-sm cursor-not-allowed">
+                  Applications Closed
+                </button>
+              )
             )}
 
             {/* Save + Share */}
