@@ -4,7 +4,7 @@ import NavBar from "../../components/auth/Navbar";
 import FormattedText from "../../components/common/FormattedText";
 import Toast from "../../components/common/Toast";
 import { bookmarks, opportunities, profile, applications } from "../../services/api";
-import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
+import { getExternalSourceLabel, getOrgName, getSafeExternalUrl, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 import { parseDescription } from "../../utils/descriptionUtils";
 
 const typeIcon = (type = "") => {
@@ -187,6 +187,10 @@ const VolunteerDetails = () => {
   const displayDeadline = jobData?._raw?.deadline || jobData?._raw?.application_deadline || "";
   const isOpen = jobData?.is_open ?? jobData?._raw?.is_open ?? true;
   const jobId = jobData?.id;
+  // Scraped listings have no Afrivate owner: users apply on the original site.
+  const isExternal = !!jobData?._raw?.is_external;
+  const externalSourceLabel = getExternalSourceLabel(jobData?._raw?.source);
+  const externalApplyUrl = isExternal ? getSafeExternalUrl(jobData?.link || jobData?._raw?.link) : null;
 
   if (notFound) {
     return (
@@ -409,7 +413,23 @@ const VolunteerDetails = () => {
             </div>
 
             {/* Apply Button */}
-            {!!parsedDescription.description && (
+            {isExternal ? (
+              <>
+                {isOpen && externalApplyUrl ? (
+                  <a href={externalApplyUrl} target="_blank" rel="noopener noreferrer"
+                    className="block w-full text-center bg-[#651F5F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-[#4a1647] transition-colors">
+                    Apply on {externalSourceLabel}
+                  </a>
+                ) : (
+                  <button disabled className="w-full bg-gray-200 text-gray-400 py-4 rounded-2xl font-bold text-sm cursor-not-allowed">
+                    {isOpen ? "Application link unavailable" : "Applications Closed"}
+                  </button>
+                )}
+                <p className="text-xs text-gray-400 text-center -mt-2">
+                  Found on {externalSourceLabel}. You'll apply on their site, not through Afrivate.
+                </p>
+              </>
+            ) : !!parsedDescription.description && (
               isOpen ? (
                 <button
                   onClick={() =>
@@ -454,7 +474,8 @@ const VolunteerDetails = () => {
               </button>
             </div>
 
-            {/* Have questions? */}
+            {/* Have questions? (scraped listings have no Afrivate recruiter to message) */}
+            {!isExternal && (
             <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="rounded-2xl p-5">
               <p className="font-bold text-white mb-1">Have questions?</p>
               <p className="text-purple-200 text-xs mb-3">Reach out to the organisation directly for more information.</p>
@@ -462,6 +483,7 @@ const VolunteerDetails = () => {
                 Message recruiter →
               </button>
             </div>
+            )}
           </div>
         </div>
       </div>

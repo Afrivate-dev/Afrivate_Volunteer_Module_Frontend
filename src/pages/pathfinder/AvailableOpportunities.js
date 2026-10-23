@@ -8,10 +8,13 @@ import Toast from "../../components/common/Toast";
 import Pagination from "../../components/common/Pagination";
 import { opportunities, bookmarks } from "../../services/api";
 // import {application } from "../../services/api";
-import { getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
+import { getExternalSourceLabel, getOrgName, navigateToVolunteerDetails } from "../../utils/opportunityUtils";
 import { parseDescription } from "../../utils/descriptionUtils";
 
 const PAGE_SIZE = 10;
+// The API paginates (max 100 per request); fetch every page so scraped listings aren't cut off.
+const FETCH_PAGE_SIZE = 100;
+const MAX_FETCH_PAGES = 10;
 const OPP_TYPES = ["All", "Volunteer Work", "Internship", "Mentorship"];
 const WORK_MODES = ["All", "Remote", "Hybrid", "On-site"];
 const SORT_OPTIONS = ["Latest First", "Oldest First", "A-Z"];
@@ -37,8 +40,23 @@ function mapOpp(item) {
     description: getPreview(item.description || ""),
     status: item.is_open ? "Currently Active" : "Closed",
     postedAt: item.posted_at || "",
+    // Scraped listings (is_external) are applied to on the original site.
+    external: !!item.is_external,
+    sourceLabel: item.is_external ? getExternalSourceLabel(item.source) : "",
+    deadline: item.deadline || "",
     _raw: item,
   };
+}
+
+async function fetchAllOpen() {
+  const all = [];
+  for (let page = 1; page <= MAX_FETCH_PAGES; page++) {
+    const data = await opportunities.list({ is_open: true, page_size: FETCH_PAGE_SIZE, page });
+    if (Array.isArray(data)) return data;
+    all.push(...(data?.results || []));
+    if (!data?.next) break;
+  }
+  return all;
 }
 
 // const statusStyle = (s = "") => {
@@ -94,8 +112,7 @@ const AvailableOpportunities = () => {
   const loadOpportunities = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await opportunities.list({ is_open: true });
-      const raw = Array.isArray(data) ? data : data?.results || [];
+      const raw = await fetchAllOpen();
       setList(raw.map(mapOpp).filter(Boolean));
     } catch (err) {
       setToast({ isOpen: true, message: err.message || "Failed to load.", type: "error" });
@@ -283,9 +300,13 @@ const AvailableOpportunities = () => {
                           {opp.type && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{opp.type}</span>}
                           {opp.workMode && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.workMode}</span>}
                           {opp.timeCommitment && <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{opp.timeCommitment}</span>}
+                          {opp.external && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">via {opp.sourceLabel}</span>}
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          {opp.postedAt && <span className="text-xs text-gray-400">{formatPosted(opp.postedAt)}</span>}
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {opp.postedAt && <span className="text-xs text-gray-400">{formatPosted(opp.postedAt)}</span>}
+                            {opp.deadline && <span className="text-xs text-gray-400">Closes {new Date(opp.deadline).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>}
+                          </div>
                           <button onClick={() => navigateToVolunteerDetails(navigate, opp.id, { job: opp, _raw: opp._raw })}
                             className="ml-auto bg-[#651F5F] text-white px-4 py-1.5 rounded-xl text-xs font-semibold hover:bg-[#4a1647] transition-colors">
                             See Details

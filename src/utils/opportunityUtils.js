@@ -8,6 +8,23 @@ export function getOrgName(item) {
   return n.trim() || "Organization";
 }
 
+const EXTERNAL_SOURCE_LABELS = {
+  myjobmag: "MyJobMag",
+  reliefweb: "ReliefWeb",
+  telegram: "Telegram",
+};
+
+/** Display name of the site a scraped (external) opportunity was found on. */
+export function getExternalSourceLabel(source) {
+  return EXTERNAL_SOURCE_LABELS[source] || source || "the original site";
+}
+
+// A scraped link is untrusted input: only ever render http(s) addresses
+// (a `javascript:` URL in an href would run script in our origin).
+export function getSafeExternalUrl(url) {
+  return typeof url === "string" && /^https?:\/\//i.test(url) ? url : null;
+}
+
 // Always use this instead of navigate("/volunteer-details", { state: { job } }) directly.
 // Direct navigation passed the abbreviated preview object which stripped the `description`
 // field, breaking custom question parsing in ApplyApplication.
