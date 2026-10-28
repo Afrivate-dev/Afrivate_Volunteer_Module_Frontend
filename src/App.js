@@ -60,7 +60,6 @@ import SupportButton from './components/common/SupportButton';
 import PendingAttestations from './pages/enabler/PendingAttestations';
 import VerifyCertificate from './pages/VerifyCertificate';
 
-
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -77,7 +76,9 @@ class ErrorBoundary extends Component {
       return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 font-sans">
           <h1 className="text-4xl font-bold text-[#8D4087] mb-4">Something went wrong</h1>
-          <p className="text-gray-500 mb-8 text-center">An unexpected error occurred. Please refresh the page.</p>
+          <p className="text-gray-500 mb-8 text-center">
+            An unexpected error occurred. Please refresh the page.
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="bg-[#8D4087] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#5A0091] transition-colors"
@@ -135,126 +136,471 @@ function App() {
 
   return (
     <ErrorBoundary>
-    <UserProvider>
-      <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/landingpathfinder" element={<LandingPathfinder />} />
-          <Route path="/landingenabler" element={<Landingenabler />} />
-          <Route path="/dashf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
-          <Route path="/enabler/dashboard" element={<RequireAuth role="enabler"><EnablerDashboard /></RequireAuth>} />
-          <Route path="/emppro" element={<Navigate to="/enabler/dashboard" replace />} />
-          <Route path="/dash-employer" element={<Navigate to="/enabler/dashboard" replace />} />
-          <Route path="/dash-freelance" element={<Navigate to="/pathf" replace />} />
-          <Route path="/opportunity" element={<Navigate to="/available-opportunities" replace />} />
-          <Route path="/volunteer-details" element={<VolunteerDetails />} />
-          <Route path="/my-applications" element={<RequireAuth role="pathfinder"><MyApplications /></RequireAuth>} />
-          <Route path="/organization/:id" element={<OrganizationProfile />} />
-          <Route path="/apply/:opportunityId" element={<RequireAuth role="pathfinder"><ApplyApplication /></RequireAuth>} />
-          <Route path="/bookmarks" element={<RequireAuth role="pathfinder"><Bookmarks /></RequireAuth>} />
-          <Route path="/available-opportunities" element={<RequireAuth role="pathfinder"><AvailableOpportunities /></RequireAuth>} />
-          <Route path="/volunteer" element={<RequireAuth role="pathfinder"><VolunteerDetails /></RequireAuth>} />
-          <Route path="/enabler-profile/:id" element={<RequireAuth role="pathfinder"><EnablerProfileView /></RequireAuth>} />
-          {/* Both /profile and /pathfinder/profile-setup render the same component; the latter is used by onboarding links. */}
-          <Route path="/pathfinder/profile-setup" element={<RequireAuth role="pathfinder"><EditNewProfile /></RequireAuth>} />
-          <Route path="/pathf" element={<RequireAuth role="pathfinder"><Pathf /></RequireAuth>} />
-          <Route path="/road" element={<Road />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/contact-support" element={<Support />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
-          <Route path="/deep-pay-info" element={<DeepPayInfo />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-otp" element={<VerifyOTP />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/set-password" element={<RequireAuth><SetPassword /></RequireAuth>} />
-          <Route path="/create-opportunity" element={<RequireAuth role="enabler"><CreateOpportunity /></RequireAuth>} />
-          <Route path="/enabler/recommendations" element={<RequireAuth role="enabler"><Recommendations /></RequireAuth>} />
-          <Route path="/enabler/profile" element={<RequireAuth role="enabler"><EnablerProfile /></RequireAuth>} />
-          <Route path="/enabler/edit-profile" element={<RequireAuth role="enabler"><EditProfile /></RequireAuth>} />
-          <Route path="/enabler/opportunity/:id" element={<RequireAuth role="enabler"><OpportunityDetails /></RequireAuth>} />
-          <Route path="/enabler/edit-opportunity/:id" element={<RequireAuth role="enabler"><EditOpportunity /></RequireAuth>} />
-          <Route path="/enabler/opportunities-posted" element={<RequireAuth role="enabler"><OpportunitiesPosted /></RequireAuth>} />
-          <Route path="/enabler/settings" element={<RequireAuth role="enabler"><Settings /></RequireAuth>} />
-          <Route path="/pathfinder/settings" element={<RequireAuth role="pathfinder"><PathfinderSettings /></RequireAuth>} />
-          <Route path="/enabler/pathfinder/:id" element={<RequireAuth role="enabler"><PathfinderProfile /></RequireAuth>} />
-          <Route path="/enabler/contact/:id" element={<RequireAuth role="enabler"><ContactPathfinder /></RequireAuth>} />
-          <Route path="/enabler/bookmarked-pathfinders" element={<RequireAuth role="enabler"><EnablerPathfinderBookmarks /></RequireAuth>} />
-          <Route path="/enabler/applicants/:id" element={<RequireAuth role="enabler"><Applicants /></RequireAuth>} />
-          <Route path="/enabler/profile-setup" element={<RequireAuth role="enabler"><EnablerProfileSetup /></RequireAuth>} />
+      <UserProvider>
+        <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Landing />} />
+            <Route path="/landingpathfinder" element={<LandingPathfinder />} />
+            <Route path="/landingenabler" element={<Landingenabler />} />
+            <Route
+              path="/dashf"
+              element={
+                <RequireAuth role="pathfinder">
+                  <Pathf />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/dashboard"
+              element={
+                <RequireAuth role="enabler">
+                  <EnablerDashboard />
+                </RequireAuth>
+              }
+            />
+            <Route path="/emppro" element={<Navigate to="/enabler/dashboard" replace />} />
+            <Route path="/dash-employer" element={<Navigate to="/enabler/dashboard" replace />} />
+            <Route path="/dash-freelance" element={<Navigate to="/pathf" replace />} />
+            <Route
+              path="/opportunity"
+              element={<Navigate to="/available-opportunities" replace />}
+            />
+            <Route path="/volunteer-details" element={<VolunteerDetails />} />
+            <Route
+              path="/my-applications"
+              element={
+                <RequireAuth role="pathfinder">
+                  <MyApplications />
+                </RequireAuth>
+              }
+            />
+            <Route path="/organization/:id" element={<OrganizationProfile />} />
+            <Route
+              path="/apply/:opportunityId"
+              element={
+                <RequireAuth role="pathfinder">
+                  <ApplyApplication />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/bookmarks"
+              element={
+                <RequireAuth role="pathfinder">
+                  <Bookmarks />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/available-opportunities"
+              element={
+                <RequireAuth role="pathfinder">
+                  <AvailableOpportunities />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler-profile/:id"
+              element={
+                <RequireAuth role="pathfinder">
+                  <EnablerProfileView />
+                </RequireAuth>
+              }
+            />
+            {/* Both /profile and /pathfinder/profile-setup render the same component; the latter is used by onboarding links. */}
+            <Route
+              path="/pathfinder/profile-setup"
+              element={
+                <RequireAuth role="pathfinder">
+                  <EditNewProfile />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathf"
+              element={
+                <RequireAuth role="pathfinder">
+                  <Pathf />
+                </RequireAuth>
+              }
+            />
+            <Route path="/road" element={<Road />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/contact-support" element={<Support />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route
+              path="/notifications"
+              element={
+                <RequireAuth>
+                  <Notifications />
+                </RequireAuth>
+              }
+            />
+            <Route path="/deep-pay-info" element={<DeepPayInfo />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/set-password"
+              element={
+                <RequireAuth>
+                  <SetPassword />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/create-opportunity"
+              element={
+                <RequireAuth role="enabler">
+                  <CreateOpportunity />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/recommendations"
+              element={
+                <RequireAuth role="enabler">
+                  <Recommendations />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/profile"
+              element={
+                <RequireAuth role="enabler">
+                  <EnablerProfile />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/edit-profile"
+              element={
+                <RequireAuth role="enabler">
+                  <EditProfile />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/opportunity/:id"
+              element={
+                <RequireAuth role="enabler">
+                  <OpportunityDetails />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/edit-opportunity/:id"
+              element={
+                <RequireAuth role="enabler">
+                  <EditOpportunity />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/opportunities-posted"
+              element={
+                <RequireAuth role="enabler">
+                  <OpportunitiesPosted />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/settings"
+              element={
+                <RequireAuth role="enabler">
+                  <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathfinder/settings"
+              element={
+                <RequireAuth role="pathfinder">
+                  <PathfinderSettings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/pathfinder/:id"
+              element={
+                <RequireAuth role="enabler">
+                  <PathfinderProfile />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/contact/:id"
+              element={
+                <RequireAuth role="enabler">
+                  <ContactPathfinder />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/bookmarked-pathfinders"
+              element={
+                <RequireAuth role="enabler">
+                  <EnablerPathfinderBookmarks />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/applicants/:id"
+              element={
+                <RequireAuth role="enabler">
+                  <Applicants />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/profile-setup"
+              element={
+                <RequireAuth role="enabler">
+                  <EnablerProfileSetup />
+                </RequireAuth>
+              }
+            />
 
-          <Route path="/enabler/registration" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
-          <Route path="/enabler/cac" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
-          <Route path="/enabler/upgrade" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
-          <Route path="/enabler/online-presence" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
-          <Route path="/enabler/online" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
-          <Route path="/enabler/show-work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
-          <Route path="/enabler/work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
-          <Route path="/enabler/congratulations" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
-          <Route path="/enabler/verification-status" element={<RequireAuth role="enabler"><VerificationStatus /></RequireAuth>} />
-          <Route path="/enabler/submitted" element={<RequireAuth role="enabler"><Submitted /></RequireAuth>} />
+            <Route
+              path="/enabler/registration"
+              element={
+                <RequireAuth role="enabler">
+                  <Registration />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/cac"
+              element={
+                <RequireAuth role="enabler">
+                  <Registration />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/upgrade"
+              element={
+                <RequireAuth role="enabler">
+                  <Registration />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/online-presence"
+              element={
+                <RequireAuth role="enabler">
+                  <OnlinePresence />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/online"
+              element={
+                <RequireAuth role="enabler">
+                  <OnlinePresence />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/show-work"
+              element={
+                <RequireAuth role="enabler">
+                  <ShowWork />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/work"
+              element={
+                <RequireAuth role="enabler">
+                  <ShowWork />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/congratulations"
+              element={
+                <RequireAuth role="enabler">
+                  <Congratulations />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/verification-status"
+              element={
+                <RequireAuth role="enabler">
+                  <VerificationStatus />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/submitted"
+              element={
+                <RequireAuth role="enabler">
+                  <Submitted />
+                </RequireAuth>
+              }
+            />
 
-          <Route path="/pathfinder/experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
-          <Route path="/pathfinder/my-experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
+            <Route
+              path="/pathfinder/experience"
+              element={
+                <RequireAuth role="pathfinder">
+                  <MyExperience />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathfinder/my-experience"
+              element={
+                <RequireAuth role="pathfinder">
+                  <MyExperience />
+                </RequireAuth>
+              }
+            />
 
-          {/* Enabler Attestations */}
-          <Route path="/enabler/attestations" element={<RequireAuth role="enabler"><PendingAttestations /></RequireAuth>} />
+            {/* Enabler Attestations */}
+            <Route
+              path="/enabler/attestations"
+              element={
+                <RequireAuth role="enabler">
+                  <PendingAttestations />
+                </RequireAuth>
+              }
+            />
 
-          {/* Public Credential Verification */}
-          <Route path="/verify/:id" element={<VerifyCertificate />} />
+            {/* Public Credential Verification */}
+            <Route path="/verify/:id" element={<VerifyCertificate />} />
 
-          {/* Organization routes */}
-          <Route path="/org/registration" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
-          <Route path="/org/cac" element={<RequireAuth role="enabler"><Registration /></RequireAuth>} />
-          <Route path="/org/experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
-          <Route path="/org/my-experience" element={<RequireAuth role="pathfinder"><MyExperience /></RequireAuth>} />
-          <Route path="/org/show-work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
-          <Route path="/org/work" element={<RequireAuth role="enabler"><ShowWork /></RequireAuth>} />
-          <Route path="/org/online-presence" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
-          <Route path="/org/online" element={<RequireAuth role="enabler"><OnlinePresence /></RequireAuth>} />
-          <Route path="/org/congratulations" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
-          <Route path="/org/registration-success" element={<RequireAuth role="enabler"><Congratulations /></RequireAuth>} />
+            {/* Organization routes */}
+            <Route
+              path="/org/registration"
+              element={
+                <RequireAuth role="enabler">
+                  <Registration />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/cac"
+              element={
+                <RequireAuth role="enabler">
+                  <Registration />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/experience"
+              element={
+                <RequireAuth role="pathfinder">
+                  <MyExperience />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/my-experience"
+              element={
+                <RequireAuth role="pathfinder">
+                  <MyExperience />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/show-work"
+              element={
+                <RequireAuth role="enabler">
+                  <ShowWork />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/work"
+              element={
+                <RequireAuth role="enabler">
+                  <ShowWork />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/online-presence"
+              element={
+                <RequireAuth role="enabler">
+                  <OnlinePresence />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/online"
+              element={
+                <RequireAuth role="enabler">
+                  <OnlinePresence />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/congratulations"
+              element={
+                <RequireAuth role="enabler">
+                  <Congratulations />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/org/registration-success"
+              element={
+                <RequireAuth role="enabler">
+                  <Congratulations />
+                </RequireAuth>
+              }
+            />
 
-          {/* Legacy redirects */}
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <RoleRedirect pathfinder="/pathf" enabler="/enabler/dashboard" />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <RequireAuth>
-                <RoleRedirect pathfinder="/pathfinder/profile-setup" enabler="/enabler/profile" />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/kyc"
-            element={
-              <RequireAuth>
-                <Navbar />
-                <KYCForm />
-              </RequireAuth>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <SupportButton />
-        <CookieConsent />
-      </div>
-    </UserProvider>
+            {/* Legacy redirects */}
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <RoleRedirect pathfinder="/pathf" enabler="/enabler/dashboard" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <RequireAuth>
+                  <RoleRedirect pathfinder="/pathfinder/profile-setup" enabler="/enabler/profile" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/kyc"
+              element={
+                <RequireAuth>
+                  <Navbar />
+                  <KYCForm />
+                </RequireAuth>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <SupportButton />
+          <CookieConsent />
+        </div>
+      </UserProvider>
     </ErrorBoundary>
   );
 }
 
 export default App;
-

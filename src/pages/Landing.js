@@ -8,7 +8,6 @@ import {
   HeartHandshake,
   Briefcase,
   Lightbulb,
-  Zap,
   Globe,
   Trophy,
   MapPin,
@@ -16,21 +15,29 @@ import {
   X,
   ShieldCheck,
   Phone,
-  Info
+  Info,
+  ListChecks,
+  LogIn,
+  Sparkles,
+  Lock,
+  Plane,
 } from 'lucide-react';
 
 // Local asset paths
-import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
+
+import logoImg from '../Assets/newLogo.svg';
+import vectorBg from '../Assets/Vector2.png';
+import afrivateWatermark from '../Assets/AFRIVATE.png';
 import phone from '../Assets/phone.png';
-import work from '../Assets/grok-video-c21e1147-f3e2-4f09-8f81-a2f331dfa3e0 1.png';
-import work2 from '../Assets/grok-video-8e5d6500-b97c-46c4-b804-b4a643565470 2.png';
-import work3 from '../Assets/grok-video-90f255da-353b-4aad-a543-dbad3a8ca126 1.png';
+import work from '../Assets/work1.jpg';
+import work2 from '../Assets/work2.jpg';
+import work3 from '../Assets/work3.jpg';
+import work4 from '../Assets/work4.jpg';
 import africaMap from '../Assets/africa-network.png';
 import how from '../Assets/How It Works.png';
 
-
-// --- CUSTOM INLINE SVG BRAND ICONS TO PREVENT COMPILER CONFLICTS ---
-const XTwitterIcon = ({ size = 16, className = "" }) => (
+// --- CUSTOM INLINE SVG BRAND ICONS ---
+const XTwitterIcon = ({ size = 16, className = '' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -43,7 +50,7 @@ const XTwitterIcon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
-const LinkedinIcon = ({ size = 16, className = "" }) => (
+const LinkedinIcon = ({ size = 16, className = '' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -62,7 +69,7 @@ const LinkedinIcon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
-const InstagramIcon = ({ size = 16, className = "" }) => (
+const InstagramIcon = ({ size = 16, className = '' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -81,13 +88,38 @@ const InstagramIcon = ({ size = 16, className = "" }) => (
   </svg>
 );
 
+// Updated categories with descriptions
 const categories = [
-  { label: "Volunteering", icon: HeartHandshake },
-  { label: "Internships", icon: Briefcase },
-  { label: "Mentorship", icon: Lightbulb },
-  { label: "Micro-tasks", icon: Zap },
-  { label: "Remote Work", icon: Globe },
-  { label: "Leadership", icon: Trophy },
+  {
+    label: 'Volunteering',
+    description: 'Give your time to impactful projects and causes across the continent.',
+    icon: HeartHandshake,
+  },
+  {
+    label: 'Internships',
+    description: 'Gain practical, hands-on experience to kickstart your professional career.',
+    icon: Briefcase,
+  },
+  {
+    label: 'Micro-Tasks',
+    description: 'Complete short, flexible tasks that fit perfectly into your busy schedule.',
+    icon: ListChecks,
+  },
+  {
+    label: 'Mentorship',
+    description: 'Learn directly from experienced professionals and industry leaders.',
+    icon: Lightbulb,
+  },
+  {
+    label: 'Remote Work',
+    description: 'Find location-independent roles with organizations across Africa.',
+    icon: Globe,
+  },
+  {
+    label: 'Leadership',
+    description: 'Take charge of initiatives and develop your executive management skills.',
+    icon: Trophy,
+  },
 ];
 
 const Landing = () => {
@@ -102,44 +134,82 @@ const Landing = () => {
     navigate('/opportunity');
   };
 
+  // Added a 4th job to satisfy the lg:grid-cols-4 layout from the mockup
   const jobs = [
-    { id: 'landing-1', title: "CORPSAFRICA Volunteer Program", company: "MSME Africa", location: "Multiple African Countries", type: "Volunteering", button: "View Details", image: work },
-    { id: 'landing-2', title: "Nest Africa AI Innovation Lab", company: "MSME Africa", location: "Remote / Hybrid", type: "Volunteering", button: "View Details", image: work2 },
-    { id: 'landing-3', title: "Content Writer – African Tech", company: "TechCabal", location: "Remote", type: "Volunteering", button: "View Details", image: work3 },
+    {
+      id: 'landing-1',
+      title: 'Product Designer',
+      company: 'Paystack',
+      location: 'Lagos, Nigeria',
+      type: 'Volunteering',
+      image: work,
+    },
+    {
+      id: 'landing-2',
+      title: 'AI/ML Engineer',
+      company: 'Google',
+      location: 'Enugu, Nigeria',
+      type: 'Internship',
+      image: work2,
+    },
+    {
+      id: 'landing-3',
+      title: 'Frontend Developer',
+      company: 'Oracle',
+      location: 'Kano, Nigeria',
+      type: 'Full-time',
+      image: work3,
+    },
+    {
+      id: 'landing-4',
+      title: 'Backend Developer',
+      company: 'Oracle',
+      location: 'Abuja, Nigeria',
+      type: 'Full-time',
+      image: work4,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#FAF8FB] text-[#333333] font-sans antialiased relative">
-      
-      {/* FIXED NAVIGATION BAR (Always floating at the top of the viewport) */}
+      {/* HEADER */}
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-40 w-[min(1100px,94%)] font-montserrat">
         <div className="flex items-center justify-between rounded-full bg-white/95 backdrop-blur-md px-5 py-3 md:py-4 shadow-[0_4px_24px_rgba(132,58,127,0.06)] border border-white/40">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="AfriVate Logo" className="h-8 md:h-9 lg:h-10 w-auto object-contain" />
+            <img
+              src={logoImg}
+              alt="AfriVate Logo"
+              className="h-8 md:h-9 lg:h-10 w-auto object-contain"
+            />
           </Link>
-
-          {/* Center Links */}
           <nav className="hidden lg:flex items-center gap-8 text-sm font-semibold text-[#843A7F]">
-            <Link to="/opportunity" className="hover:opacity-75 transition-all">Volunteering</Link>
-            <Link to="/contact" className="hover:opacity-75 transition-all">Contact us</Link>
-            <Link to="/about" className="hover:opacity-75 transition-all">About us</Link>
+            <Link to="/opportunity" className="hover:opacity-75 transition-all">
+              Volunteering
+            </Link>
+            <Link to="/contact" className="hover:opacity-75 transition-all">
+              Contact us
+            </Link>
+            <Link to="/about" className="hover:opacity-75 transition-all">
+              About us
+            </Link>
           </nav>
-
-          {/* Sign Up Button Only */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden lg:flex items-center gap-3">
+            <Link
+              to="/login"
+              className="text-sm font-semibold text-[#843A7F] hover:opacity-75 transition"
+            >
+              Login
+            </Link>
             <Link to="/signup">
               <button className="bg-[#843A7F] text-white py-2.5 px-6 rounded-full text-sm font-semibold hover:bg-[#6f3069] transition shadow-[0_4px_14px_rgba(132,58,127,0.15)]">
                 Sign up
               </button>
             </Link>
           </div>
-
-          {/* Responsive Menu Icon */}
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden p-2 text-[#843A7F] hover:bg-[#843A7F]/10 rounded-full transition"
-            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -180,7 +250,10 @@ const Landing = () => {
               onClick={() => setIsMenuOpen(false)}
               className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <HeartHandshake size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
+              <HeartHandshake
+                size={18}
+                className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200"
+              />
               Volunteering
             </Link>
             <Link
@@ -188,7 +261,10 @@ const Landing = () => {
               onClick={() => setIsMenuOpen(false)}
               className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <Phone size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
+              <Phone
+                size={18}
+                className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200"
+              />
               Contact us
             </Link>
             <Link
@@ -196,7 +272,10 @@ const Landing = () => {
               onClick={() => setIsMenuOpen(false)}
               className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <Info size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
+              <Info
+                size={18}
+                className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200"
+              />
               About us
             </Link>
             <Link
@@ -204,7 +283,10 @@ const Landing = () => {
               onClick={() => setIsMenuOpen(false)}
               className="group flex items-center gap-3 py-3.5 px-4 rounded-xl text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-[#843A7F] hover:to-[#A2529C] hover:text-white hover:shadow-[0_6px_16px_rgba(132,58,127,0.25)] active:scale-[0.98] transition-all duration-200"
             >
-              <ShieldCheck size={18} className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200" />
+              <ShieldCheck
+                size={18}
+                className="text-[#843A7F]/80 group-hover:text-white transition-colors duration-200"
+              />
               Login
             </Link>
           </div>
@@ -221,217 +303,214 @@ const Landing = () => {
           </Link>
           <div className="flex flex-col items-center gap-3">
             <div className="flex gap-4 text-[#843A7F]">
-              <a href="https://x.com/Afrivate" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><XTwitterIcon size={14} /></a>
-              <a href="https://www.linkedin.com/company/afrivate/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><LinkedinIcon size={14} /></a>
-              <a href="https://www.instagram.com/afrivate_/" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition"><InstagramIcon size={14} /></a>
+              <a
+                href="https://x.com/Afrivate"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:scale-110 transition"
+              >
+                <XTwitterIcon size={14} />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/afrivate/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:scale-110 transition"
+              >
+                <LinkedinIcon size={14} />
+              </a>
+              <a
+                href="https://www.instagram.com/afrivate_/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:scale-110 transition"
+              >
+                <InstagramIcon size={14} />
+              </a>
             </div>
-            <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">Elevating Life in Africa</span>
+            <span className="text-[10px] text-gray-400 font-medium tracking-wide uppercase">
+              Elevating Life in Africa
+            </span>
           </div>
         </div>
       </div>
 
-      {/* HERO GRID SECTION WITH BACKGROUND PATTERN */}
-      <div className="relative w-full border-b border-gray-100 pb-16 md:pb-24 overflow-hidden pt-[124px]">
-        
+      {/* HERO SECTION */}
+      <div className="relative w-full h-dvh pt-18 z-10 overflow-hidden">
         {/* Soft layout purple/pink glow blobs behind the grid */}
         <div className="pointer-events-none absolute -left-10 top-20 h-72 w-72 rounded-full bg-[#C58BC0]/20 blur-3xl z-0" />
         <div className="pointer-events-none absolute right-0 top-10 h-80 w-80 rounded-full bg-[#E2B6DD]/30 blur-3xl z-0" />
         <div className="pointer-events-none absolute left-1/3 bottom-0 h-72 w-72 rounded-full bg-[#D9A8D3]/20 blur-3xl z-0" />
 
-        {/* Localized Grid Lines */}
+        {/* Background Grid - Now contained by the relative w-full parent */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.4]"
+          className="pointer-events-none absolute inset-0 opacity-[0.4] -z-10"
           style={{
             backgroundImage:
-              "linear-gradient(#EADFE9 1px, transparent 1px), linear-gradient(90deg, #EADFE9 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
+              'linear-gradient(#EADFE9 1px, transparent 1px), linear-gradient(90deg, #EADFE9 1px, transparent 1px)',
+            backgroundSize: '72px 72px',
           }}
         />
 
-        {/* HERO CONTENT AREA */}
-        <div className="relative mx-auto w-[min(1100px,94%)] text-center pt-16 z-10">
-          
-          <div className="relative inline-block max-w-4xl mx-auto">
-            {/* Left Innovation Floating Chip */}
-            <div className="hidden md:flex absolute -left-28 top-8 items-center gap-2 rounded-2xl bg-white px-4 py-2.5 shadow-[0_4px_20px_rgba(132,58,127,0.06)] border border-gray-100">
-              <span className="text-[#843A7F]"><Rocket size={15} /></span>
+        {/* Background Map Simulation */}
+        <div className="absolute -right-[70px] top-20 opacity-30 pointer-events-none -z-10 hidden md:block">
+          <img
+            src={africaMap}
+            loading="lazy"
+            alt=""
+            className="max-h-[589px] max-w-[1033px] object-contain drop-shadow-[12px_8px_2.5px_rgba(113,39,109,0.2)]"
+          />
+        </div>
+
+        {/* Centered Content Container */}
+        <div className="relative mx-auto w-[min(1100px,94%)] text-center pt-36 z-10 font-montserrat">
+          {/* Tightly bound relative wrapper with added padding for safe zones */}
+          <div className="relative inline-block mx-auto px-20 lg:px-36">
+            {/* Left Innovation Floating Chip - Now anchored inside the padding */}
+            <div className="hidden md:flex absolute left-0 lg:left-4 top-2 lg:top-4 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-[0_4px_20px_rgba(132,58,127,0.08)] border border-gray-100">
+              <span className="text-[#843A7F]">
+                <Rocket size={16} />
+              </span>
               <span className="text-xs font-bold text-[#843A7F] font-montserrat">Innovation</span>
             </div>
 
-            {/* Headline Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#843A7F] leading-tight font-montserrat tracking-tight px-4 sm:px-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#843A7F] leading-[1.15] tracking-tight  sm:px-10">
               Volunteer Your Skills,
               <br />
               Build Your Future.
             </h1>
 
-            {/* Right Skills Floating Chip */}
-            <div className="hidden md:flex absolute -right-20 bottom-3 items-center gap-2 rounded-2xl bg-white px-4 py-2.5 shadow-[0_4px_20px_rgba(132,58,127,0.06)] border border-gray-100">
-              <span className="text-[#843A7F]"><GraduationCap size={15} /></span>
+            {/* Right Skills Floating Chip - Now anchored inside the padding */}
+            <div className="hidden md:flex absolute right-0 lg:right-20 bottom-2 lg:bottom-4 items-center gap-2 rounded-xl bg-white px-4 py-2.5 shadow-[0_4px_20px_rgba(132,58,127,0.08)] border border-gray-100">
+              <span className="text-[#843A7F]">
+                <GraduationCap size={16} />
+              </span>
               <span className="text-xs font-bold text-[#843A7F] font-montserrat">Skills</span>
             </div>
           </div>
 
-          <p className="mt-6 max-w-2xl mx-auto text-sm md:text-base text-gray-500 font-semibold font-montserrat leading-relaxed">
-            Volunteering on AfriVate helps Africans gain real experience, grow
-            professionally, and connect with organizations that value impact over
-            borders.
+          <p className="mt-8 max-w-2xl mx-auto text-sm md:text-base text-gray-500 font-semibold leading-relaxed">
+            Volunteering on AfriVate helps Africans gain real experience, grow professionally, and
+            connect with organizations that value impact over borders.
           </p>
 
-          {/* Minimalist Search Input Pill */}
-          <div className="mt-8 mx-auto max-w-xl flex items-center gap-3 rounded-full bg-white/95 border border-gray-200 px-5 py-3.5 shadow-[0_8px_30px_rgba(132,58,127,0.06)]">
-            <Search size={20} className="text-[#843A7F] shrink-0" />
+          <div className="mt-8 mx-auto max-w-xl flex items-center gap-3 rounded-full bg-white border border-gray-200 px-5 py-3 shadow-[0_8px_30px_rgba(132,58,127,0.06)] focus-within:border-[#843A7F] transition-colors">
+            <Search size={20} className="text-[#8D4087] shrink-0" />
             <input
               type="text"
               placeholder="Search for an Opportunity"
-              className="flex-1 bg-transparent outline-none text-sm placeholder:text-gray-400 font-medium font-montserrat"
+              className="flex-1 bg-transparent outline-none text-sm placeholder:text-gray-400 font-medium text-gray-700"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button type="button" onClick={handleSearch} className="text-[#843A7F] shrink-0 hover:translate-x-0.5 transition-transform duration-200">
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="text-[#843A7F] shrink-0 hover:translate-x-0.5 transition-transform"
+            >
               <ChevronRight size={22} strokeWidth={2.5} />
             </button>
           </div>
 
-          {/* Primary Action Button Below Search */}
-          <div className="mt-6 font-montserrat">
-            <Link to="/signup">
-              <button className="rounded-full bg-[#843A7F] text-white font-bold px-12 py-3.5 shadow-[0_6px_20px_rgba(132,58,127,0.2)] hover:bg-[#6f3069] transition duration-200 text-sm md:text-base">
-                Get Started
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4 sm:px-0">
+            {/* Solid "Get started" Button */}
+            <Link to="/signup" className="w-full sm:w-auto">
+              <button className="flex items-center justify-center w-full sm:w-[200px] h-[50px] rounded-[10px] bg-[#843A7F] text-white font-['Inria_Serif'] font-normal text-lg sm:text-[20px] leading-none shadow-lg hover:bg-[#6f3069] transition duration-200">
+                Get started <span className="ml-2 font-sans text-base">↗</span>
+              </button>
+            </Link>
+
+            {/* Outline "Explore Opportunities" Button */}
+            <Link to="/opportunity" className="w-full sm:w-auto">
+              <button className="flex items-center justify-center w-full sm:w-[226px] h-[50px] rounded-[10px] border border-[#8D408733] bg-[#FFFFFF1A] text-[#843A7F] sm:text-[#8D4087] font-['Inria_Serif'] font-normal text-base sm:text-[20px] leading-none hover:bg-[#8D4087]/5 transition-colors duration-200 px-4">
+                Explore Opportunities
               </button>
             </Link>
           </div>
-
         </div>
       </div>
 
-      {/* CATEGORIES SECTION */}
-      <section id="volunteering" className="py-16 bg-white/40 backdrop-blur-sm border-b border-gray-100">
+      {/* WHAT WE OFFER SECTION */}
+      <section className="py-20 bg-[#FAF8FB] border-b border-gray-100">
         <div className="mx-auto w-[min(1100px,94%)] text-center font-montserrat">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#843A7F]">
-            Browse Category
+          <span className="inline-block px-4 py-1.5 rounded-[10px] bg-[#EADFE9] text-[#000000] text-[15px] font-medium mb-4">
+            Categories
+          </span>
+          <h2 className="text-3xl pt-10 md:text-4xl font-extrabold text-[#333333]">
+            What We Offer
           </h2>
-          <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
-            Find the opportunity that matches where you are in your journey
+          <p className="mt-3 text-sm text-gray-500 max-w-xl mx-auto">
+            Find the perfect opportunity that matches your current skills and long-term career
+            aspirations.
           </p>
 
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map(({ label, icon: Icon }) => (
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+            {categories.map(({ label, description, icon: Icon }) => (
               <div
                 key={label}
-                className="rounded-2xl bg-white p-5 flex flex-col items-center gap-3 shadow-[0_6px_20px_rgba(132,58,127,0.04)] border border-gray-100 hover:shadow-[0_10px_28px_rgba(132,58,127,0.12)] hover:border-[#E2B6DD] transition duration-300 group cursor-pointer"
+                className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 hover:shadow-md hover:border-[#E2B6DD] transition duration-300 group cursor-pointer"
               >
-                <span className="grid place-items-center h-12 w-12 rounded-xl bg-[#F4E0F1] text-[#843A7F] group-hover:bg-[#843A7F] group-hover:text-white transition duration-300">
+                <span className="flex items-center justify-center h-12 w-12 rounded-xl bg-[#F4E0F1] text-[#843A7F] mb-5">
                   <Icon size={22} />
                 </span>
-                <span className="text-sm font-semibold text-gray-700 text-center">
-                  {label}
-                </span>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">{label}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <section className="relative w-full overflow-hidden px-4 md:px-0 md:py-16 py-4 mt-20 md:mt-[120px] font-montserrat md:pb-24 md:min-h-[950px] md:max-w-[1280px] md:mx-auto">
-        
-        {/* Raised the text vector background */}
-        <img className='w-full max-w-[400px] md:max-w-[70%] mx-auto select-none pointer-events-none relative -mt-6 md:-mt-16 block' alt='how it works' src={how}/>
-
-        {/* Outer step-card and mockup container wrapper (responsive flex on mobile, boundary height on desktop) */}
-        <div className="relative w-full mt-8 md:mt-12 flex flex-col md:block items-center md:min-h-[700px] lg:min-h-[820px]">
-          
-          {/* Centered phone mockup */}
-          <img 
-            className="relative md:absolute md:left-1/2 md:-translate-x-1/2 md:top-[60px] w-[260px] sm:w-[300px] md:w-[320px] lg:w-[350px] object-contain drop-shadow-[0_25px_50px_rgba(132,58,127,0.18)] z-10" 
-            alt="Phone showing how it works" 
-            src={phone}
-          />
-
-          {/* Responsive Step Cards */}
-          
-          {/* Step 1 */}
-          <div className="relative md:absolute md:left-[2%] lg:left-[8%] md:top-[20%] lg:top-[25%] w-full max-w-[340px] md:w-[280px] lg:w-[340px] rounded-[24px] md:rounded-[30px] p-6 bg-white/75 backdrop-blur-md border border-[#E2B6DD]/50 shadow-[0_10px_30px_rgba(132,58,127,0.08)] mt-6 md:mt-0 z-20 transition-all duration-300">
-            <div>
-              <h4 className="font-montserrat font-extrabold text-[#843A7F] text-base md:text-xl lg:text-2xl leading-snug">1. Create Profile</h4>
-              <p className="font-montserrat font-medium text-gray-600 text-xs md:text-sm mt-1 leading-relaxed">Highlight your skills and aspirations.</p>
-            </div>
-          </div>
-
-          {/* Step 2 */}
-          <div className="relative md:absolute md:right-[2%] lg:right-[8%] md:top-[38%] lg:top-[42%] w-full max-w-[340px] md:w-[290px] lg:w-[350px] rounded-[24px] md:rounded-[30px] p-6 bg-white/75 backdrop-blur-md border border-[#E2B6DD]/50 shadow-[0_10px_30px_rgba(132,58,127,0.08)] mt-4 md:mt-0 z-20 transition-all duration-300">
-            <div>
-              <h4 className="font-montserrat font-extrabold text-[#843A7F] text-base md:text-xl lg:text-2xl leading-snug">2. Explore Volunteering Opportunities</h4>
-              <p className="font-montserrat font-medium text-gray-600 text-xs md:text-sm mt-1 leading-relaxed">Check out volunteering opportunities curated for you.</p>
-            </div>
-          </div>
-
-          {/* Step 3 */}
-          <div className="relative md:absolute md:left-[10%] lg:left-[18%] md:top-[68%] lg:top-[72%] w-full max-w-[340px] md:w-[280px] lg:w-[340px] rounded-[24px] md:rounded-[30px] p-6 bg-white/75 backdrop-blur-md border border-[#E2B6DD]/50 shadow-[0_10px_30px_rgba(132,58,127,0.08)] mt-4 md:mt-0 z-20 transition-all duration-300">
-            <div>
-              <h4 className="font-montserrat font-extrabold text-[#843A7F] text-base md:text-xl lg:text-2xl leading-snug">3. Apply & Grow</h4>
-              <p className="font-montserrat font-medium text-gray-600 text-xs md:text-sm mt-1 leading-relaxed">Take the next step in your career.</p>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
       {/* FEATURED OPPORTUNITIES SECTION */}
-      <section className="py-16 bg-[#FAF8FB] font-montserrat mt-24">
-        <div className="mx-auto w-[min(1100px,94%)]">
-          
-          <div className="flex items-end justify-between flex-wrap gap-4 border-b border-gray-100 pb-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[#843A7F]">
-                Featured Opportunities
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Explore top-rated volunteering roles available this week
-              </p>
-            </div>
-            <Link
-              to="/opportunity"
-              className="text-sm font-bold text-[#843A7F] flex items-center gap-1 hover:underline group"
-            >
-              See More 
-              <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
+      <section className="py-20 bg-[#FAF8FB]  font-montserrat">
+        <div className="mx-auto w-[min(1100px,94%)] text-center">
+          <span className="inline-block px-4 py-1.5 rounded-[10px] bg-[#EADFE9] text-[#000000] text-[15px] font-medium mb-4">
+            Opportunities
+          </span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#333333]">
+            Featured Opportunities
+          </h2>
+          <p className="text-sm text-gray-500 mt-2 mb-10">
+            Explore handpicked opportunities designed to help you gain experience, develop new
+            skills, and <br></br> take the next step in your professional journey.
+          </p>
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Updated to lg:grid-cols-4 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="rounded-2xl bg-white p-3.5 shadow-[0_6px_20px_rgba(132,58,127,0.05)] border border-gray-100/60 hover:shadow-[0_12px_28px_rgba(132,58,127,0.12)] hover:border-[#E2B6DD] transition duration-300 flex flex-col justify-between"
+                className="rounded-2xl bg-[#fff] shadow-sm border border-gray-100 hover:shadow-md transition duration-300 flex flex-col justify-between overflow-hidden"
               >
                 <div>
-                  <div className="relative rounded-xl overflow-hidden aspect-[4/3]">
-                    <img
-                      src={job.image}
-                      alt={job.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                    <span className="absolute top-2.5 right-2.5 rounded-full bg-white/95 backdrop-blur-sm px-3.5 py-1 text-[10px] font-bold text-[#843A7F] border border-[#F4E0F1]">
+                  {/* Image Container - Flush to the edges */}
+                  <div className="relative aspect-[4/3] w-full">
+                    <img src={job.image} alt={job.title} className="w-full h-full object-cover" />
+                    {/* Floating Badge */}
+                    <span className="absolute top-3 right-3 rounded-full bg-white/45 backdrop-blur-sm px-3.5 py-1 text-[10px] font-bold text-[#843A7F]">
                       {job.type}
                     </span>
                   </div>
-                  <div className="p-2 mt-3">
-                    <p className="text-xs font-semibold text-gray-500">{job.company}</p>
-                    <p className="text-base font-extrabold text-[#843A7F] mt-1 leading-snug">{job.title}</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-2">
-                      <MapPin size={13} className="text-[#843A7F]" /> {job.location}
+
+                  {/* Text Content */}
+                  <div className="p-4 md:p-5">
+                    <p className="text-xs font-bold text-gray-800">{job.company}</p>
+                    <p className="text-[15px] font-bold text-[#843A7F] mt-1 leading-snug">
+                      {job.title}
+                    </p>
+                    <p className="text-xs font-semibold text-gray-600 flex items-center gap-1.5 mt-2.5">
+                      <MapPin size={14} className="text-gray-600" strokeWidth={2.5} />
+                      {job.location}
                     </p>
                   </div>
                 </div>
 
-                <div className="p-2 pt-0 mt-4">
-                  <button 
+                {/* Button Container */}
+                <div className="px-4 pb-4 md:px-5 md:pb-5 pt-0 mt-auto">
+                  <button
                     onClick={() => navigate('/volunteer-details', { state: { job } })}
-                    className="w-full rounded-full border border-[#E2B6DD] text-[#843A7F] text-sm font-bold py-2.5 hover:bg-[#F4E0F1] transition duration-200"
+                    className="w-full rounded-xl border border-gray-200 bg-gray-50 text-[#843A7F] text-xs font-bold py-3 hover:bg-gray-100 transition duration-200"
                   >
                     View Details
                   </button>
@@ -439,184 +518,335 @@ const Landing = () => {
               </div>
             ))}
           </div>
+
+          <div className="mt-10 flex justify-center">
+            <Link
+              to="/opportunity"
+              className="text-sm font-bold text-[#843A7F] flex items-center gap-1 hover:underline"
+            >
+              See All Opportunities <ChevronRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* WHY VOLUNTEER SECTION */}
-      <section className="py-20 bg-white/50 backdrop-blur-sm border-t border-gray-100 font-montserrat">
-        <div className="mx-auto w-[min(1100px,94%)]">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[#843A7F]">Why Volunteer?</h2>
-            <p className="text-sm text-gray-500 mt-2">It's more than just helping. It's about personal and professional growth.</p>
+      {/* HOW IT WORKS SECTION */}
+      <section className="relative w-full  overflow-hidden px-4 md:px-0 py-16 lg:py-2 bg-[#FAF8FB] font-montserrat">
+        {/* Large Background Text */}
+        <div className="absolute top-6 sm:top-10 md:top-16 left-1/2 -translate-x-1/2 w-full px-4 z-0 flex justify-center pointer-events-none">
+          <img
+            className="w-[90%] sm:w-[500px] md:w-[700px] lg:w-full max-w-[1300px] h-auto object-contain select-none opacity-90"
+            alt="how it works text"
+            src={how}
+          />
+        </div>
+
+        {/* Main Content Area - Pushed down so the phone overlaps the text */}
+        <div className="relative z-10 -top-8 w-full flex flex-col md:block items-center mt-24 md:mt-32 md:min-h-[750px] lg:min-h-[850px] max-w-[1100px] mx-auto">
+          {/* Centered Phone */}
+          <img
+            src={phone}
+            alt="Phone showing how it works"
+            className="relative md:absolute md:left-1/2 md:-translate-x-1/2 md:top-0 w-[260px] md:w-[320px] lg:w-[360px] object-contain drop-shadow-2xl z-10"
+          />
+
+          {/* Step 1 (Left) - Uses right anchor to guarantee overlap on left side of phone */}
+          <div className="relative md:absolute md:right-[calc(50%-80px)] lg:right-[55%] md:top-[12%] lg:top-[10%] w-full max-w-[320px] rounded-[2rem] p-5 md:p-6 bg-[#843A7F]/15 backdrop-blur-md border border-white/60 shadow-[0_8px_32px_rgba(132,58,127,0.12)] z-20 mt-6 md:mt-0 transition-transform hover:scale-105 duration-300">
+            <h4 className="font-extrabold text-[#843A7F] text-lg md:text-xl leading-tight">
+              1. Create Profile
+            </h4>
+            <p className="font-medium text-gray-700 text-xs md:text-sm mt-1.5 leading-relaxed">
+              Highlight your skills and aspirations.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="rounded-2xl bg-white p-6 border border-gray-100 shadow-[0_8px_20px_rgba(132,58,127,0.03)] hover:shadow-[0_12px_28px_rgba(132,58,127,0.08)] transition">
-              <div className="h-10 w-10 rounded-xl bg-[#F4E0F1] flex items-center justify-center text-[#843A7F] mb-4">
-                <GraduationCap size={20} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">Gain Experience</h3>
-              <ul className="text-xs text-gray-600 mt-3 space-y-2">
-                <li className="flex items-center gap-2">✔ Build your Resume</li>
-                <li className="flex items-center gap-2">✔ Learn real-world skills</li>
-                <li className="flex items-center gap-2">✔ Explore career paths</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl bg-white p-6 border border-gray-100 shadow-[0_8px_20px_rgba(132,58,127,0.03)] hover:shadow-[0_12px_28px_rgba(132,58,127,0.08)] transition">
-              <div className="h-10 w-10 rounded-xl bg-[#F4E0F1] flex items-center justify-center text-[#843A7F] mb-4">
-                <Globe size={20} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">Meet Friends</h3>
-              <ul className="text-xs text-gray-600 mt-3 space-y-2">
-                <li className="flex items-center gap-2">✔ Connect with like minds</li>
-                <li className="flex items-center gap-2">✔ Expand your network</li>
-                <li className="flex items-center gap-2">✔ Join a supportive community</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl bg-white p-6 border border-gray-100 shadow-[0_8px_20px_rgba(132,58,127,0.03)] hover:shadow-[0_12px_28px_rgba(132,58,127,0.08)] transition">
-              <div className="h-10 w-10 rounded-xl bg-[#F4E0F1] flex items-center justify-center text-[#843A7F] mb-4">
-                <Zap size={20} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">Build Skills</h3>
-              <ul className="text-xs text-gray-600 mt-3 space-y-2">
-                <li className="flex items-center gap-2">✔ Leadership progression</li>
-                <li className="flex items-center gap-2">✔ Project planning</li>
-                <li className="flex items-center gap-2">✔ Strong communications</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl bg-white p-6 border border-gray-100 shadow-[0_8px_20px_rgba(132,58,127,0.03)] hover:shadow-[0_12px_28px_rgba(132,58,127,0.08)] transition">
-              <div className="h-10 w-10 rounded-xl bg-[#F4E0F1] flex items-center justify-center text-[#843A7F] mb-4">
-                <HeartHandshake size={20} />
-              </div>
-              <h3 className="text-lg font-bold text-gray-800">Help Locals</h3>
-              <ul className="text-xs text-gray-600 mt-3 space-y-2">
-                <li className="flex items-center gap-2">✔ Support native initiatives</li>
-                <li className="flex items-center gap-2">✔ Improve urban districts</li>
-                <li className="flex items-center gap-2">✔ Witness immediate impact</li>
-              </ul>
-            </div>
-
+          {/* Step 2 (Right) - Uses left anchor to guarantee overlap on right side of phone */}
+          <div className="relative md:absolute md:left-[calc(50%-80px)] lg:left-[60%] md:top-[42%] lg:top-[30%] w-full max-w-[320px] rounded-[2rem] p-5 md:p-6 bg-[#843A7F]/15 backdrop-blur-md border border-white/60 shadow-[0_8px_32px_rgba(132,58,127,0.12)] z-20 mt-4 md:mt-0 transition-transform hover:scale-105 duration-300">
+            <h4 className="font-extrabold text-[#843A7F] text-lg md:text-xl leading-tight">
+              2. Explore Volunteering Opportunities
+            </h4>
+            <p className="font-medium text-gray-700 text-xs md:text-sm mt-1.5 leading-relaxed">
+              Check out volunteering opportunities curated for you.
+            </p>
           </div>
+
+          {/* Step 3 (Left) - Uses right anchor to guarantee overlap on left side of phone */}
+          <div className="relative md:absolute md:right-[calc(50%-50px)] lg:right-[55%] md:top-[72%] lg:top-[56%] w-full max-w-[320px] rounded-[2rem] p-5 md:p-6 bg-[#843A7F]/15 backdrop-blur-md border border-white/60 shadow-[0_8px_32px_rgba(132,58,127,0.12)] z-20 mt-4 md:mt-0 transition-transform hover:scale-105 duration-300">
+            <h4 className="font-extrabold text-[#843A7F] text-lg md:text-xl leading-tight">
+              3. Apply & Grow
+            </h4>
+            <p className="font-medium text-gray-700 text-xs md:text-sm mt-1.5 leading-relaxed">
+              Take the next step in your career.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT SETS US APART */}
+      <section className="py-16 md:py-24 px-4 sm:px-6 md:px-8 bg-[#FAF8FB] font-montserrat">
+        <div className="relative mx-auto max-w-[1280px] rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#843A7F] text-white overflow-hidden py-12 px-6 sm:px-10 md:py-20 md:px-16 shadow-2xl">
+          {/* Subtle Geometric Background Pattern */}
+          <img
+            src={vectorBg}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-[0.3] md:opacity-[0.5] pointer-events-none z-0"
+          />
+
+          <div className="relative z-10 text-center max-w-3xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
+              What Sets Us Apart
+            </h2>
+            <p className="text-xs sm:text-sm md:text-base text-white/90 mt-3 md:mt-4 leading-relaxed">
+              Discover the key advantages that set us apart, delivering unparalleled expertise,
+              innovative solutions, and dedicated support to help your business thrive.
+            </p>
+          </div>
+
+          {/* Grid Area with embedded Watermark */}
+          <div className="relative mt-12 sm:mt-16 md:mt-20 flex justify-center">
+            {/* Centered Image Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+              <img
+                src={afrivateWatermark}
+                alt="Afrivate Watermark"
+                className="w-full max-w-[140%] sm:max-w-[110%] md:max-w-[85%] object-contain opacity-[0.4] md:opacity-[0.7]"
+              />
+            </div>
+
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-6 text-left w-full">
+              {/* Item 1 */}
+              <div className="flex flex-col items-start">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-[12px] sm:rounded-[14px] bg-white flex items-center justify-center text-[#843A7F] mb-4 sm:mb-6 shadow-sm">
+                  <LogIn size={20} />
+                </div>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-tight">
+                  Proven
+                  <br />
+                  Expertise
+                </h3>
+                <p className="text-xs sm:text-sm text-white/80 mt-2 sm:mt-3 leading-relaxed">
+                  With years of experience, we deliver solutions that work.
+                </p>
+              </div>
+
+              {/* Item 2 */}
+              <div className="flex flex-col items-start">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-[12px] sm:rounded-[14px] bg-white flex items-center justify-center text-[#843A7F] mb-4 sm:mb-6 shadow-sm">
+                  <Sparkles size={20} />
+                </div>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-tight">
+                  Customer-Centric
+                  <br />
+                  Approach
+                </h3>
+                <p className="text-xs sm:text-sm text-white/80 mt-2 sm:mt-3 leading-relaxed">
+                  We prioritize your needs to create custom solutions.
+                </p>
+              </div>
+
+              {/* Item 3 */}
+              <div className="flex flex-col items-start">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-[12px] sm:rounded-[14px] bg-white flex items-center justify-center text-[#843A7F] mb-4 sm:mb-6 shadow-sm">
+                  <Lock size={20} />
+                </div>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-tight">
+                  Innovative
+                  <br />
+                  Solutions
+                </h3>
+                <p className="text-xs sm:text-sm text-white/80 mt-2 sm:mt-3 leading-relaxed">
+                  We stay ahead of the curve with the latest tech trends.
+                </p>
+              </div>
+
+              {/* Item 4 */}
+              <div className="flex flex-col items-start">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-[12px] sm:rounded-[14px] bg-white flex items-center justify-center text-[#843A7F] mb-4 sm:mb-6 shadow-sm">
+                  <Plane size={20} />
+                </div>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white leading-tight">
+                  Quality &<br />
+                  Reliability
+                </h3>
+                <p className="text-xs sm:text-sm text-white/80 mt-2 sm:mt-3 leading-relaxed">
+                  Our team is here for you every step of the way.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Faint Horizontal Separator Line */}
+          <div className="relative z-10 mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-white/10 w-[95%] mx-auto" />
         </div>
       </section>
 
       {/* COMMUNITY SECTION */}
-      <section id="about" className="py-20 bg-white font-montserrat">
-        <div className="mx-auto w-[min(1100px,94%)] grid md:grid-cols-2 gap-10 items-center">
+      {/* Add overflow-hidden to the parent section to prevent horizontal scrolling */}
+      <section id="about" className="py-16 md:py-24 bg-white font-montserrat overflow-hidden">
+        <div className="mx-auto w-[min(1100px,94%)] grid md:grid-cols-2 gap-12 items-center">
+          {/* Text Content */}
           <div className="text-center md:text-left">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#843A7F] leading-tight">
-              A community
-              <br />
-              built for
-              <br />
-              Africa's future
+            <span className="inline-block px-4 py-1.5 rounded-[14px] bg-[#EADFE9] text-[#000] text-[15px] font-medium mb-6">
+              Our Community
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#333333] leading-tight">
+              A Community Built for Africa's Future
             </h2>
-            <p className="mt-6 text-gray-600 max-w-md mx-auto md:mx-0 leading-relaxed">
-              Pathfinders and Enablers from 30+ African countries work together on
-              AfriVate every day — building careers, building organisations, and
-              building the continent.
+            <p className="mt-6 text-gray-500 leading-relaxed text-sm md:text-base max-w-md mx-auto md:mx-0">
+              Pathfinders and Enablers from 30+ African countries work together on AfriVate every
+              day — building careers, building organisations, and building the continent.
             </p>
-            <button 
-              className="mt-8 rounded-full bg-[#843A7F] text-white font-bold px-8 py-3.5 hover:bg-[#6f3069] transition shadow-md" 
-              onClick={() => window.open("https://chat.whatsapp.com/FMHF97ul4k18alJNwieFxB", "_blank", "noopener,noreferrer")}
+            <button
+              onClick={() =>
+                window.open('https://chat.whatsapp.com/FMHF97ul4k18alJNwieFxB', '_blank')
+              }
+              className="mt-8 rounded-[15px] bg-[#843A7F] text-white font-bold px-8 py-3.5 hover:bg-[#6f3069] transition shadow-md text-sm"
             >
-              Join Community
+              Join Us
             </button>
           </div>
-          <div className="flex justify-center">
+
+          {/* Responsive Map Container */}
+          <div className="relative flex justify-center md:justify-end w-full min-h-[300px] sm:min-h-[360px] md:min-h-[500px]">
             <img
               src={africaMap}
               alt="Map of Africa community network"
               loading="lazy"
-              className="w-full max-w-md object-contain"
+              className="w-[300px] sm:w-[380px] md:absolute md:top-1/2 md:-translate-y-1/2 md:-right-10 lg:md:-right-32 md:w-[700px] lg:w-[900px] max-w-none object-contain pointer-events-none drop-shadow-[12px_8px_2.5px_rgba(113,39,109,0.2)]"
             />
           </div>
         </div>
       </section>
 
-      {/* CTA INTERACTIVE SIGN UP BANNER */}
-      <section className="relative overflow-hidden bg-[#843A7F] text-white py-20 w-full font-montserrat shadow-[0_15px_40px_rgba(132,58,127,0.15)] flex flex-col justify-center items-center">
-        
-        {/* Transparent outline background text "AFRIVATE" */}
-        <h2
-          className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-black select-none pointer-events-none tracking-[0.05em] uppercase opacity-[0.14] leading-none"
-          style={{
-            fontSize: "clamp(54px, 12vw, 140px)",
-            color: "transparent",
-            WebkitTextStroke: "1px rgba(255,255,255,0.7)",
-            fontFamily: "Poppins, Montserrat, sans-serif"
-          }}
-        >
-          AFRIVATE
-        </h2>
+      {/* GET IN TOUCH SECTION */}
+      <section className="py-24 bg-[#FAF8FB] font-montserrat border-t border-gray-100">
+        <div className="mx-auto w-[min(1100px,94%)] grid md:grid-cols-2 gap-16 items-start">
+          <div>
+            <span className="inline-block px-4 py-1.5 rounded-[14px] bg-[#EADFE9] text-[#000] text-[15px] font-medium mb-6">
+              Contact Us
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#333333]">Get in Touch</h2>
+            <p className="mt-4 text-gray-500 text-sm leading-relaxed max-w-sm">
+              Have a question about volunteering or partnering with us? We'd love to hear from you.
+              Send us a message and our team will respond shortly.
+            </p>
 
-        {/* Foreground Content Panel */}
-        <div className="relative mx-auto max-w-xl text-center px-4 z-10 flex flex-col items-center justify-center">
-          <p className="text-xl md:text-2xl font-bold tracking-tight">Ready to take your next step?</p>
-          <p className="mt-2 text-xs md:text-sm text-white/90 leading-relaxed font-normal">
-            Join a growing community of change-makers and innovators across Africa.
-          </p>
-          
-          <Link to="/signup" className="inline-block mt-6">
-            <button className="rounded-full bg-white text-[#843A7F] font-bold px-10 py-3.5 hover:bg-gray-50 transition duration-200 shadow-md text-sm md:text-base">
-              Get Started
-            </button>
-          </Link>
+            <div className="mt-8 flex flex-col gap-5">
+              <div className="flex items-center gap-4 text-gray-700">
+                <div className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#843A7F] shrink-0">
+                  <Phone size={18} />
+                </div>
+                <span className="text-sm font-semibold">+2348066446777</span>
+              </div>
+              <div className="flex items-center gap-4 text-gray-700">
+                <div className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#843A7F] shrink-0">
+                  <MapPin size={18} />
+                </div>
+                <span className="text-sm font-semibold">
+                  {' '}
+                  413 The Fusion Olusegun Obasanjo way, Wuye, Abuja
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-10 flex gap-4 text-[#843A7F]">
+              <a
+                href="https://x.com/Afrivate"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-[#843A7F] hover:text-white transition"
+              >
+                <XTwitterIcon size={16} />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/afrivate/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-[#843A7F] hover:text-white transition"
+              >
+                <LinkedinIcon size={16} />
+              </a>
+              <a
+                href="https://www.instagram.com/afrivate_/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 w-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-[#843A7F] hover:text-white transition"
+              >
+                <InstagramIcon size={16} />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <form className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-gray-600">Full Name</label>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  className="p-3.5 rounded-xl border border-gray-200 outline-none focus:border-[#843A7F] text-sm bg-[#FAF8FB]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-gray-600">Phone Number</label>
+                <input
+                  type="tel"
+                  placeholder="+234 (0) 800 000 0000"
+                  className="p-3.5 rounded-xl border border-gray-200 outline-none focus:border-[#843A7F] text-sm bg-[#FAF8FB]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-gray-600">Email Address</label>
+                <input
+                  type="email"
+                  placeholder="john@example.com"
+                  className="p-3.5 rounded-xl border border-gray-200 outline-none focus:border-[#843A7F] text-sm bg-[#FAF8FB]"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-gray-600">Message</label>
+                <textarea
+                  rows="4"
+                  placeholder="How can we help you?"
+                  className="p-3.5 rounded-xl border border-gray-200 outline-none focus:border-[#843A7F] text-sm bg-[#FAF8FB] resize-none"
+                ></textarea>
+              </div>
+              <button
+                type="button"
+                className="mt-2 w-full rounded-xl bg-[#843A7F] text-white font-bold py-4 hover:bg-[#6f3069] transition text-sm"
+              >
+                Submit Message
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer id="contact" className="bg-white border-t border-gray-100 font-montserrat w-full">
+      <footer className="bg-white border-t border-gray-100 font-montserrat w-full">
         <div className="mx-auto w-[min(1100px,94%)] py-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <Link to="/" className="flex items-center">
             <img src={logoImg} alt="AfriVate Logo" className="h-8 md:h-9 w-auto object-contain" />
           </Link>
-          <nav className="flex items-center gap-6 sm:gap-8 text-sm font-semibold text-[#843A7F] flex-wrap justify-center">
-            <Link to="/" className="hover:opacity-75 transition">Home</Link>
-            <Link to="/about" className="hover:opacity-75 transition">About Us</Link>
-            <Link to="/contact" className="hover:opacity-75 transition">Contact Us</Link>
-            <Link to="/privacy" className="hover:opacity-75 transition">Privacy Policy</Link>
+          <nav className="flex items-center gap-6 sm:gap-8 text-sm font-semibold text-gray-500 flex-wrap justify-center">
+            <Link to="/" className="hover:text-[#843A7F] transition">
+              Home
+            </Link>
+            <Link to="/about" className="hover:text-[#843A7F] transition">
+              About Us
+            </Link>
+            <Link to="/contact" className="hover:text-[#843A7F] transition">
+              Contact Us
+            </Link>
+            <Link to="/privacy" className="hover:text-[#843A7F] transition">
+              Privacy Policy
+            </Link>
           </nav>
         </div>
-
-        <div className="mx-auto w-[min(1100px,94%)] border-t border-gray-50 py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <div className="mx-auto w-[min(1100px,94%)] border-t border-gray-50 py-8 flex items-center justify-center text-xs text-gray-400">
           <span>© 2026 AfriVate. All rights reserved.</span>
-          <div className="flex items-center gap-4 text-[#843A7F]">
-            <a 
-              href="https://x.com/Afrivate" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              aria-label="X"
-              className="hover:scale-110 transition duration-150"
-            >
-              <XTwitterIcon size={16} />
-            </a>
-            <a 
-              href="https://www.linkedin.com/company/afrivate/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              aria-label="LinkedIn"
-              className="hover:scale-110 transition duration-150"
-            >
-              <LinkedinIcon size={16} />
-            </a>
-            <a 
-              href="https://www.instagram.com/afrivate_/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              aria-label="Instagram"
-              className="hover:scale-110 transition duration-150"
-            >
-              <InstagramIcon size={16} />
-            </a>
-          </div>
         </div>
       </footer>
-
     </div>
   );
 };
