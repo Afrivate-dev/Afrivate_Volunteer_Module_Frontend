@@ -1,213 +1,469 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import EnablerNavbar from "../../components/auth/EnablerNavbar";
-import Modal from "../../components/common/Modal";
-import Pagination from "../../components/common/Pagination";
-import { opportunities, profile } from "../../services/api";
-import { getOrgName } from "../../utils/opportunityUtils";
+import {
+  Search,
+  Plus,
+  ChevronRight,
+  CheckCircle2,
+  FolderOpen,
+} from "lucide-react";
+import OrganizationLayout from "../../components/layout/OrganizationLayout";
+import CreateEngagementModal from "../../components/enabler/CreateEngagementModal";
+import { engagements as engagementsApi, opportunities as opportunitiesApi } from "../../services/api";
 
-const PAGE_SIZE = 10;
-
-function mapApiOpportunity(item) {
-  return {
-    id: String(item.id),
-    title: item.title || "",
-    company: getOrgName(item),
-    type: item.opportunity_type || "Volunteering",
-    description: item.description || "",
-    responsibilities: [],
-    qualifications: [],
-    aboutCompany: "",
-    applicationInstructions: "",
-    jobType: item.opportunity_type || "Volunteer",
-    location: item.location || "",
-    workModel: item.work_model || "",
-    timeCommitment: "",
-    link: item.link,
-    posted_at: item.posted_at,
-    is_open: item.is_open,
-  };
-}
-
-const typeIcon = (type = "") => {
-  const t = type.toLowerCase();
-  if (t.includes("mentor")) return "B";
-  if (t.includes("intern")) return "I";
-  if (t.includes("volunteer")) return "V";
-  return "O";
-};
-
-const OpportunitiesPosted = () => {
+export default function OpportunitiesPosted() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [opportunitiesList, setOpportunitiesList] = useState([]);
-  const [page, setPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [successToast, setSuccessToast] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
-  const [togglingId, setTogglingId] = useState(null);
+  const [engagements, setEngagements] = useState([]);
 
-  useEffect(() => { document.title = "Opportunities Posted - AfriVate"; }, []);
+  useEffect(() => {
+    document.title = "Volunteer Engagements - AfriVate";
+    if (location.search.includes("new=true")) {
+      setIsCreateModalOpen(true);
+    }
+    loadData();
+  }, [location.search]);
 
-  const loadOpportunities = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const loadData = async () => {
     try {
-      const data = await opportunities.mine();
-      let rawList = Array.isArray(data) ? data : Array.isArray(data?.results) ? data.results : Array.isArray(data?.data) ? data.data : [];
-      if (!rawList.length) {
-        try {
-          const enabler = await profile.enablerGet();
-          const enablerName = enabler?.name || enabler?.base_details?.organization_name || null;
-          const all = await opportunities.list();
-          const allRaw = Array.isArray(all) ? all : Array.isArray(all?.results) ? all.results : Array.isArray(all?.data) ? all.data : [];
-          rawList = enablerName ? allRaw.filter((o) => o.created_by_name === enablerName) : allRaw;
-        } catch (fallbackErr) { console.error("Fallback loading opportunities failed:", fallbackErr); }
+      setLoading(true);
+      const [engListRes, pendingRes, oppsRes] = await Promise.allSettled([
+        engagementsApi.list(),
+        engagementsApi.pendingAttestations(),
+        opportunitiesApi.mine(),
+      ]);
+
+      const rawEngagements = engListRes.status === "fulfilled" && Array.isArray(engListRes.value)
+        ? engListRes.value
+        : [];
+      const pendingList = pendingRes.status === "fulfilled" && Array.isArray(pendingRes.value)
+        ? pendingRes.value
+        : [];
+      const myOpps = oppsRes.status === "fulfilled" && Array.isArray(oppsRes.value)
+        ? oppsRes.value
+        : [];
+
+      // Combine raw engagements and pending
+      const combined = [...rawEngagements];
+      pendingList.forEach((p) => {
+        if (!combined.some((c) => c.id === p.id)) {
+          combined.push(p);
+        }
+      });
+
+      let mapped = [];
+      if (combined.length > 0) {
+        mapped = combined.map((item) => {
+          const volunteerName =
+            item.pathfinder_name ||
+            item.volunteer_name ||
+            item.pathfinder?.user?.email ||
+            item.volunteer_email ||
+            "Volunteer";
+
+          const initials = volunteerName
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2) || "VO";
+
+          const statusRaw = (item.status || "active").toLowerCase();
+          let statusText = "Confirmed";
+          let statusCls = "bg-emerald-50 text-emerald-700 border-emerald-200/60";
+          let dotCls = "bg-emerald-500";
+          let filterGroup = "confirmed";
+
+          if (statusRaw.includes("pending") || statusRaw.includes("attest")) {
+            statusText = "Awaiting review";
+            statusCls = "bg-amber-50 text-amber-700 border-amber-200/60";
+            dotCls = "bg-amber-500";
+            filterGroup = "attention";
+          } else if (statusRaw === "attested" || statusRaw === "certified" || item.certificate_id) {
+            statusText = "Credential issued";
+            statusCls = "bg-blue-50 text-blue-700 border-blue-200/60";
+            dotCls = "bg-blue-500";
+            filterGroup = "issued";
+          } else if (statusRaw === "draft") {
+            statusText = "Draft";
+            statusCls = "bg-gray-100 text-gray-600 border-gray-200/60";
+            dotCls = "bg-gray-400";
+            filterGroup = "all";
+          }
+
+          const rawDate = item.end_date || item.created_at || item.updated_at;
+          const formattedEndDate = rawDate
+            ? new Date(rawDate).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : "—";
+
+          return {
+            id: String(item.id),
+            initials,
+            avatarBg: "bg-teal-100 text-teal-800",
+            volunteer: volunteerName,
+            role: item.role || item.opportunity_title || "Field Support Volunteer",
+            engagement: item.title || item.opportunity_title || "Volunteer Engagement",
+            hours: item.hours_contributed ? `${item.hours_contributed} hrs` : "—",
+            status: statusText,
+            statusCls,
+            dotCls,
+            endDate: formattedEndDate,
+            filterGroup,
+          };
+        });
+      } else if (myOpps.length > 0) {
+        // Fallback: If no direct engagement contracts exist yet, map user's posted opportunities
+        mapped = myOpps.map((opp) => {
+          const initials = (opp.title || "OP")
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+
+          const rawDate = opp.created_at || opp.deadline;
+          const formattedEndDate = rawDate
+            ? new Date(rawDate).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : "—";
+
+          return {
+            id: String(opp.id),
+            initials,
+            avatarBg: "bg-purple-100 text-[#843A7F]",
+            volunteer: "Open Assignment",
+            role: opp.opportunity_type || "Volunteer Role",
+            engagement: opp.title,
+            hours: opp.time_commitment ? `${opp.time_commitment}` : "—",
+            status: opp.is_open ? "Confirmed" : "Draft",
+            statusCls: opp.is_open
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+              : "bg-gray-100 text-gray-600 border-gray-200/60",
+            dotCls: opp.is_open ? "bg-emerald-500" : "bg-gray-400",
+            endDate: formattedEndDate,
+            filterGroup: opp.is_open ? "confirmed" : "all",
+          };
+        });
       }
-      setOpportunitiesList(rawList.map(mapApiOpportunity));
+
+      setEngagements(mapped);
     } catch (err) {
-      console.error("Error loading opportunities:", err);
-      setError(err.message || "Failed to load opportunities");
-      setOpportunitiesList([]);
+      console.error("Error loading opportunities/engagements", err);
+      setEngagements([]);
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => { loadOpportunities(); }, [loadOpportunities]);
-
-  useEffect(() => {
-    if (location.state?.refreshList) {
-      loadOpportunities();
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state?.refreshList, loadOpportunities, navigate, location.pathname]);
-
-  const handleDelete = (id) => setDeleteModal({ isOpen: true, id });
-
-  const confirmDelete = async () => {
-    try {
-      await opportunities.delete(deleteModal.id);
-      setOpportunitiesList((prev) => prev.filter((opp) => opp.id !== deleteModal.id));
-    } catch (err) {
-      console.error("Error deleting opportunity:", err);
-      setError(err.message || "Failed to delete opportunity");
-    } finally {
-      setDeleteModal({ isOpen: false, id: null });
-    }
   };
 
-  const handleToggleOpen = async (opp) => {
-    if (togglingId) return;
-    setTogglingId(opp.id);
-    try {
-      await opportunities.patch(opp.id, { is_open: !opp.is_open });
-      setOpportunitiesList((prev) => prev.map((o) => o.id === opp.id ? { ...o, is_open: !opp.is_open } : o));
-    } catch (err) {
-      console.error("Error toggling opportunity:", err);
-      setError(err.message || "Failed to update opportunity");
-    } finally {
-      setTogglingId(null);
-    }
+  const handleCreated = (newRecord, isDraft) => {
+    setEngagements((prev) => [newRecord, ...prev]);
+    setSuccessToast(
+      isDraft ? "Engagement saved as draft." : "Volunteer engagement created successfully!"
+    );
+    setTimeout(() => setSuccessToast(""), 4000);
   };
+
+  const filteredEngagements = engagements.filter((item) => {
+    if (activeFilter === "attention" && item.filterGroup !== "attention") return false;
+    if (activeFilter === "confirmed" && item.filterGroup !== "confirmed") return false;
+    if (activeFilter === "issued" && item.filterGroup !== "issued") return false;
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      return (
+        item.volunteer.toLowerCase().includes(q) ||
+        item.engagement.toLowerCase().includes(q) ||
+        item.role.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  const countAttention = engagements.filter((e) => e.filterGroup === "attention").length;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans">
-      <EnablerNavbar />
-      <div className="pt-16">
-        {/* Purple Header */}
-        <div style={{ background: "linear-gradient(104.04deg, #8D4087 0%, #651F5F 100%)" }} className="px-4 sm:px-8 py-6 sm:py-8">
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1">Opportunities Posted</h1>
-              <p className="text-purple-200 text-sm">View and manage all your posted volunteering opportunities</p>
-            </div>
-            <button onClick={() => navigate("/create-opportunity")}
-              className="flex items-center gap-2 bg-white text-[#651F5F] px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-purple-50 transition-colors shrink-0">
-              + New Opportunity
-            </button>
-          </div>
+    <OrganizationLayout activeItem="Volunteer Engagements">
+      {/* ══════════════════════════════════════════════════════
+          CREATE VOLUNTEER ENGAGEMENT MODAL (Image 1)
+      ══════════════════════════════════════════════════════ */}
+      <CreateEngagementModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreated}
+      />
+
+      {/* Success banner */}
+      {successToast && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 text-emerald-800 text-xs sm:text-sm shadow-xs animate-in fade-in duration-200">
+          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+          <span>{successToast}</span>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════
+          PAGE HEADER
+      ══════════════════════════════════════════════════════ */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 sm:mb-6">
+        <div>
+          <span className="text-xs font-semibold text-gray-500 block mb-1">
+            Volunteer Engagements
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+            Volunteer Engagements
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Create, review, and confirm volunteer contributions.
+          </p>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">{error}</div>
-          )}
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="hidden sm:flex bg-[#0B7B69] hover:bg-[#096657] active:scale-[0.98] text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl items-center justify-center gap-2 shadow-sm transition-all shrink-0"
+        >
+          <Plus size={16} strokeWidth={2.5} />
+          <span>New engagement</span>
+        </button>
+      </div>
 
-          {loading ? (
-            <div className="flex justify-center py-16">
-              <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8D4087] border-t-transparent" />
-            </div>
-          ) : opportunitiesList.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M4 6h16v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></div>
-              <p className="font-bold text-gray-800 mb-1">No opportunities posted yet</p>
-              <p className="text-sm text-gray-400 mb-5">Create your first opportunity to start receiving applications.</p>
-              <button onClick={() => navigate("/create-opportunity")}
-                className="bg-[#651F5F] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#4a1647] transition-colors">
-                Create Your First Opportunity
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {opportunitiesList.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((opp) => (
-                <div key={opp.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-xl shrink-0">
-                    {typeIcon(opp.type)}
-                  </div>
-                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/enabler/opportunity/${opp.id}`)}>
-                    <h2 className="font-bold text-gray-900 mb-0.5">{opp.title}</h2>
-                    <p className="text-xs text-gray-500">
-                      {opp.type}{opp.location && ` • ${opp.location}`}
-                    </p>
-                    <div className="mt-1">
-                      {opp.is_open ? (
-                        <span className="text-xs font-semibold bg-green-100 text-green-700 px-2.5 py-0.5 rounded-full">Open</span>
-                      ) : (
-                        <span className="text-xs font-semibold bg-gray-100 text-gray-500 px-2.5 py-0.5 rounded-full">Closed</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/enabler/opportunity/${opp.id}`); }}
-                      className="border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-semibold hover:bg-gray-50 transition-colors">
-                      View
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleToggleOpen(opp); }} disabled={togglingId === opp.id}
-                      className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                        opp.is_open ? "bg-orange-100 text-orange-600 hover:bg-orange-200" : "bg-green-100 text-green-700 hover:bg-green-200"
-                      } disabled:opacity-50`}>
-                      {togglingId === opp.id ? "…" : opp.is_open ? "Close" : "Reopen"}
-                    </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(opp.id); }}
-                      className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <Pagination
-                page={page}
-                totalPages={Math.ceil(opportunitiesList.length / PAGE_SIZE)}
-                onPrev={() => setPage((p) => p - 1)}
-                onNext={() => setPage((p) => p + 1)}
-              />
-            </div>
-          )}
+      {/* Full width button on mobile (Screenshot 4) */}
+      <div className="sm:hidden mb-6">
+        <button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="w-full bg-[#0B7B69] hover:bg-[#096657] active:scale-[0.98] text-white text-sm font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all"
+        >
+          <Plus size={18} strokeWidth={2.5} />
+          <span>New engagement</span>
+        </button>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════
+          SEARCH AND FILTER BAR
+      ══════════════════════════════════════════════════════ */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        {/* Search input */}
+        <div className="relative w-full max-w-md">
+          <Search
+            size={16}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="text"
+            placeholder="Search engagements or volunteers"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-xs sm:text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#843A7F] focus:ring-1 focus:ring-[#843A7F]/15 transition shadow-sm"
+          />
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-xl text-xs font-semibold self-start md:self-auto overflow-x-auto max-w-full">
+          <button
+            onClick={() => setActiveFilter("all")}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              activeFilter === "all"
+                ? "bg-gray-900 text-white shadow-sm font-bold"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            All <span className="opacity-80">{engagements.length}</span>
+          </button>
+          <button
+            onClick={() => setActiveFilter("attention")}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              activeFilter === "attention"
+                ? "bg-gray-900 text-white shadow-sm font-bold"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            Needs attention <span className="opacity-80">{countAttention}</span>
+          </button>
+          <button
+            onClick={() => setActiveFilter("confirmed")}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              activeFilter === "confirmed"
+                ? "bg-gray-900 text-white shadow-sm font-bold"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            Confirmed
+          </button>
+          <button
+            onClick={() => setActiveFilter("issued")}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              activeFilter === "issued"
+                ? "bg-gray-900 text-white shadow-sm font-bold"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            Credentials issued
+          </button>
         </div>
       </div>
 
-      <Modal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        onConfirm={confirmDelete}
-        title="Delete Opportunity"
-        message="Deleting this opportunity will also remove all applications. This cannot be undone."
-        confirmText="Delete"
-        type="danger"
-      />
-    </div>
-  );
-};
+      {/* ══════════════════════════════════════════════════════
+          ENGAGEMENTS TABLE CARD
+      ══════════════════════════════════════════════════════ */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="py-20 flex justify-center items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#843A7F] border-t-transparent" />
+          </div>
+        ) : filteredEngagements.length === 0 ? (
+          <div className="py-16 px-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-purple-50 text-[#843A7F] flex items-center justify-center mx-auto mb-3">
+              <FolderOpen size={24} />
+            </div>
+            <h3 className="text-sm font-bold text-gray-900">
+              No volunteer engagements found
+            </h3>
+            <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
+              {searchQuery
+                ? `No engagements matched "${searchQuery}". Try a different keyword.`
+                : "You don't have any volunteer engagements recorded yet. Click '+ New engagement' to create one."}
+            </p>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="mt-4 inline-flex items-center gap-1.5 bg-[#843A7F] hover:bg-[#6e2e6a] text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-xs"
+            >
+              <Plus size={14} />
+              <span>Create engagement</span>
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Mobile Cards List View (Matches Screenshot 4) */}
+            <div className="lg:hidden divide-y divide-gray-100">
+              {filteredEngagements.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(`/enabler/opportunity/${item.id}`)}
+                  className="p-4 cursor-pointer hover:bg-gray-50/80 active:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2.5">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${item.avatarBg}`}
+                      >
+                        {item.initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-900 text-xs sm:text-sm truncate">
+                          {item.volunteer}
+                        </p>
+                        <p className="text-[11px] text-gray-400 truncate">
+                          {item.role}
+                        </p>
+                      </div>
+                    </div>
 
-export default OpportunitiesPosted;
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${item.statusCls} shrink-0`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${item.dotCls}`} />
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <div className="pl-12 flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-800">
+                        {item.engagement}
+                      </p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">
+                        {item.hours !== "—" ? `${item.hours} · ` : ""}{item.endDate}
+                      </p>
+                    </div>
+                    <ChevronRight size={16} className="text-gray-400 shrink-0" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/40">
+                    <th className="py-3.5 px-6 font-semibold">VOLUNTEER</th>
+                    <th className="py-3.5 px-4 font-semibold">ENGAGEMENT</th>
+                    <th className="py-3.5 px-4 font-semibold">HOURS</th>
+                    <th className="py-3.5 px-4 font-semibold">STATUS</th>
+                    <th className="py-3.5 px-4 font-semibold">END DATE</th>
+                    <th className="py-3.5 px-6 font-semibold text-right"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredEngagements.map((item) => (
+                    <tr
+                      key={item.id}
+                      onClick={() => navigate(`/enabler/opportunity/${item.id}`)}
+                      className="hover:bg-gray-50/80 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3.5">
+                          <div
+                            className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${item.avatarBg}`}
+                          >
+                            {item.initials}
+                          </div>
+                          <div className="overflow-hidden">
+                            <p className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight">
+                              {item.volunteer}
+                            </p>
+                            <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                              {item.role}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 text-gray-800 font-medium text-xs sm:text-sm">
+                        {item.engagement}
+                      </td>
+
+                      <td className="py-4 px-4 text-gray-500 font-medium text-xs">
+                        {item.hours}
+                      </td>
+
+                      <td className="py-4 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${item.statusCls}`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${item.dotCls}`} />
+                          {item.status}
+                        </span>
+                      </td>
+
+                      <td className="py-4 px-4 text-gray-500 font-medium text-xs">
+                        {item.endDate}
+                      </td>
+
+                      <td className="py-4 px-6 text-right">
+                        <ChevronRight
+                          size={18}
+                          className="text-gray-300 group-hover:text-gray-600 transition-colors inline-block"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+    </OrganizationLayout>
+  );
+}

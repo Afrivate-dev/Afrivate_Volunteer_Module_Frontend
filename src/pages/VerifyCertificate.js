@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { engagements as apiEngagements } from '../services/api';
-import logoImg from '../Assets/afrivate-logo.svg';
+import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
 import { Download, FileText, Loader, ShieldCheck } from 'lucide-react';
 
 export default function VerifyCertificate() {

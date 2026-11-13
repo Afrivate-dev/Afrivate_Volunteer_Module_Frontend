@@ -57,8 +57,15 @@ import VerificationStatus from './pages/enabler/VerificationStatus';
 import Submitted from './pages/enabler/Submitted';
 import MyExperience from './pages/pathfinder/MyExperience';
 import SupportButton from './components/common/SupportButton';
-import PendingAttestations from './pages/enabler/PendingAttestations';
+import Credentials from './pages/enabler/Credentials';
+import TeamMembers from './pages/enabler/TeamMembers';
 import VerifyCertificate from './pages/VerifyCertificate';
+import VolunteerOverview from './pages/volunteer/VolunteerOverview';
+import VolunteerHome from './pages/volunteer/VolunteerHome';
+import VolunteerEngagements from './pages/volunteer/VolunteerEngagements';
+import VolunteerCredentials from './pages/volunteer/VolunteerCredentials';
+import VolunteerAchievements from './pages/volunteer/VolunteerAchievements';
+import VolunteerSkillsPortfolio from './pages/volunteer/VolunteerSkillsPortfolio';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -472,12 +479,128 @@ function App() {
               }
             />
 
-            {/* Enabler Attestations */}
+            {/* Volunteer Redesigned Routes */}
+            <Route
+              path="/volunteer/home"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerHome />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/opportunities"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerHome />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/dashboard"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerOverview />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/overview"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerOverview />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/engagements"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerEngagements />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/credentials"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerCredentials />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/achievements"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerAchievements />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/volunteer/skills-portfolio"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerSkillsPortfolio />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathfinder/credentials"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerCredentials />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathfinder/achievements"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerAchievements />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/pathfinder/skills-portfolio"
+              element={
+                <RequireAuth role="pathfinder">
+                  <VolunteerSkillsPortfolio />
+                </RequireAuth>
+              }
+            />
+
+            {/* Enabler Credentials */}
+            <Route
+              path="/enabler/credentials"
+              element={
+                <RequireAuth role="enabler">
+                  <Credentials />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/enabler/attestations"
               element={
                 <RequireAuth role="enabler">
-                  <PendingAttestations />
+                  <Credentials />
+                </RequireAuth>
+              }
+            />
+
+            {/* Enabler Team Members */}
+            <Route
+              path="/enabler/team-members"
+              element={
+                <RequireAuth role="enabler">
+                  <TeamMembers />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/enabler/team"
+              element={
+                <RequireAuth role="enabler">
+                  <TeamMembers />
                 </RequireAuth>
               }
             />

@@ -25,7 +25,7 @@ import {
 
 // Local asset paths
 
-import logoImg from '../Assets/newLogo.svg';
+import logoImg from '../Assets/AfriVate_logo_long_white_on_navy.png';
 import vectorBg from '../Assets/Vector2.png';
 import afrivateWatermark from '../Assets/AFRIVATE.png';
 import phone from '../Assets/phone.png';

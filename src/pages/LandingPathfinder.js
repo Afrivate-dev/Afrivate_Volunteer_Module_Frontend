@@ -6,7 +6,7 @@ import logoImg from '../Assets/Vector (1).png';
 import pic1 from '../Assets/Picture 1.png';
 import blob1 from '../Assets/Blob 1.png';
 import blob2 from '../Assets/blob 2.png';
-import brandLogo from '../Assets/afrivate-logo.svg';
+import brandLogo from '../Assets/AfriVate_logo_long_white_on_navy.png';
 import pic2 from '../Assets/Picture 2.png';
 import pic3 from '../Assets/Picture 3.png';
 import pic4 from '../Assets/Picture 4.png';

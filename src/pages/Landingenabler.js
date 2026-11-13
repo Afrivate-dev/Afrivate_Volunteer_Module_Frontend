@@ -9,7 +9,7 @@ import how from '../Assets/How It Works.png';
 import ppl2 from '../Assets/lets-icons_group-fill.png';
 import health from '../Assets/healthicons_justice-outline-24px.png';
 import shield from '../Assets/zondicons_shield.png';
-import brandLogo from '../Assets/afrivate-logo.svg';
+import brandLogo from '../Assets/AfriVate_logo_long_white_on_navy.png';
 
 const Landingenabler = () => {
   const [isOpen, setIsOpen] = useState(false);
